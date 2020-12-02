@@ -8,6 +8,7 @@ Medlemmar:<br/>
 <li>Joacim Norbeck - nekcoj</li>
 <li>Carl-Johan "Calle" Hornestam - Carljohan-hornestam</li>
 
+## Installation info
 
 ### Install Neo4J Community Edition
 - https://neo4j.com/download-center/#community

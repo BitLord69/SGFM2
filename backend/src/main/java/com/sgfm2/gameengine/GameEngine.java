@@ -4,13 +4,11 @@ import com.sgfm2.gameobjects.Card;
 import com.sgfm2.gameobjects.CardSettings;
 import com.sgfm2.gameobjects.Deck;
 import com.sgfm2.gameobjects.GameState;
-import com.sgfm2.interfaces.Renderer;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
 
-public class GameHost extends Game {
+public class GameEngine  {
 
   private final List<CardSettings> cardSettings = new ArrayList<>() {{
     add(new CardSettings(1, "Mutated worm", 8));
@@ -24,12 +22,19 @@ public class GameHost extends Game {
     add(new CardSettings(9, "Radiated zombie", 4));
     add(new CardSettings(10, "Super Galaxy Face Melter", 2));
   }};
+
+  public static final byte PLAYER_ONE = 0;
+  public static final byte PLAYER_TWO = 1;
+  public static final int TIE = 2;
+
+  protected GameState gameState;
+
   private final Deck deck = new Deck(cardSettings);
   private final int handSize;
 
-  public GameHost(GameLobby gameLobby, Renderer renderer, GameState gameState, int handSize) {
-    super(gameLobby, renderer, gameState);
+  public GameEngine(GameState gameState, int handSize) {
     this.handSize = handSize;
+    this.gameState = gameState;
   }
 
   /**
@@ -43,11 +48,6 @@ public class GameHost extends Game {
    *      Byt startspelare -> gameState.changeStartPlayer()
    */
   public void runGame() {
-    if (!gameState.isLocalGame()) {
-      getPlayerNameFromClient();
-      gameLobby.renderClient(gameState, Game.CLIENT);
-    }
-
     dealCards();
     do {
       gameState.setRoundWinner(-1);
@@ -67,38 +67,26 @@ public class GameHost extends Game {
       int winner = getRoundWinner(c1, c2);
       gameState.setRoundWinner(winner);
       redrawGameBoard();
-      continueGame();
       gameState.clearPlayedCards();
       gameState.changeStartPlayer();
     } while (!isGameOver());
 
     redrawGameBoard();
-    gameLobby.sendGameOver();
   }
 
   private void getPlayerNameFromClient() {
-    gameState.getPlayer(Game.CLIENT).setName(gameLobby.getPlayerNameFromClient());
+//    gameState.getPlayer(CLIENT).setName(gameLobby.getPlayerNameFromClient());
   }
 
   private void redrawGameBoard() {
-    gameBoard.render(gameState, Game.HOST);
-    if (!gameState.isLocalGame()) {
-      gameLobby.renderClient(gameState, Game.CLIENT);
-    }
   }
 
   private void renderStartPlayer() {
-    if (gameState.getStartPlayer() == Game.HOST) {
-      gameBoard.render(gameState, Game.HOST);
-    } else {
-      gameLobby.renderClient(gameState, Game.CLIENT);
-    }
-  }
-
-  private void continueGame() {
-    if (gameState.isLocalGame()) {
-      gameBoard.continueGame();
-    }
+//    if (gameState.getStartPlayer() == HOST) {
+//      gameBoard.render(gameState, HOST);
+//    } else {
+//      gameLobby.renderClient(gameState, CLIENT);
+//    }
   }
 
   /**
@@ -109,7 +97,7 @@ public class GameHost extends Game {
    * @return an integer with the selected card
    */
   public int getCardFromStartPlayer() {
-    return gameState.getStartPlayer() == HOST ? getCardFromPlayer1() : getCardFromPlayer2();
+    return gameState.getStartPlayer() == PLAYER_ONE ? getCardFromPlayer1() : getCardFromPlayer2();
   }
 
   /**
@@ -118,7 +106,7 @@ public class GameHost extends Game {
    * @return an integer with the selected card
    */
   public int getCardFromSecondPlayer() {
-    return gameState.getStartPlayer() == CLIENT ? getCardFromPlayer1() : getCardFromPlayer2();
+    return gameState.getStartPlayer() == PLAYER_TWO ? getCardFromPlayer1() : getCardFromPlayer2();
   }
 
    /**
@@ -130,9 +118,9 @@ public class GameHost extends Game {
     int result = card1.getCurrentPower() - card2.getCurrentPower();
     int winner;
 
-    if (result > 0) { winner = gameState.getStartPlayer() == HOST ? 0 : 1; }
-    else if (result < 0) { winner = gameState.getStartPlayer() == HOST ? 1 : 0; }
-    else  { winner = Game.TIE; }
+    if (result > 0) { winner = gameState.getStartPlayer() == PLAYER_ONE ? 0 : 1; }
+    else if (result < 0) { winner = gameState.getStartPlayer() == PLAYER_ONE ? 1 : 0; }
+    else  { winner = TIE; }
 
     finalizingRound(winner, card1, card2);
     return winner;
@@ -150,17 +138,17 @@ public class GameHost extends Game {
 
       //Deal new card to LOSER, if TIE both players receive a new card.
       switch (winner) {
-        case HOST:
-          gameState = gameLobby.sendCardToClient(new ArrayList<>(Collections.singletonList(deck.getTopCard())), gameState);
+        case PLAYER_ONE:
+//          gameState = gameLobby.sendCardToClient(new ArrayList<>(Collections.singletonList(deck.getTopCard())), gameState);
           break;
 
-        case CLIENT:
-          gameState.getPlayer(HOST).addCardToHand(deck.getTopCard());
+        case PLAYER_TWO:
+          gameState.getPlayer(PLAYER_ONE).addCardToHand(deck.getTopCard());
           break;
 
         case TIE:
-          gameState.getPlayer(HOST).addCardToHand(deck.getTopCard());
-          gameState = gameLobby.sendCardToClient(new ArrayList<>(Collections.singletonList(deck.getTopCard())), gameState);
+          gameState.getPlayer(PLAYER_ONE).addCardToHand(deck.getTopCard());
+  //        gameState = gameLobby.sendCardToClient(new ArrayList<>(Collections.singletonList(deck.getTopCard())), gameState);
           break;
 
         default:
@@ -171,7 +159,7 @@ public class GameHost extends Game {
   }
 
   public void handleWinnerCardForStartPlayer(int winner, Card card1, Card card2){
-    if (winner == HOST) {
+    if (winner == PLAYER_ONE) {
       handleWinnerCardForPlayer1(card1, card2);
     } else {
       handleWinnerCardForPlayer2(card1, card2);
@@ -179,7 +167,7 @@ public class GameHost extends Game {
   }
 
   public void handleWinnerCardForSecondPlayer(int winner, Card card1, Card card2){
-      if (winner == CLIENT) {
+      if (winner == PLAYER_TWO) {
       handleWinnerCardForPlayer2(card1, card2);
     } else {
       handleWinnerCardForPlayer1(card1, card2);
@@ -187,24 +175,24 @@ public class GameHost extends Game {
   }
 
   public void handleWinnerCardForPlayer1(Card card1, Card card2){
-    gameState.getPlayer(HOST).addToVictoryPile(card2);
+    gameState.getPlayer(PLAYER_ONE).addToVictoryPile(card2);
     card1.decreasePower(card2.getCurrentPower());
-    gameState.getPlayer(HOST).addCardToHand(card1);
+    gameState.getPlayer(PLAYER_ONE).addCardToHand(card1);
   }
 
   public void handleWinnerCardForPlayer2(Card card1, Card card2){
-    gameState = gameLobby.addToClientVictoryPile(card2, gameState);
+//    gameState = gameLobby.addToClientVictoryPile(card2, gameState);
     card1.decreasePower(card2.getCurrentPower());
-    gameState = gameLobby.sendCardToClient(new ArrayList<>(Collections.singletonList(card1)), gameState);
+//    gameState = gameLobby.sendCardToClient(new ArrayList<>(Collections.singletonList(card1)), gameState);
   }
 
   public boolean isGameOver() {
-    boolean playerOneScore = gameState.getPlayer(HOST).getScore() >= gameState.getPointsToWin();
-    boolean playerTwoScore = gameState.getPlayer(CLIENT).getScore() >= gameState.getPointsToWin();
+    boolean playerOneScore = gameState.getPlayer(PLAYER_ONE).getScore() >= gameState.getPointsToWin();
+    boolean playerTwoScore = gameState.getPlayer(PLAYER_TWO).getScore() >= gameState.getPointsToWin();
     if (playerOneScore || playerTwoScore || deck.isEmpty()) {
-        gameState.setGameWinner(gameState.getPlayer(Game.HOST).getScore() == gameState.getPlayer(Game.CLIENT).getScore()
-                ? Game.TIE : gameState.getPlayer(Game.HOST).getScore() > gameState.getPlayer(Game.CLIENT).getScore()
-                ? Game.HOST : Game.CLIENT);
+        gameState.setGameWinner(gameState.getPlayer(PLAYER_ONE).getScore() == gameState.getPlayer(PLAYER_TWO).getScore()
+                ? TIE : gameState.getPlayer(PLAYER_ONE).getScore() > gameState.getPlayer(PLAYER_TWO).getScore()
+                ? PLAYER_ONE : PLAYER_TWO);
         return true;
     }
     return false;
@@ -212,14 +200,16 @@ public class GameHost extends Game {
 
   public int getCardFromPlayer1() {
     //be den lokala spelaren om ett kort
-    gameState.setCurrentPlayer(Game.HOST);
-    gameBoard.render(gameState, Game.HOST);
-    return gameBoard.getCard(gameState, Game.HOST);
+    gameState.setCurrentPlayer(PLAYER_ONE);
+//    gameBoard.render(gameState, HOST);
+//    return gameBoard.getCard(gameState, HOST);
+    return 0;
   }
 
   public int getCardFromPlayer2() {
-    gameState.setCurrentPlayer(Game.CLIENT);
-    return gameLobby.requestCardFromClient(gameState);
+    gameState.setCurrentPlayer(PLAYER_TWO);
+    return 0;
+//    return gameLobby.requestCardFromClient(gameState);
   }
 
   public void dealCards(){
@@ -228,10 +218,11 @@ public class GameHost extends Game {
   }
 
   public boolean dealCardsToHost(){
-    return gameState.getPlayer(HOST).addCardsToHand((ArrayList<Card>) deck.getHand(handSize));
+    return gameState.getPlayer(PLAYER_ONE).addCardsToHand((ArrayList<Card>) deck.getHand(handSize));
   }
 
   public GameState dealCardsToClient(){
-     return gameLobby.sendCardToClient((ArrayList<Card>) deck.getHand(handSize), gameState);
+    return null;
+//     return gameLobby.sendCardToClient((ArrayList<Card>) deck.getHand(handSize), gameState);
   }
 }

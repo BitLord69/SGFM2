@@ -1,13 +1,12 @@
 package com.sgfm2;
 
-import com.corundumstudio.socketio.annotation.OnEvent;
-import com.corundumstudio.socketio.listener.*;
 import com.corundumstudio.socketio.*;
+import com.corundumstudio.socketio.listener.ConnectListener;
+import com.corundumstudio.socketio.listener.DataListener;
+import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.corundumstudio.socketio.namespace.Namespace;
-import com.corundumstudio.socketio.protocol.Packet;
-import com.corundumstudio.socketio.protocol.PacketType;
 
-import java.util.*;
+import java.util.Collection;
 
 public class Server {
 
@@ -27,7 +26,7 @@ public class Server {
         System.out.println("Wääääoooww, client connected!!!! " + client.getSessionId());
 
         //Increase roomno 2 clients are present in a room.
-        //SocketIONamespace testPlupp = server.getNamespace(Namespace.DEFAULT_NAME);
+//        SocketIONamespace testPlupp = server.getNamespace(Namespace.DEFAULT_NAME);
         BroadcastOperations bcO = server.getRoomOperations("room-" + roomNo);
         Collection<SocketIOClient> clients = null;
         if (bcO != null) {
@@ -46,29 +45,32 @@ public class Server {
 //        packet.setName("message");
 //        packet.setData(Collections.singletonList("hejhopp"));
 //        //server.getRoomOperations("room-" + roomNo).sendEvent("message", "HEJHEJ");
-//        server.getBroadcastOperations().sendEvent("message", "HEJHEJ");
-//        // client.sendEvent("message", new Object[]{"HEJHEJ"});
-//        System.out.println("efter sendEvent");
-      }
+        server.getBroadcastOperations().sendEvent("message", new Message("Room message", "Welcome to room # " + roomNo + "!"));
+//        client.sendEvent("message", new Message("", "Welcome to the chat!"));
+        System.out.println("efter sendEvent");
+      } // onConnect
     });
 
     server.addDisconnectListener(new DisconnectListener() {
       @Override
       public void onDisconnect(SocketIOClient client) {
-        System.out.println("client disconnected " + client.getSessionId());
+        System.out.println("onDisconnected");
       }
     });
 
-    server.addEventListener("greeting", String.class, new DataListener<String>() {
+    server.addEventListener("send", Message.class, new DataListener<Message>() {
+
       @Override
-      public void onData(SocketIOClient client, String data, AckRequest ackSender) throws Exception {
-        System.out.println("message from client, in addEventListener " + data);
+      public void onData(SocketIOClient client, Message data, AckRequest ackSender) throws Exception {
+        System.out.println("onSend: " + data.toString());
+        server.getBroadcastOperations().sendEvent("message", data);
       }
     });
   }
 
   public void sendMsg() {
-    server.getBroadcastOperations().sendEvent("weekendGreeting", "supaaaaaa");
+    System.out.println("Before sending the weekend message!");
+    server.getBroadcastOperations().sendEvent("message", new Message("Helg!", "Nu är det helg!"));
   }
 
   public void start() {

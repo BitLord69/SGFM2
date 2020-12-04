@@ -1,20 +1,10 @@
 {
-  "name": "frontend",
+  "name": "backend",
   "version": "0.0.0",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build"
-  },
+  "scripts": {},
   "dependencies": {
-    "primeflex": "^2.0.0",
-    "primeicons": "^4.1.0",
-    "primevue": "^3.0.0",
-    "socket.io": "^3.0.3",
-    "socket.io-client": "^3.0.3",
-    "vue": "^3.0.2"
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^3.0.3"
   },
-  "devDependencies": {
-    "vite": "^1.0.0-rc.8",
-    "@vue/compiler-sfc": "^3.0.2"
-  }
+  "devDependencies": {}
 }

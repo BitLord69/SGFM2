@@ -1,6 +1,6 @@
 <template>
   <router-link to="/lobby">
-    <button>Play a game</button>
+    <Button class="p-ripple" label="Play a game"/>
   </router-link>
 </template>
 
@@ -11,7 +11,7 @@ export default {
 </script>
 
 <style scoped>
-button {
+Button {
   height: 5em;
   width: 20em;
   background-color: #e2c3a6;

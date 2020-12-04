@@ -38,4 +38,16 @@ h1 {
   word-spacing: -0.5em;
   font-family: "Press Start 2P", cursive;
 }
+
+Button:hover{
+  background-color: #e2c3a6 !important;
+  border: 0.2em solid #3b1704 !important;
+  color: #3b1704 !important;
+}
+
+.p-dialog-content,
+.p-dialog-header,
+.p-dialog-footer{
+  background-color: #e2c3a6 !important;
+}
 </style>

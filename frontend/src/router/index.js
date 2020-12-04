@@ -3,6 +3,7 @@ import LandingPageComponent from "../components/LandingPageComponent.vue"
 import Lobby from "../components/Lobby.vue"
 
 
+
 const routes = [
   {
     path: "/",

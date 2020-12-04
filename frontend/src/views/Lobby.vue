@@ -22,33 +22,43 @@
         class="p-button-raised p-ripple"
         @click="setVisibleJoin()"
       />
-      <div>
-        <span>{{state.playername}}</span>
-      </div>
     </div>
     <div class="modals">
       <Dialog
         id="createModal"
-        
+        :modal="true"
+        :dismissableMask="true"
         v-model:visible="state.displayCreate"
       >
-        <template #header :style="{backgroundColor: '#e2c3a6'}"><h3>Create game</h3></template>
+        <template #header><h3>Create game</h3></template>
         <CreateGame />
-        <template #footer :style="{backgroundColor: '#e2c3a6'}">
-          <Button label="Create" class="p-button-raised btn-dialog-create-game" />
+        <template class="p-mx-auto" #footer>
+          <Button label="Create" class="p-d-block p-mx-auto p-button-raised btn-dialog" />
         </template>
       </Dialog>
-
+      <Dialog
+        id="joinModal"
+        :modal="true"
+        :dismissableMask="true"
+        v-model:visible="state.displayJoin"
+      >
+        <template #header><h3>Join game</h3></template>
+        <JoinGame />
+        <template class="p-mx-auto" #footer>
+          <Button label="Join" class="p-d-block p-mx-auto p-button-raised btn-dialog" />
+        </template>
+      </Dialog>
     </div>
   </div>
 </template>
 
 <script>
 import { reactive } from "vue";
-import CreateGame from "./CreateGame";
+import CreateGame from "../components/CreateGame";
+import JoinGame from "../components/JoinGame";
 export default {
   name: "Lobby",
-  components: {CreateGame},
+  components: {CreateGame, JoinGame},
   setup() {
     const state = reactive({
       displayCreate: false,
@@ -65,7 +75,7 @@ export default {
     }
 
     function isDisabled() {
-      return state.playername === null
+      return state.playername === null || state.playername.trim() === ""
     }
 
     return {
@@ -112,7 +122,7 @@ h1 {
   font-family: "Press Start 2P", cursive;
 }
 
-.btn-dialog-create-game{
+.btn-dialog{
   background-color: #e2c3a6;
   border: 0.2em solid #3b1704;
   box-shadow: 0.2em 0.2em black;

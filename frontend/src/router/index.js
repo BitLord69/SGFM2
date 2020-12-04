@@ -1,14 +1,12 @@
 import { createWebHistory, createRouter } from "vue-router";
-import LandingPageComponent from "../components/LandingPageComponent.vue"
-import Lobby from "../components/Lobby.vue"
-
-
+import LandingPage from "../views/LandingPage.vue"
+import Lobby from "../views/Lobby.vue"
 
 const routes = [
   {
     path: "/",
     name: "Home",
-    component: LandingPageComponent,
+    component: LandingPage,
   },
   {
     path: "/lobby",

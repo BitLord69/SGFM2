@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class GameState implements Serializable {
-  private int pointsToWin;
-  private ArrayList<Player> players = new ArrayList<>();
+  private final int pointsToWin;
+  private final ArrayList<Player> players = new ArrayList<>();
   private final ArrayList<Card> playedCards = new ArrayList<>();
   private int startPlayer = 0;
   private int currentPlayer = 0;

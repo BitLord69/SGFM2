@@ -13,6 +13,11 @@ window.onload = function () {
       console.log("data i message: ", data);
     });
 
+    client.on('GAME_UPDATE', (gameState) => {
+      console.log("GAME_UPDATE received");
+      console.log("gameState: ", JSON.parse(gameState));
+    })
+
     client.on('connect_error', () => {
       console.log("i connect_error");
     });

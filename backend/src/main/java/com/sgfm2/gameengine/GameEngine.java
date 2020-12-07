@@ -25,17 +25,19 @@ public class GameEngine  {
   public static final byte PLAYER_TWO = 1;
   public static final int TIE = 2;
 
-  protected GameState gameState;
+  private final GameState gameState;
 
   private final Deck deck = new Deck(cardSettings);
   private final int handSize;
+  private final int roomNo;
 
   private final Server server;
 
-  public GameEngine(Server server, int handSize, int pointsToWin) {
+  public GameEngine(Server server, int handSize, int pointsToWin, int roomNo) {
     gameState = new GameState(pointsToWin);
     this.handSize = handSize;
     this.server = server;
+    this.roomNo = roomNo;
   }
 
   /**
@@ -73,6 +75,11 @@ public class GameEngine  {
     } while (!isGameOver());
 
     redrawGameBoard();
+  }
+
+  public void startGame() {
+    dealCards();
+    server.sendMsgToRoom(gameState, roomNo);
   }
 
   public void setPlayer (Player player) {
@@ -217,17 +224,8 @@ public class GameEngine  {
 //    return gameLobby.requestCardFromClient(gameState);
   }
 
-  public void dealCards(){
-    dealCardsToHost();
-   gameState = dealCardsToClient();
-  }
-
-  public boolean dealCardsToHost(){
-    return gameState.getPlayer(PLAYER_ONE).addCardsToHand((ArrayList<Card>) deck.getHand(handSize));
-  }
-
-  public GameState dealCardsToClient(){
-    return null;
-//     return gameLobby.sendCardToClient((ArrayList<Card>) deck.getHand(handSize), gameState);
+  public void dealCards() {
+    gameState.getPlayer(PLAYER_ONE).addCardsToHand((ArrayList<Card>) deck.getHand(handSize));
+    gameState.getPlayer(PLAYER_TWO).addCardsToHand((ArrayList<Card>) deck.getHand(handSize));
   }
 }

@@ -2,9 +2,9 @@
   <div class="lobby">
     <h1>Super Galaxy Face Melter</h1>
 
-    <span class="p-float-label">
-      <InputText type="text" v-model="state.playername" />
-      <label for="username">Playername</label>
+    <span class="p-float-label p-mt-4">
+      <InputText class="inputPlayerName" id="playername" type="text" v-model="state.playername" />
+      <label class="inputPlayerNameLabel" for="playername">Playername</label>
     </span>
     <div class="buttons">
       <Button
@@ -89,6 +89,15 @@ export default {
 </script>
 
 <style scoped>
+.inputPlayerName {
+  background-color:  #e2c3a6;
+  color: #3b1704;
+}
+
+.inputPlayerNameLabel {
+  color: #3b1704;
+}
+
 .lobby {
   position: relative;
   display: flex;

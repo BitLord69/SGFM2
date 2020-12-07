@@ -64,6 +64,10 @@ public class GameState implements Serializable {
     return players.get(index);
   }
 
+  public void setPlayer(Player player) {
+    players.add(player);
+  }
+
   public int getStartPlayer() {
     return startPlayer;
   }

@@ -21,7 +21,7 @@ class Client {
     console.log("i setup");
 
     this.client.on('connect', function () {
-      console.log("connected to server");
+      this.client.emit('SEND_PLAYER_NAME',  "James Bond", () => {});
     });
 
     this.client.on('message', (data) => {

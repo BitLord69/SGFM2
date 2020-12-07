@@ -5,17 +5,21 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.corundumstudio.socketio.namespace.Namespace;
+import com.sgfm2.gameobjects.GameState;
+import com.sgfm2.gameobjects.Player;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Set;
 
 public class Server {
 
   final SocketIOServer server;
   private int roomNo = 0;
+  private HashMap<String, GameState> games = new HashMap<>();
 
   public Server() {
     Configuration config = new Configuration();
-    //config.setAllowCustomRequests(true);
     config.setHostname("localhost");
     config.setPort(9092);
     server = new SocketIOServer(config);
@@ -26,27 +30,28 @@ public class Server {
         System.out.println("Wääääoooww, client connected!!!! " + client.getSessionId());
 
         //Increase roomno 2 clients are present in a room.
-//        SocketIONamespace testPlupp = server.getNamespace(Namespace.DEFAULT_NAME);
-        BroadcastOperations bcO = server.getRoomOperations("room-" + roomNo);
+        BroadcastOperations bcO = server.getRoomOperations(String.valueOf(roomNo));
         Collection<SocketIOClient> clients = null;
         if (bcO != null) {
           clients = bcO.getClients();
-          if (clients.size() > 1) roomNo++;
+          System.out.println("!clients.size: " + clients.size());
+          if (clients.size() > 1) {
+            roomNo++;
+            if (clients.size() == 2) {
+              games.put(String.valueOf(roomNo), new GameState());
+            }
+          } else {
+            // TODO: 2020-12-07 add proper initializers to GameState
+            games.put(String.valueOf(roomNo), new GameState());
+          }
         }
 
-        client.joinRoom("room-" + roomNo);
+        client.joinRoom(String.valueOf(roomNo));
         System.out.println("rooms " + client.getAllRooms());
 
         System.out.println("roomno: " + roomNo);
-        System.out.println("clients.size: " + clients.size());
 
-//        String data = "hello there! " + roomNo;
-//        Packet packet = new Packet(PacketType.EVENT);
-//        packet.setName("message");
-//        packet.setData(Collections.singletonList("hejhopp"));
-//        //server.getRoomOperations("room-" + roomNo).sendEvent("message", "HEJHEJ");
         server.getBroadcastOperations().sendEvent("message", new Message("Room message", "Welcome to room # " + roomNo + "!"));
-//        client.sendEvent("message", new Message("", "Welcome to the chat!"));
         System.out.println("efter sendEvent");
       } // onConnect
     });
@@ -59,11 +64,19 @@ public class Server {
     });
 
     server.addEventListener("send", Message.class, new DataListener<Message>() {
-
       @Override
       public void onData(SocketIOClient client, Message data, AckRequest ackSender) throws Exception {
         System.out.println("onSend: " + data.toString());
         server.getBroadcastOperations().sendEvent("message", data);
+      }
+    });
+
+    server.addEventListener("SEND_PLAYER_NAME", String.class, new DataListener<String>() {
+      @Override
+      public void onData(SocketIOClient client, String name, AckRequest ackSender) throws Exception {
+        System.out.println("SEND_PLAYER_NAME: " + name);
+        Set<String> rooms = client.getAllRooms();
+        games.get(String.valueOf(rooms.toArray()[1])).setPlayer(new Player(name));
       }
     });
   }

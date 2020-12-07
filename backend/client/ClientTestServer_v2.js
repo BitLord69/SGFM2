@@ -5,7 +5,8 @@ window.onload = function () {
     });
 
     client.on('connect', function () {
-      console.log("connected to server");
+      console.log('connected!');
+      client.emit('SEND_PLAYER_NAME',  "James Bond" + new Date(), () => {});
     });
 
     client.on('message', (data) => {

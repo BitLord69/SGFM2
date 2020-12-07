@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class GameState implements Serializable {
+
+  public static final byte PLAYER_ONE = 0;
+  public static final byte PLAYER_TWO = 1;
+
   private final int pointsToWin;
   private final ArrayList<Player> players = new ArrayList<>();
   private final ArrayList<Card> playedCards = new ArrayList<>();
@@ -40,6 +44,10 @@ public class GameState implements Serializable {
     return playedCards.add(playedCard);
   }
 
+  public int powerDifference() {
+    return playedCards.get(0).getCurrentPower() - playedCards.get(1).getCurrentPower();
+  }
+
   public ArrayList<Card> getPlayedCards() {
     return playedCards;
   }
@@ -51,6 +59,10 @@ public class GameState implements Serializable {
       this.startPlayer = 1;
     }
     return this.startPlayer;
+  }
+
+  public void changeCurrentPlayer() {
+    currentPlayer = currentPlayer == PLAYER_ONE ? PLAYER_TWO : PLAYER_ONE;
   }
 
   public Player getPlayer(int index){
@@ -91,5 +103,9 @@ public class GameState implements Serializable {
 
   public boolean isRoundOver() {
     return getRoundWinner() > -1;
+  }
+
+  public void setPlayedCard(int card) {
+    addPlayedCard(players.get(getCurrentPlayer()).getCard(card));
   }
 }

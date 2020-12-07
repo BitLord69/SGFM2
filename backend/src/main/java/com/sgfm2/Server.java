@@ -80,7 +80,19 @@ public class Server {
         if (getNrClientsInRoom(roomNo) == 2) {
           gameEngine.startGame();
         }
+      }
+    });
 
+    server.addEventListener("PLAYED_CARD", String.class, new DataListener<String>() {
+      @Override
+      public void onData(SocketIOClient client, String data, AckRequest ackSender) throws Exception {
+        System.out.println("PLAYED_CARD: " + data);
+        // update gamestate with the sent card
+        // check if playedCards > 1, in that case calculate roundwinner
+        // change currentplayer, return gamestate to room
+        Set<String> rooms = client.getAllRooms();
+        GameEngine gameEngine = games.get(String.valueOf(rooms.toArray()[1]));
+        gameEngine.setPlayedCard(Integer.parseInt(data));
       }
     });
   }
@@ -92,14 +104,12 @@ public class Server {
   }
 
   public void sendMsgToRoom(GameState gameState, int roomNo) {
-    System.out.println("Before sending the weekend message!");
     BroadcastOperations bcO = server.getRoomOperations(String.valueOf(roomNo));
     Collection<SocketIOClient> clients = bcO.getClients();
     clients.forEach(client -> client.sendEvent("GAME_UPDATE", new Gson().toJson(gameState)));
   }
 
   public void sendMsgToRoom(String message, int roomNo ) {
-    System.out.println("Before sending the weekend message!");
     BroadcastOperations bcO = server.getRoomOperations(String.valueOf(roomNo));
     Collection<SocketIOClient> clients = bcO.getClients();
     clients.forEach(client -> client.sendEvent("message", message));

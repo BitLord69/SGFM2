@@ -21,7 +21,7 @@ export default {
 }
 .gameWindow {
   width: 80vw;
-  height: 70vh;
+  height: 85vh;
   background: linear-gradient(
     90deg,
     rgba(226, 195, 166, 1) 0%,

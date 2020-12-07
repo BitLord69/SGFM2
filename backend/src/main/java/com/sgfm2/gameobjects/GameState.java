@@ -9,7 +9,6 @@ public class GameState implements Serializable {
   private final ArrayList<Card> playedCards = new ArrayList<>();
   private int startPlayer = 0;
   private int currentPlayer = 0;
-  private boolean isLocalGame = false;
 
   // -1: game still going,
   //  0: host (player 1) won,
@@ -18,17 +17,11 @@ public class GameState implements Serializable {
   private int gameWinner = -1;
   private int roundWinner = -1;
 
-  public GameState() {
-  }
+//  public GameState() {
+//  }
 
-  public GameState(int pointsToWin, ArrayList<Player> players, boolean isLocalGame) {
-    this.players = players;
+  public GameState(int pointsToWin) {
     this.pointsToWin = pointsToWin;
-    this.isLocalGame = isLocalGame;
-  }
-
-  public boolean isLocalGame() {
-    return isLocalGame;
   }
 
   public int getCurrentPlayer() {

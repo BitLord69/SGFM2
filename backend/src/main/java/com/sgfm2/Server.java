@@ -4,8 +4,7 @@ import com.corundumstudio.socketio.*;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
-import com.corundumstudio.socketio.namespace.Namespace;
-import com.sgfm2.gameobjects.GameState;
+import com.sgfm2.gameengine.GameEngine;
 import com.sgfm2.gameobjects.Player;
 
 import java.util.Collection;
@@ -16,34 +15,30 @@ public class Server {
 
   final SocketIOServer server;
   private int roomNo = 0;
-  private HashMap<String, GameState> games = new HashMap<>();
+  private HashMap<String, GameEngine> games = new HashMap<>();
 
   public Server() {
     Configuration config = new Configuration();
     config.setHostname("localhost");
     config.setPort(9092);
     server = new SocketIOServer(config);
+    final Server localThis = this;
 
     server.addConnectListener(new ConnectListener() {
       @Override
       public void onConnect(SocketIOClient client) {
         System.out.println("Wääääoooww, client connected!!!! " + client.getSessionId());
-
         //Increase roomno 2 clients are present in a room.
-        BroadcastOperations bcO = server.getRoomOperations(String.valueOf(roomNo));
-        Collection<SocketIOClient> clients = null;
-        if (bcO != null) {
-          clients = bcO.getClients();
-          System.out.println("!clients.size: " + clients.size());
-          if (clients.size() > 1) {
-            roomNo++;
-            if (clients.size() == 2) {
-              games.put(String.valueOf(roomNo), new GameState());
-            }
-          } else {
-            // TODO: 2020-12-07 add proper initializers to GameState
-            games.put(String.valueOf(roomNo), new GameState());
+        int clients = getNrClientsInRoom(roomNo);
+        System.out.println("!clients.size: " + clients);
+        if (clients > 1) {
+          roomNo++;
+          if (clients == 2) {
+            games.put(String.valueOf(roomNo), new GameEngine(localThis, 5,10));
           }
+        } else {
+          // TODO: 2020-12-07 add proper initializers to GameEngine
+          games.put(String.valueOf(roomNo), new GameEngine(localThis,5,10));
         }
 
         client.joinRoom(String.valueOf(roomNo));
@@ -77,8 +72,18 @@ public class Server {
         System.out.println("SEND_PLAYER_NAME: " + name);
         Set<String> rooms = client.getAllRooms();
         games.get(String.valueOf(rooms.toArray()[1])).setPlayer(new Player(name));
+        if (getNrClientsInRoom(1) == 2) {
+          System.out.println("Game is ready to start!");
+        }
+
       }
     });
+  }
+
+  private int getNrClientsInRoom(int roomNo) {
+    BroadcastOperations bcO = server.getRoomOperations(String.valueOf(roomNo));
+    Collection<SocketIOClient> clients = bcO.getClients();
+    return clients == null ? 0 : clients.size();
   }
 
   public void sendMsg() {

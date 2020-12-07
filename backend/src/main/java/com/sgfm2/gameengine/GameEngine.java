@@ -1,12 +1,10 @@
 package com.sgfm2.gameengine;
 
-import com.sgfm2.gameobjects.Card;
-import com.sgfm2.gameobjects.CardSettings;
-import com.sgfm2.gameobjects.Deck;
-import com.sgfm2.gameobjects.GameState;
+import com.sgfm2.Server;
+import com.sgfm2.gameobjects.*;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GameEngine  {
 
@@ -32,9 +30,12 @@ public class GameEngine  {
   private final Deck deck = new Deck(cardSettings);
   private final int handSize;
 
-  public GameEngine(GameState gameState, int handSize) {
+  private final Server server;
+
+  public GameEngine(Server server, int handSize, int pointsToWin) {
+    gameState = new GameState(pointsToWin);
     this.handSize = handSize;
-    this.gameState = gameState;
+    this.server = server;
   }
 
   /**
@@ -72,6 +73,10 @@ public class GameEngine  {
     } while (!isGameOver());
 
     redrawGameBoard();
+  }
+
+  public void setPlayer (Player player) {
+    gameState.setPlayer(player);
   }
 
   private void getPlayerNameFromClient() {

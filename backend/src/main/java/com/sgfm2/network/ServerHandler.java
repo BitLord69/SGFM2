@@ -2,7 +2,6 @@ package com.sgfm2.network;
 
 import com.sgfm2.gameobjects.Card;
 import com.sgfm2.gameobjects.GameState;
-import com.sgfm2.interfaces.Renderer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -38,7 +37,6 @@ public class ServerHandler extends NetworkComHandler {
     }
   }
 
-  @Override
   public String getPlayerNameFromClient() {
     Packet packet = new Packet(CommandType.GET_PLAYER_NAME_FROM_CLIENT, null);
     send(packet);
@@ -46,8 +44,7 @@ public class ServerHandler extends NetworkComHandler {
     return (String) packet.getParams()[0];
   }
 
-  @Override
-  public int getCardFromClient(Renderer renderer, GameState gameState) {
+  public int getCardFromClient(GameState gameState) {
     int card = -1;
 
     Packet packet = new Packet(CommandType.GET_CARD_FROM_CLIENT, new GameState[]{gameState});
@@ -60,8 +57,7 @@ public class ServerHandler extends NetworkComHandler {
     return card;
   }
 
-  @Override
-  public GameState addToClientVictoryPile(Card card, GameState gameState, Renderer renderer) {
+  public GameState addToClientVictoryPile(Card card, GameState gameState) {
     Packet packet = new Packet(CommandType.ADD_TO_CLIENT_VICTORY_PILE,new Object[]{card, gameState});
     packet.cardsInPlayedCards = gameState.getPlayedCards().size();
     send(packet);
@@ -69,7 +65,6 @@ public class ServerHandler extends NetworkComHandler {
     return (GameState) packet.getParams()[0];
   }
 
-  @Override
   public GameState sendCardToClient(ArrayList<Card> cardsToClient, GameState gameState) {
     Packet packet = new Packet(CommandType.SEND_CARD_TO_CLIENT, new Object[]{cardsToClient, gameState});
     send(packet);
@@ -78,8 +73,7 @@ public class ServerHandler extends NetworkComHandler {
     return (GameState) packet.getParams()[0];
   }
 
-  @Override
-  public void renderClient(Renderer renderer, GameState gameState, int playerToDraw) {
+  public void renderClient(GameState gameState, int playerToDraw) {
     Packet packet = new Packet(CommandType.RENDER_CLIENT, new Object[]{gameState, playerToDraw});
     send(packet);
   }

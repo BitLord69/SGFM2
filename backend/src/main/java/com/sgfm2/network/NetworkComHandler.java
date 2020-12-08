@@ -1,13 +1,11 @@
 package com.sgfm2.network;
 
-import com.sgfm2.interfaces.ComHandler;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-abstract public class NetworkComHandler implements ComHandler {
+abstract public class NetworkComHandler {
 
   protected static final int PORT = 42069;
 

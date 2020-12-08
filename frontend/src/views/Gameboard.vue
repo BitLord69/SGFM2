@@ -68,18 +68,6 @@ export default {
       playedCards: [],
       isDisabled: false
     });
-    const cardOptions = {
-      group: {
-        name: "cards",
-        pull: "clone",
-        put: false,
-      },
-      sort: true,
-    };
-
-    const playedHandOptions = {
-      group: "cards",
-    };
 
     function getImageName(name) {
       return name.replaceAll(" ", "_").toLowerCase();
@@ -94,8 +82,6 @@ export default {
       state,
       getImageName,
       moveCard,
-      cardOptions,
-      playedHandOptions
     };
   },
 };

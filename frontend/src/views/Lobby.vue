@@ -2,6 +2,9 @@
   <div class="lobby">
     <h1>Super Galaxy Face Melter</h1>
 
+    <div v-if="error">{{error}}</div>
+    <div v-else>{{ gameState || 'Inget gameState' }}</div>
+
     <span class="p-float-label p-mt-4">
       <InputText class="inputPlayerName" id="playername" type="text" v-model="state.playername" />
       <label class="inputPlayerNameLabel" for="playername">Playername</label>
@@ -28,19 +31,19 @@
         id="createModal"
         :modal="true"
         :dismissableMask="true"
-        v-model:visible="state.displayCreate"
+        :visible="state.displayCreate"
       >
         <template #header><h3>Create game</h3></template>
         <CreateGame />
         <template class="p-mx-auto" #footer>
-          <Button label="Create" class="p-d-block p-mx-auto p-button-raised btn-dialog" />
+          <Button label="Create" class="p-d-block p-mx-auto p-button-raised btn-dialog" @click="createNewGame"/>
         </template>
       </Dialog>
       <Dialog
         id="joinModal"
         :modal="true"
         :dismissableMask="true"
-        v-model:visible="state.displayJoin"
+        :visible="state.displayJoin"
       >
         <template #header><h3>Join game</h3></template>
         <JoinGame />
@@ -54,12 +57,23 @@
 
 <script>
 import { reactive } from "vue";
-import CreateGame from "../components/CreateGame";
-import JoinGame from "../components/JoinGame";
+import CreateGame from "@/components/CreateGame";
+import JoinGame from "@/components/JoinGame";
+
+import SocketHandler from '@/modules/SocketHandler';
+
 export default {
   name: "Lobby",
-  components: {CreateGame, JoinGame},
+  components: { CreateGame, JoinGame }, 
+  // sockets: {
+  //   message : function (data) {
+  //     console.log('Message received: ', data)
+  //   },     
+  // },
+
   setup() {
+    const { playCard, sendMessage, createGame, joinGame, error, gameState, isConnected } = SocketHandler();
+
     const state = reactive({
       displayCreate: false,
       displayJoin: false,
@@ -78,11 +92,19 @@ export default {
       return state.playername === null || state.playername.trim() === ""
     }
 
+    function createNewGame() {
+      createGame(state.playername);
+      playCard(2);
+    }
+
     return {
       state,
       setVisibleCreate,
       setVisibleJoin,
-      isDisabled
+      isDisabled,
+      createNewGame,
+      playCard, joinGame, sendMessage, createGame,
+      error, gameState, isConnected
     };
   },
 };

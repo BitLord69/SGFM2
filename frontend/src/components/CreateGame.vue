@@ -7,16 +7,18 @@
 
 <script>
 import { reactive } from "vue";
+
 export default {
   name: "CreateGame",
   setup(){
+
     const state = reactive({
       cardsOnHand: 5,
       pointsToWin: 15
     })
 
     return {
-      state
+      state,
     }
   }
 }

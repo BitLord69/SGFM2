@@ -5,6 +5,7 @@ import SocketIO from 'socket.io-client'
 const error = ref(null);
 const gameState = ref(null);
 const isConnected = ref(true);
+const gameList = ref(null);
 
 export default function SocketHandler() {
   let client = SocketIO("http://localhost:9092", {
@@ -44,8 +45,7 @@ export default function SocketHandler() {
 
   client.on("GAME_UPDATE", (incomingGameState) => {
     console.log("GAME_UPDATE received");
-    // console.log("gameState: ", JSON.parse(incomingGameState));
-    gameState.value = incomingGameState
+    gameState.value = JSON.parse(incomingGameState);
   });
 
 
@@ -64,14 +64,19 @@ export default function SocketHandler() {
     client.emit("PLAYED_CARD", cardId);
   }
 
+  function getGameList(){
+    client.emit("AVAILABLE_GAMES");
+  }
+
+  client.on("LIST_GAMES", (data) => {
+    console.log(JSON.parse(data));
+    gameList.value = JSON.parse(data);
+  })
+
   client.on("connect_error", (e) => {
     console.log("i connect_error:", e);
     error.value = e;
   });
-
-  client.on("leave", () => {
-    console.log("Leaving room!");
-  })
 
   client.on("disconnect", () => {
     console.log("disconnected from the server");
@@ -79,5 +84,5 @@ export default function SocketHandler() {
     // client = null;
   });
 
-  return { playCard, sendMessage, createGame, joinGame, error, gameState, isConnected }
+  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected }
 }

@@ -79,7 +79,7 @@
   </div>
 </template>
 <script>
-import { reactive } from "vue";
+import { reactive, watchEffect } from "vue";
 import { VueDraggableNext } from "vue-draggable-next";
 import SocketHandler from '@/modules/SocketHandler';
 import WaitingForPlayer from '../components/WaitingForPlayer';
@@ -110,18 +110,17 @@ export default {
       cardsOnHandSize: 5,
     });
 
-  // watchEffect(
-  //     () => {
-  //       if (gameState.value !== null) {
-  //         if (gameState.value.players.length > 1) {
-  //           state.connectedPlayers = 2
-  //         }
-  //       }
-  //     }
-  //   )
+  watchEffect(
+      () => {
+        if (gameState.value !== null) {
+          if (gameState.value.players.length > 1) {
+            state.connectedPlayers = 2
+          }
+        }
+      }
+    )
 
     function getImageName(name) {
-      console.log("gs", JSON.parse(gameState.value));
       return name.replaceAll(" ", "_").toLowerCase();
     }
 

@@ -1,7 +1,7 @@
 <template>
   <h1>Super Galaxy Face Melter</h1>
   <div class="container">
-    <div class="gameWindow">
+    <div class="gameWindow" :style="{ backgroundImage: `url(${'../bg.png'})` }">
       <router-view />
     </div>
   </div>
@@ -14,20 +14,15 @@ export default {
 </script>
 
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz&family=MedievalSharp&family=Press+Start+2P&display=swap");
 .container {
   justify-content: center;
   display: flex;
 }
 .gameWindow {
   width: 80vw;
-  height: 70vh;
-  background: linear-gradient(
-    90deg,
-    rgba(226, 195, 166, 1) 0%,
-    rgba(59, 23, 4, 1) 50%,
-    rgba(226, 195, 166, 1) 100%
-  );
+  height: 85vh;
+  background-size: 100% 100%;
   position: relative;
   justify-content: center;
   display: flex;

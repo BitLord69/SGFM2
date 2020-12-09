@@ -20,7 +20,7 @@
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
         <div class="p-mt-1">Points </div>
       </div>
-      <draggable class="cardsOnHand" :list="state.cardsOnHandOpponent">
+      <div class="cardsOnHand">
         <div
           class="card p-mx-1"
           v-for="index in 5"
@@ -28,7 +28,7 @@
           :style="{ backgroundImage: `url(${'../card_back.png'})` }"
         >
         </div>
-      </draggable>
+      </div>
     </div>
     <div class="table">
       <draggable

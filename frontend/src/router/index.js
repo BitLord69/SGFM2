@@ -1,6 +1,7 @@
 import { createWebHistory, createRouter } from "vue-router";
 import LandingPage from "../views/LandingPage.vue"
 import Lobby from "../views/Lobby.vue"
+import Gameboard from "../views/Gameboard.vue"
 
 const routes = [
   {
@@ -13,6 +14,11 @@ const routes = [
     name: "Lobby",
     component: Lobby,
   },
+  {
+    path: "/gameboard",
+    name: "Gameboard",
+    component: Gameboard,
+  }
 ];
 
 const router = createRouter({

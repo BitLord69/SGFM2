@@ -1,5 +1,18 @@
 <template>
   <div class="gameboard">
+    <Dialog
+        id="joinModal"
+        :modal="true"
+        :dismissableMask="true"
+        :visible="state.connectedPlayers < 2"
+      >
+        <template #header>
+          <h3 v-if="state.connectedPlayers < 2">Waiting for opponent to connect...</h3>
+        </template>
+    <WaitingForPlayer />
+        <template class="p-mx-auto" #footer>
+        </template>
+      </Dialog>
     <div class="playerRow p-mt-2">
       <div class="profile profileOpp p-pt-1">
         <div>Name </div>
@@ -63,17 +76,17 @@
         <div class="p-mt-1">Points </div>
       </div>
     </div>
-    <!-- <div>{{gameState}}</div> -->
   </div>
 </template>
 <script>
 import { reactive } from "vue";
 import { VueDraggableNext } from "vue-draggable-next";
 import SocketHandler from '@/modules/SocketHandler';
+import WaitingForPlayer from '../components/WaitingForPlayer';
 
 export default {
   name: "Gameboard",
-  components: { draggable: VueDraggableNext },
+  components: { draggable: VueDraggableNext, WaitingForPlayer },
   setup() {
     const { gameState, playCard } = SocketHandler();
     const state = reactive({
@@ -92,11 +105,23 @@ export default {
         { name: "Card Back"},
       ],
       playedCards: [],
+      connectedPlayers: 1,
       isDisabled: false,
       cardsOnHandSize: 5,
     });
 
+  // watchEffect(
+  //     () => {
+  //       if (gameState.value !== null) {
+  //         if (gameState.value.players.length > 1) {
+  //           state.connectedPlayers = 2
+  //         }
+  //       }
+  //     }
+  //   )
+
     function getImageName(name) {
+      console.log("gs", JSON.parse(gameState.value));
       return name.replaceAll(" ", "_").toLowerCase();
     }
 
@@ -108,7 +133,6 @@ export default {
       if(state.cardsOnHand.length < state.cardsOnHandSize) {
         state.isDisabled = !state.isDisabled;
       }
-      
     }
 
     return {
@@ -120,7 +144,7 @@ export default {
       playCard,
     };
   },
-};
+}
 </script>
 <style scoped>
 .gameboard {

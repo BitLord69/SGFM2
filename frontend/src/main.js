@@ -12,6 +12,8 @@ import Slider from 'primevue/slider';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import ScrollPanel from 'primevue/scrollpanel';
+import ProgressSpinner from 'primevue/progressspinner';
+
 
 // Socket imports
 // import VueSocketIO from 'wsj.vue-socket.io'
@@ -45,6 +47,7 @@ app.component("Slider", Slider);
 app.component("Accordion", Accordion);
 app.component("AccordionTab", AccordionTab);
 app.component("ScrollPanel", ScrollPanel);
+app.component("ProgressSpinner", ProgressSpinner);
 app.directive("ripple", Ripple);
 
 app.mount("#app");

@@ -1,7 +1,7 @@
 <template>
-  <h3 class="p-mt-0">Cards on hand (3 - 8): {{state.cardsOnHand}}</h3>
+  <h4 class="p-mt-0">Cards on hand (3 - 8): {{state.cardsOnHand}}</h4>
   <Slider :min="3" :max="8" v-model="state.cardsOnHand" />
-  <h3>Points to win (10 - 20): {{state.pointsToWin}}</h3>
+  <h4>Points to win (10 - 20): {{state.pointsToWin}}</h4>
   <Slider :min="10" :max="20" v-model="state.pointsToWin" />
 </template>
 

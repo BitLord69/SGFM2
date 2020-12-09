@@ -44,7 +44,7 @@ export default function SocketHandler() {
 
   client.on("GAME_UPDATE", (incomingGameState) => {
     console.log("GAME_UPDATE received");
-    console.log("gameState: ", JSON.parse(incomingGameState).players);
+    console.log("gameState: ", JSON.parse(incomingGameState));
     gameState.value = incomingGameState
   });
 

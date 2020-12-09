@@ -26,7 +26,7 @@ public class Player implements Serializable {
   }
 
   public Card getCard(int selectedCard){
-    return selectedCard != 0 && selectedCard <= cardsOnHand.size() ? cardsOnHand.get(selectedCard-1) : null;
+    return selectedCard <= cardsOnHand.size() ? cardsOnHand.get(selectedCard) : null;
   }
 
   public boolean addToVictoryPile(Card wonCard){

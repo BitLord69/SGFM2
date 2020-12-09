@@ -10,16 +10,19 @@ import com.google.gson.Gson;
 import com.sgfm2.gameengine.GameEngine;
 import com.sgfm2.gameobjects.GameState;
 import com.sgfm2.gameobjects.Player;
+import com.sgfm2.messages.JoinGameMessage;
+import com.sgfm2.messages.ListGamesMessage;
+import com.sgfm2.messages.Message;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Server {
 
   final SocketIOServer server;
   private int roomNo = 0;
   private HashMap<String, GameEngine> games = new HashMap<>();
+  private HashMap<String, ListGamesMessage> roomList = new HashMap<>();
 
   public Server() {
     Configuration config = new Configuration();
@@ -60,7 +63,7 @@ public class Server {
         GameEngine gameEngine = new GameEngine(localThis,5,10, roomNo);
         gameEngine.setPlayer(new Player(name));
         games.put(String.valueOf(roomNo), gameEngine);
-
+        roomList.put(String.valueOf(roomNo), new ListGamesMessage(String.valueOf(roomNo), 1, 10, 5, name));
         client.joinRoom(String.valueOf(roomNo));
         System.out.println("rooms " + client.getAllRooms());
         System.out.println("roomno: " + roomNo);
@@ -74,6 +77,13 @@ public class Server {
         sendMsgToRoom("Welcome to room # " + roomNo + " - waiting for an opponent!", roomNo);
         sendMsgToRoom(gameEngine.getGameState(), roomNo);
 
+        BroadcastOperations bco = server.getBroadcastOperations();
+        bco.getClients().forEach(x -> {
+          System.out.println(x.getSessionId());
+          x.sendEvent("LIST_GAMES" , getGameList());
+        });
+
+        //server.getBroadcastOperations().sendEvent("LIST_GAMES" , getGameList());
         System.out.println("Message should be sent from the server.....");
         //        gameEngine.setPlayer(new Player(name));
       }
@@ -83,7 +93,9 @@ public class Server {
       @Override
       public void onData(SocketIOClient client, JoinGameMessage data, AckRequest ackSender) throws Exception {
         System.out.println("JOIN_GAME: " + data.getRoomNo());
-
+        ListGamesMessage lgm = roomList.get(data.getRoomNo());
+        lgm.setPlayersInRoom(2);
+        //roomList.put(data.getRoomNo(), lgm);
         client.joinRoom(String.valueOf(data.getRoomNo()));
         GameEngine gameEngine = games.get(data.getRoomNo());
         gameEngine.setPlayer(new Player(data.getName()));
@@ -130,6 +142,19 @@ public class Server {
         gameEngine.setPlayedCard(Integer.parseInt(data));
       }
     });
+
+    server.addEventListener("AVAILABLE_GAMES", String.class, new DataListener<String>() {
+      @Override
+      public void onData(SocketIOClient client, String data, AckRequest ackSender) throws Exception {
+        client.sendEvent("LIST_GAMES",  getGameList());
+      }
+    });
+  }
+
+  private String getGameList() {
+    List<ListGamesMessage> listGamesMessages = roomList.values().stream()
+        .filter(listGamesMessage -> listGamesMessage.getPlayersInRoom() < 2).collect(Collectors.toList());
+    return new Gson().toJson(listGamesMessages);
   }
 
   private int getNrClientsInRoom(int roomNo) {

@@ -1,12 +1,6 @@
 <template>
   <div class="lobby">
     <h1>Super Galaxy Face Melter</h1>
-
-    <div v-if="error">{{error}}</div>
-    <div v-else>{{ gameState || 'Inget gameState' }}
-      <div style="{{color: 'white'}}">{{gameState && gameState.players}}</div>
-    </div>
-
     <span class="p-float-label p-mt-4">
       <InputText class="inputPlayerName" id="playername" type="text" v-model="state.playername" />
       <label class="inputPlayerNameLabel" for="playername">Playername</label>
@@ -35,7 +29,7 @@
         :dismissableMask="true"
         :visible="state.displayCreate"
       >
-        <template #header><h3>Create game</h3></template>
+        <template #header><h3 class="p-m-0">Create game</h3></template>
         <CreateGame />
         <template class="p-mx-auto" #footer>
           <router-link to="/gameboard">
@@ -49,7 +43,8 @@
         :dismissableMask="true"
         :visible="state.displayJoin"
       >
-        <template #header><h3>Join game</h3></template>
+        <template #header><h3 class="p-m-0">Join game</h3></template>
+        
         <JoinGame />
         <template class="p-mx-auto" #footer>
           <Button label="Join" class="p-d-block p-mx-auto p-button-raised btn-dialog" @click="joinGame(state.playername, 1)" to="/gameboard"/>
@@ -70,7 +65,7 @@ export default {
   name: "Lobby",
   components: { CreateGame, JoinGame },
   setup() {
-    const { playCard, sendMessage, createGame, joinGame, error, gameState, isConnected } = SocketHandler();
+    const { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected } = SocketHandler();
 
     const state = reactive({
       displayCreate: false,
@@ -84,6 +79,7 @@ export default {
 
     function setVisibleJoin() {
       state.displayJoin = !state.displayJoin;
+      
     }
 
     function isDisabled() {
@@ -93,7 +89,7 @@ export default {
     function createNewGame() {
       createGame(state.playername);
     }
-
+    
     return {
       state,
       setVisibleCreate,
@@ -101,7 +97,7 @@ export default {
       isDisabled,
       createNewGame,
       playCard, joinGame, sendMessage, createGame,
-      error, gameState, isConnected
+      error, gameState, isConnected, getGameList, gameList
     };
   },
 };

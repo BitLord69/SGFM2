@@ -1,4 +1,4 @@
-package com.sgfm2;
+package com.sgfm2.messages;
 
 public class JoinGameMessage {
   private String name, roomNo;

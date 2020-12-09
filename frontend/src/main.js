@@ -21,6 +21,7 @@ import "primevue/resources/themes/saga-blue/theme.css";
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 import 'primeflex/primeflex.css';
+import { VueDraggableNext } from "vue-draggable-next";
 
 // export const socketClient = SocketIO('http://localhost:9092');
 // export const socketClient = SocketIO('http://localhost:9092'), {

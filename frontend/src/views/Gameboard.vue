@@ -22,11 +22,10 @@
       <draggable class="cardsOnHand" :list="state.cardsOnHandOpponent">
         <div
           class="card p-mx-1"
-          v-for="(card, index) in state.cardsOnHandOpponent"
+          v-for="index in 5"
           :key="index"
-          :style="{ backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})` }"
+          :style="{ backgroundImage: `url(${'../card_back.png'})` }"
         >
-          
         </div>
       </draggable>
     </div>
@@ -97,20 +96,13 @@ export default {
         { name: "Anonymous Hacker", power: 8 },
         { name: "Super Galaxy Face Melter", power: 10 },
       ],
-      cardsOnHandOpponent: [
-        { name: "Card Back"},
-        { name: "Card Back"},
-        { name: "Card Back"},
-        { name: "Card Back"},
-        { name: "Card Back"},
-      ],
       playedCards: [],
       connectedPlayers: 1,
       isDisabled: false,
       cardsOnHandSize: 5,
     });
 
-  watchEffect(
+    watchEffect(
       () => {
         if (gameState.value !== null) {
           if (gameState.value.players.length > 1) {
@@ -201,7 +193,6 @@ export default {
   display: flex;
   width: 80%;
   justify-content: center;
-
   background-size: 100% 100%;
 }
 

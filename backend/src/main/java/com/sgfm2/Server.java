@@ -4,6 +4,8 @@ import com.corundumstudio.socketio.*;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.corundumstudio.socketio.protocol.Packet;
+import com.corundumstudio.socketio.protocol.PacketType;
 import com.google.gson.Gson;
 import com.sgfm2.gameengine.GameEngine;
 import com.sgfm2.gameobjects.GameState;
@@ -30,34 +32,66 @@ public class Server {
       @Override
       public void onConnect(SocketIOClient client) {
         System.out.println("Wääääoooww, client connected!!!! " + client.getSessionId());
-        //Increase roomno 2 clients are present in a room.
-        int clients = getNrClientsInRoom(roomNo);
 
-        if (clients == 0){
-          // TODO: 2020-12-07 add proper initializers to GameEngine
-          games.put(String.valueOf(roomNo), new GameEngine(localThis,5,10, roomNo));
-        }
-        if (clients > 1) {
-          roomNo++;
-          if (clients == 2) {
-            games.put(String.valueOf(roomNo), new GameEngine(localThis, 5,10, roomNo));
-          }
-        }
-
-        client.joinRoom(String.valueOf(roomNo));
-        System.out.println("rooms " + client.getAllRooms());
-
-        System.out.println("roomno: " + roomNo);
-
-        sendMsgToRoom("Welcome to room # " + roomNo + "!", roomNo);
-        System.out.println("efter sendEvent");
       } // onConnect
     });
 
     server.addDisconnectListener(new DisconnectListener() {
       @Override
       public void onDisconnect(SocketIOClient client) {
-        System.out.println("onDisconnected");
+        System.out.printf("Client %s disconnected.\n", client.getSessionId());
+        Object[] rooms = client.getAllRooms().toArray();
+        if(rooms.length > 1)  {
+          System.out.println("Client room " + client.getAllRooms().toArray()[1]);
+        } else {
+          System.out.println("Client has no room number!");
+        }
+
+        client.disconnect();
+      }
+    });
+
+    server.addEventListener("CREATE_GAME", String.class, new DataListener<String>() {
+      @Override
+      public void onData(SocketIOClient client, String name, AckRequest ackSender) throws Exception {
+        System.out.println("CREATE_GAME: " + name);
+        roomNo++;
+
+        GameEngine gameEngine = new GameEngine(localThis,5,10, roomNo);
+        gameEngine.setPlayer(new Player(name));
+        games.put(String.valueOf(roomNo), gameEngine);
+
+        client.joinRoom(String.valueOf(roomNo));
+        System.out.println("rooms " + client.getAllRooms());
+        System.out.println("roomno: " + roomNo);
+
+        Packet p = new Packet(PacketType.MESSAGE);
+        p.setSubType(PacketType.EVENT);
+        p.setName("message");
+        p.setData("Welcome to room # " + roomNo + " - waiting for an opponent!");
+        client.send(p);
+
+        sendMsgToRoom("Welcome to room # " + roomNo + " - waiting for an opponent!", roomNo);
+        sendMsgToRoom(gameEngine.getGameState(), roomNo);
+
+        System.out.println("Message should be sent from the server.....");
+        //        gameEngine.setPlayer(new Player(name));
+      }
+    });
+
+    server.addEventListener("JOIN_GAME", JoinGameMessage.class, new DataListener<JoinGameMessage>() {
+      @Override
+      public void onData(SocketIOClient client, JoinGameMessage data, AckRequest ackSender) throws Exception {
+        System.out.println("JOIN_GAME: " + data.getRoomNo());
+
+        client.joinRoom(String.valueOf(data.getRoomNo()));
+        GameEngine gameEngine = games.get(data.getRoomNo());
+        gameEngine.setPlayer(new Player(data.getName()));
+
+        sendMsgToRoom("Welcome " + data.getName() + " to room # " + roomNo + " - starting game!", Integer.parseInt(data.getRoomNo()));
+
+        gameEngine.startGame();
+        sendMsgToRoom(gameEngine.getGameState(), Integer.parseInt(data.getRoomNo()));
       }
     });
 
@@ -69,24 +103,25 @@ public class Server {
       }
     });
 
-    server.addEventListener("SEND_PLAYER_NAME", String.class, new DataListener<String>() {
-      @Override
-      public void onData(SocketIOClient client, String name, AckRequest ackSender) throws Exception {
-        System.out.println("SEND_PLAYER_NAME: " + name);
-        Set<String> rooms = client.getAllRooms();
-       GameEngine gameEngine = games.get(String.valueOf(rooms.toArray()[1]));
-       gameEngine.setPlayer(new Player(name));
-
-        if (getNrClientsInRoom(roomNo) == 2) {
-          gameEngine.startGame();
-        }
-      }
-    });
+//    server.addEventListener("SEND_PLAYER_NAME", String.class, new DataListener<String>() {
+//      @Override
+//      public void onData(SocketIOClient client, String name, AckRequest ackSender) throws Exception {
+//        System.out.println("SEND_PLAYER_NAME: " + name);
+//        Set<String> rooms = client.getAllRooms();
+//       GameEngine gameEngine = games.get(String.valueOf(rooms.toArray()[1]));
+//       gameEngine.setPlayer(new Player(name));
+//
+//        if (getNrClientsInRoom(roomNo) == 2) {
+//          gameEngine.startGame();
+//        }
+//      }
+//    });
 
     server.addEventListener("PLAYED_CARD", String.class, new DataListener<String>() {
       @Override
       public void onData(SocketIOClient client, String data, AckRequest ackSender) throws Exception {
         System.out.println("PLAYED_CARD: " + data);
+        client.sendEvent("GAME_UPDATE", new Gson().toJson("Thanks for the card..." + data));
         // update gamestate with the sent card
         // check if playedCards > 1, in that case calculate roundwinner
         // change currentplayer, return gamestate to room

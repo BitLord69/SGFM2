@@ -154,4 +154,8 @@ public class GameEngine  {
     gameState.changeCurrentPlayer();
     server.sendMsgToRoom(gameState, roomNo);
   }
+
+  public GameState getGameState() {
+    return gameState;
+  }
 }

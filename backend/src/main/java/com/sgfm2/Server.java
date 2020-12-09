@@ -32,13 +32,22 @@ public class Server {
       @Override
       public void onConnect(SocketIOClient client) {
         System.out.println("Wääääoooww, client connected!!!! " + client.getSessionId());
+
       } // onConnect
     });
 
     server.addDisconnectListener(new DisconnectListener() {
       @Override
       public void onDisconnect(SocketIOClient client) {
-        System.out.println("onDisconnected");
+        System.out.printf("Client %s disconnected.\n", client.getSessionId());
+        Object[] rooms = client.getAllRooms().toArray();
+        if(rooms.length > 1)  {
+          System.out.println("Client room " + client.getAllRooms().toArray()[1]);
+        } else {
+          System.out.println("Client has no room number!");
+        }
+
+        client.disconnect();
       }
     });
 
@@ -49,6 +58,7 @@ public class Server {
         roomNo++;
 
         GameEngine gameEngine = new GameEngine(localThis,5,10, roomNo);
+        gameEngine.setPlayer(new Player(name));
         games.put(String.valueOf(roomNo), gameEngine);
 
         client.joinRoom(String.valueOf(roomNo));
@@ -62,25 +72,26 @@ public class Server {
         client.send(p);
 
         sendMsgToRoom("Welcome to room # " + roomNo + " - waiting for an opponent!", roomNo);
-        
-        server.getBroadcastOperations().sendEvent("message", "Here is a message from the server");
+        sendMsgToRoom(gameEngine.getGameState(), roomNo);
+
         System.out.println("Message should be sent from the server.....");
         //        gameEngine.setPlayer(new Player(name));
       }
     });
 
-    server.addEventListener("JOIN_GAME", String.class, new DataListener<String>() {
+    server.addEventListener("JOIN_GAME", JoinGameMessage.class, new DataListener<JoinGameMessage>() {
       @Override
-      public void onData(SocketIOClient client, String roomNo, AckRequest ackSender) throws Exception {
-        System.out.println("JOIN_GAME: " + roomNo);
+      public void onData(SocketIOClient client, JoinGameMessage data, AckRequest ackSender) throws Exception {
+        System.out.println("JOIN_GAME: " + data.getRoomNo());
 
-        client.joinRoom(String.valueOf(roomNo));
-        GameEngine gameEngine = games.get(roomNo);
-        gameEngine.setPlayer(new Player(roomNo));
+        client.joinRoom(String.valueOf(data.getRoomNo()));
+        GameEngine gameEngine = games.get(data.getRoomNo());
+        gameEngine.setPlayer(new Player(data.getName()));
 
-        sendMsgToRoom("Welcome to room # " + roomNo + " - starting game!", Integer.parseInt(roomNo));
+        sendMsgToRoom("Welcome " + data.getName() + " to room # " + roomNo + " - starting game!", Integer.parseInt(data.getRoomNo()));
 
         gameEngine.startGame();
+        sendMsgToRoom(gameEngine.getGameState(), Integer.parseInt(data.getRoomNo()));
       }
     });
 
@@ -114,9 +125,9 @@ public class Server {
         // update gamestate with the sent card
         // check if playedCards > 1, in that case calculate roundwinner
         // change currentplayer, return gamestate to room
-//        Set<String> rooms = client.getAllRooms();
-//        GameEngine gameEngine = games.get(String.valueOf(rooms.toArray()[1]));
-//        gameEngine.setPlayedCard(Integer.parseInt(data));
+        Set<String> rooms = client.getAllRooms();
+        GameEngine gameEngine = games.get(String.valueOf(rooms.toArray()[1]));
+        gameEngine.setPlayedCard(Integer.parseInt(data));
       }
     });
   }

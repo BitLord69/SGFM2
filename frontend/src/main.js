@@ -15,20 +15,18 @@ import ScrollPanel from 'primevue/scrollpanel';
 
 // Socket imports
 // import VueSocketIO from 'wsj.vue-socket.io'
-import SocketIO from 'socket.io-client'
+// import SocketIO from 'socket.io-client'
 
 import "primevue/resources/themes/saga-blue/theme.css";
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 import 'primeflex/primeflex.css';
 
-export const socketClient = SocketIO('http://localhost:9092');
+// export const socketClient = SocketIO('http://localhost:9092');
 // export const socketClient = SocketIO('http://localhost:9092'), {
 //   "reconnection delay": 2000,
 //   "force new connection": true,
 // });
-
-console.log('main.js - socketClient:', socketClient);
 
 const app = createApp(App)
   .use(router)

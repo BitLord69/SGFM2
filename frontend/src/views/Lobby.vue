@@ -3,7 +3,9 @@
     <h1>Super Galaxy Face Melter</h1>
 
     <div v-if="error">{{error}}</div>
-    <div v-else>{{ gameState || 'Inget gameState' }}</div>
+    <div v-else>{{ gameState || 'Inget gameState' }}
+      <div style="{{color: 'white'}}">{{gameState && gameState.players}}</div>
+    </div>
 
     <span class="p-float-label p-mt-4">
       <InputText class="inputPlayerName" id="playername" type="text" v-model="state.playername" />
@@ -36,7 +38,9 @@
         <template #header><h3>Create game</h3></template>
         <CreateGame />
         <template class="p-mx-auto" #footer>
-          <Button label="Create" class="p-d-block p-mx-auto p-button-raised btn-dialog" @click="createNewGame"/>
+          <router-link to="/gameboard">
+            <Button label="Create" class="p-d-block p-mx-auto p-button-raised btn-dialog" @click="createNewGame"/>
+          </router-link>
         </template>
       </Dialog>
       <Dialog
@@ -48,7 +52,7 @@
         <template #header><h3>Join game</h3></template>
         <JoinGame />
         <template class="p-mx-auto" #footer>
-          <Button label="Join" class="p-d-block p-mx-auto p-button-raised btn-dialog" />
+          <Button label="Join" class="p-d-block p-mx-auto p-button-raised btn-dialog" @click="joinGame(state.playername, 1)" to="/gameboard"/>
         </template>
       </Dialog>
     </div>
@@ -64,13 +68,7 @@ import SocketHandler from '@/modules/SocketHandler';
 
 export default {
   name: "Lobby",
-  components: { CreateGame, JoinGame }, 
-  // sockets: {
-  //   message : function (data) {
-  //     console.log('Message received: ', data)
-  //   },     
-  // },
-
+  components: { CreateGame, JoinGame },
   setup() {
     const { playCard, sendMessage, createGame, joinGame, error, gameState, isConnected } = SocketHandler();
 
@@ -94,7 +92,6 @@ export default {
 
     function createNewGame() {
       createGame(state.playername);
-      playCard(2);
     }
 
     return {

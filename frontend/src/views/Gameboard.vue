@@ -62,15 +62,19 @@
         <div class="p-mt-1">Points </div>
       </div>
     </div>
+    <div>{{gameState}}</div>
   </div>
 </template>
 <script>
 import { reactive } from "vue";
 import { VueDraggableNext } from "vue-draggable-next";
+import SocketHandler from '@/modules/SocketHandler';
+
 export default {
   name: "Gameboard",
   components: { draggable: VueDraggableNext },
   setup() {
+    const { gameState } = SocketHandler();
     const state = reactive({
       cardsOnHand: [
         { name: "Mutated Worm", power: 1 },
@@ -110,7 +114,8 @@ export default {
       state,
       getImageName,
       moveCard,
-      switchIsDisabled
+      switchIsDisabled,
+      gameState
     };
   },
 };

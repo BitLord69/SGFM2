@@ -51,6 +51,7 @@
           v-for="(card, index) in state.cardsOnHand"
           :key="index"
           :style="{ backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})` }"
+          @click="playCard(index)"
         >
           <div class="cardPower">{{card.power}}</div>
           <div class="cardName">{{card.name}}</div>
@@ -62,7 +63,7 @@
         <div class="p-mt-1">Points </div>
       </div>
     </div>
-    <div>{{gameState}}</div>
+    <!-- <div>{{gameState}}</div> -->
   </div>
 </template>
 <script>
@@ -74,7 +75,7 @@ export default {
   name: "Gameboard",
   components: { draggable: VueDraggableNext },
   setup() {
-    const { gameState } = SocketHandler();
+    const { gameState, playCard } = SocketHandler();
     const state = reactive({
       cardsOnHand: [
         { name: "Mutated Worm", power: 1 },
@@ -115,7 +116,8 @@ export default {
       getImageName,
       moveCard,
       switchIsDisabled,
-      gameState
+      gameState,
+      playCard,
     };
   },
 };

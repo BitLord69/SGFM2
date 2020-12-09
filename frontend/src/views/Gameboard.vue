@@ -5,6 +5,7 @@
         :modal="true"
         :dismissableMask="true"
         :visible="state.connectedPlayers < 2"
+        :closable="false"
       >
         <template #header>
           <h3 v-if="state.connectedPlayers < 2">Waiting for opponent to connect...</h3>

@@ -14,31 +14,12 @@ import AccordionTab from 'primevue/accordiontab';
 import ScrollPanel from 'primevue/scrollpanel';
 import ProgressSpinner from 'primevue/progressspinner';
 
-
-// Socket imports
-// import VueSocketIO from 'wsj.vue-socket.io'
-// import SocketIO from 'socket.io-client'
-
 import "primevue/resources/themes/saga-blue/theme.css";
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 import 'primeflex/primeflex.css';
-import { VueDraggableNext } from "vue-draggable-next";
 
-// export const socketClient = SocketIO('http://localhost:9092');
-// export const socketClient = SocketIO('http://localhost:9092'), {
-//   "reconnection delay": 2000,
-//   "force new connection": true,
-// });
-
-const app = createApp(App)
-  .use(router)
-  // .use(new VueSocketIO({
-  //   debug: true,
-  //   connection: 'http://localhost:9092'
-    // connection: socketClient//'http://localhost:9092'
-  // }))
-  ;
+const app = createApp(App).use(router);
 
 app.config.globalProperties.$primevue = { ripple: true };
 app.component("InputText", InputText);

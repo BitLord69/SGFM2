@@ -56,6 +56,7 @@ export default function SocketHandler() {
 
   // send the played card as an index in a string format
   function playCard(cardId) {
+    console.log("playCard: ", cardId, " gs: ", gameState.value);
     client.emit("PLAYED_CARD", cardId);
   }
 

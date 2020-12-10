@@ -122,9 +122,9 @@ public class GameEngine  {
   }
 
   public void handleWinnerCardForPlayer2(Card card1, Card card2){
-    gameState.getPlayer(GameState.PLAYER_ONE).addToVictoryPile(card2);
+    gameState.getPlayer(GameState.PLAYER_TWO).addToVictoryPile(card2);
     card1.decreasePower(card2.getCurrentPower());
-    gameState.getPlayer(GameState.PLAYER_ONE).addCardToHand(card1);
+    gameState.getPlayer(GameState.PLAYER_TWO).addCardToHand(card1);
   }
 
   public boolean isGameOver() {
@@ -150,6 +150,7 @@ public class GameEngine  {
       getRoundWinner();
       isGameOver();
       gameState.changeStartPlayer();
+      gameState.clearPlayedCards();
     }
     gameState.changeCurrentPlayer();
     server.sendGameUpdateToRoom(gameState, roomNo);

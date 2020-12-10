@@ -4,11 +4,12 @@
         id="joinModal"
         :modal="true"
         :dismissableMask="true"
-        :visible="state.connectedPlayers < 2"
+        :visible="state.connectedPlayers < 2 || (gameState && gameState?.currentPlayer != playerId)"
         :closable="false"
       >
         <template #header>
           <h3 v-if="state.connectedPlayers < 2">Waiting for opponent to connect...</h3>
+          <h3 v-else>Waiting for opponent to finish their turn...</h3>
         </template>
       <WaitingForPlayer />
         <template class="p-mx-auto" #footer>
@@ -19,7 +20,7 @@
       <div class="profile profileOpp p-pt-1">
         <div>{{ opponent?.name || 'waiting...'}}</div>
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
-        <div class="p-mt-1">Points: {{ opponent?.score }} </div>
+        <div class="p-mt-1">Points: {{ opponent?.score }}/{{gameState?.pointsToWin}} </div>
       </div>
       <div class="cardsOnHand">
         <div
@@ -34,16 +35,17 @@
     <div class="table">
       <draggable
         class="cardsOnTable p-py-2"
-        :list="state.playedCards"
+        :list="gameState?.playedCards"
         group="cards"
         item-key="index">
         <div
           class="card"
-          v-for="(card, index) in state.playedCards"
+          v-for="(card, index) in gameState?.playedCards"
           :key="index"
           :style="{ backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})` }"
+          :onAdd="playCard(gameState?.playedCards[gameState?.playedCards.length-1].index)"
         >
-          <div class="cardPower">{{card.power}}</div>
+          <div class="cardPower">{{card.currentPower}}</div>
           <div class="cardName">{{card.name}}</div>
         </div>
       </draggable>
@@ -51,7 +53,7 @@
     <div class="playerRow p-mb-2">
       <draggable
         class="cardsOnHand"
-        :list="state.cardsOnHand"
+        :list="gameState?.players[playerId]?.cardsOnHand"
         :group="{ name: 'cards', pull: true}"
         :clone="moveCard"
         @change="switchIsDisabled"
@@ -60,12 +62,11 @@
       >
         <div
           class="card p-mx-1"
-          v-for="(card, index) in state.cardsOnHand"
-          :key="index"
+          v-for="(card, index) in gameState?.players[playerId]?.cardsOnHand"
+          :key="getIndex(card, index)"
           :style="{ backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})` }"
-          @click="playCard(index)"
         >
-          <div class="cardPower">{{card.power}}</div>
+          <div class="cardPower">{{card.currentPower}}</div>
           <div class="cardName">{{card.name}}</div>
         </div>
       </draggable>
@@ -73,12 +74,15 @@
         <div>{{ gameState && gameState?.players[playerId]?.name }}</div>
         <!-- <div>Ditt namn...</div> -->
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
-        <div class="p-mt-1">Points: {{ gameState && gameState?.players[playerId]?.score }}</div>
+        <div class="p-mt-1">Points: {{ gameState && gameState?.players[playerId]?.score }}/{{gameState?.pointsToWin}}</div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
+
+
 import { reactive, watchEffect, computed } from "vue";
 import { VueDraggableNext } from "vue-draggable-next";
 import SocketHandler from '@/modules/SocketHandler';
@@ -95,17 +99,9 @@ export default {
 
     const { gameState, playCard } = SocketHandler();
     const state = reactive({
-      cardsOnHand: [
-        { name: "Mutated Worm", power: 1 },
-        { name: "Orange Menace", power: 3 },
-        { name: "Sleepy Joe", power: 4 },
-        { name: "Anonymous Hacker", power: 8 },
-        { name: "Super Galaxy Face Melter", power: 10 },
-      ],
-      playedCards: [],
       connectedPlayers: 1,
       isDisabled: false,
-      cardsOnHandSize: 5,
+      cardsOnHandSize: 5
     });
 
     const opponent = computed(() => {
@@ -125,6 +121,11 @@ export default {
       }
     )
 
+    function getIndex(card, index){
+      card.index = index;
+      return index
+    }
+
     function getImageName(name) {
       return name.replaceAll(" ", "_").toLowerCase();
     }
@@ -134,7 +135,7 @@ export default {
     }
 
     function switchIsDisabled() {
-      if(state.cardsOnHand.length < state.cardsOnHandSize) {
+      if(gameState.value?.players[playerId].cardsOnHand.length < state.cardsOnHandSize) {
         state.isDisabled = !state.isDisabled;
       }
     }
@@ -148,6 +149,7 @@ export default {
       playCard,
       playerId,
       opponent,
+      getIndex
     };
   },
 }

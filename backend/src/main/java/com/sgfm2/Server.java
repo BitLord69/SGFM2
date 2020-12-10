@@ -38,7 +38,7 @@ public class Server {
 
     server.addDisconnectListener(client -> {
       System.out.printf("Client %s disconnected.\n", client.getSessionId());
-      client.disconnect();
+      //client.disconnect();
     });
 
     server.addEventListener("CREATE_GAME", CreateGameMessage.class, (client, data, ackSender) -> {
@@ -58,10 +58,16 @@ public class Server {
 //      client.send(p);
 
 //      sendMsgToRoom("Welcome to room # " + roomNo + " - waiting for an opponent!", roomNo);
-        server.getBroadcastOperations().
+      server.getBroadcastOperations().
           getClients().
           forEach(x -> {
             x.sendEvent("LIST_GAMES" , getGameList());
+
+          });
+        server.getBroadcastOperations().
+          getClients().
+          forEach(x -> {
+
             x.sendEvent("GAME_UPDATE" , new Gson().toJson(gameEngine.getGameState()));
           });
     });

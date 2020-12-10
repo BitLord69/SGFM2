@@ -41,7 +41,7 @@ public class GameEngine  {
 
   public void startGame() {
     dealCards();
-    server.sendMsgToRoom(gameState, roomNo);
+    server.sendGameUpdateToRoom(gameState, roomNo);
   }
 
   public void setPlayer (Player player) {
@@ -152,7 +152,7 @@ public class GameEngine  {
       gameState.changeStartPlayer();
     }
     gameState.changeCurrentPlayer();
-    server.sendMsgToRoom(gameState, roomNo);
+    server.sendGameUpdateToRoom(gameState, roomNo);
   }
 
   public GameState getGameState() {

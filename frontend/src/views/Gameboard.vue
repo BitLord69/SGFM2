@@ -10,15 +10,16 @@
         <template #header>
           <h3 v-if="state.connectedPlayers < 2">Waiting for opponent to connect...</h3>
         </template>
-    <WaitingForPlayer />
+      <WaitingForPlayer />
         <template class="p-mx-auto" #footer>
         </template>
-      </Dialog>
+    </Dialog>
+
     <div class="playerRow p-mt-2">
       <div class="profile profileOpp p-pt-1">
-        <div>Name </div>
+        <div>{{ opponent?.name || 'waiting...'}}</div>
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
-        <div class="p-mt-1">Points </div>
+        <div class="p-mt-1">Points: {{ opponent?.score }} </div>
       </div>
       <div class="cardsOnHand">
         <div
@@ -35,9 +36,7 @@
         class="cardsOnTable p-py-2"
         :list="state.playedCards"
         group="cards"
-        item-key="index"
-         
-      >
+        item-key="index">
         <div
           class="card"
           v-for="(card, index) in state.playedCards"
@@ -71,23 +70,29 @@
         </div>
       </draggable>
       <div class="profile profileYou p-pt-1">
-        <div>Name </div>
+        <div>{{ gameState && gameState?.players[playerId]?.name }}</div>
+        <!-- <div>Ditt namn...</div> -->
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
-        <div class="p-mt-1">Points </div>
+        <div class="p-mt-1">Points: {{ gameState && gameState?.players[playerId]?.score }}</div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { reactive, watchEffect } from "vue";
+import { reactive, watchEffect, computed } from "vue";
 import { VueDraggableNext } from "vue-draggable-next";
 import SocketHandler from '@/modules/SocketHandler';
 import WaitingForPlayer from '../components/WaitingForPlayer';
+import { useRoute } from 'vue-router'
+
 
 export default {
   name: "Gameboard",
   components: { draggable: VueDraggableNext, WaitingForPlayer },
   setup() {
+    const route = useRoute();
+    const playerId = route.params.player;
+
     const { gameState, playCard } = SocketHandler();
     const state = reactive({
       cardsOnHand: [
@@ -101,6 +106,13 @@ export default {
       connectedPlayers: 1,
       isDisabled: false,
       cardsOnHandSize: 5,
+    });
+
+    const opponent = computed(() => {
+      let o = playerId == 0 ? 1 : 0;
+      let player = (gameState && gameState.value?.players.length > 1) ? gameState.value?.players[o] : null;
+    console.log("opponent", player || 'null');
+      return player;
     });
 
     watchEffect(
@@ -134,6 +146,8 @@ export default {
       switchIsDisabled,
       gameState,
       playCard,
+      playerId,
+      opponent,
     };
   },
 }

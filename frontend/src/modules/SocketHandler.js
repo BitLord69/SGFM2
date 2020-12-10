@@ -1,7 +1,5 @@
 import { ref } from "vue";
-// import io from 'socket.io-client';
 import SocketIO from 'socket.io-client'
-// import { socketClient } from '@/main'
 const error = ref(null);
 const gameState = ref(null);
 const isConnected = ref(true);
@@ -30,7 +28,6 @@ export default function SocketHandler() {
   client.on("connect", function () {
     isConnected.value = true;
     console.log("Connected to server")
-    // client.emit("SEND_PLAYER_NAME", "James Bond" + new Date(), () => {});
   });
 
   // Keep if we're going to have a in-game chat function later in sprint 2
@@ -44,15 +41,13 @@ export default function SocketHandler() {
   }
 
   client.on("GAME_UPDATE", (incomingGameState) => {
-    console.log("GAME_UPDATE received");
+    console.log("GAME_UPDATE received", JSON.parse(incomingGameState));
     gameState.value = JSON.parse(incomingGameState);
   });
 
 
-  function createGame(name) {
-    console.log("Trying to create a new game, with the name", name);
-    // function createGame(name, pointsToWin, cardsOnHand) {
-    client.emit("CREATE_GAME", name);// { name, pointsToWin, cardsOnHand });
+  function createGame(name, pointsToWin, cardsOnHand) {
+    client.emit("CREATE_GAME", { name, pointsToWin, cardsOnHand });
   }
 
   function joinGame(name, roomNo) {
@@ -69,7 +64,7 @@ export default function SocketHandler() {
   }
 
   client.on("LIST_GAMES", (data) => {
-    console.log(JSON.parse(data));
+    console.log("LIST_GAMES", JSON.parse(data));
     gameList.value = JSON.parse(data);
   })
 

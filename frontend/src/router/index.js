@@ -15,7 +15,7 @@ const routes = [
     component: Lobby,
   },
   {
-    path: "/gameboard",
+    path: "/gameboard/:player",
     name: "Gameboard",
     component: Gameboard,
   }

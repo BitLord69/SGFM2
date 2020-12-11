@@ -26,4 +26,12 @@ public class JoinGameMessage {
   public void setRoomNo(String roomNo) {
     this.roomNo = roomNo;
   }
+
+  @Override
+  public String toString() {
+    return "JoinGameMessage{" +
+            "name='" + name + '\'' +
+            ", roomNo='" + roomNo + '\'' +
+            '}';
+  }
 }

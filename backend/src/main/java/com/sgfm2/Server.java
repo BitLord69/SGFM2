@@ -13,10 +13,7 @@ import com.sgfm2.messages.JoinGameMessage;
 import com.sgfm2.messages.ListGamesMessage;
 import com.sgfm2.messages.Message;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Server {
@@ -30,6 +27,7 @@ public class Server {
     Configuration config = new Configuration();
     config.setHostname("localhost");
     config.setPort(9092);
+    config.setPingInterval(30);
     server = new SocketIOServer(config);
     final Server localThis = this;
 
@@ -42,6 +40,7 @@ public class Server {
     });
 
     server.addEventListener("CREATE_GAME", CreateGameMessage.class, (client, data, ackSender) -> {
+      System.out.println("FÖRSTA RADEN I CREATE_GAME");
       roomNo++;
 
       GameEngine gameEngine = new GameEngine(localThis, data.getCardsOnHand(),data.getPointsToWin(), roomNo);
@@ -49,7 +48,9 @@ public class Server {
       games.put(String.valueOf(roomNo), gameEngine);
       roomList.put(String.valueOf(roomNo), new ListGamesMessage(String.valueOf(roomNo), 1, data));
 
+      System.out.println("innan client.joinroom");
       client.joinRoom(String.valueOf(roomNo));
+      System.out.println("efter client.joinroom");
 
 //      Packet p = new Packet(PacketType.MESSAGE);
 //      p.setSubType(PacketType.EVENT);
@@ -58,22 +59,34 @@ public class Server {
 //      client.send(p);
 
 //      sendMsgToRoom("Welcome to room # " + roomNo + " - waiting for an opponent!", roomNo);
-      server.getBroadcastOperations().
-          getClients().
+      BroadcastOperations bco = server.getBroadcastOperations();
+      System.out.println("getGameList: " + getGameList());
+      System.out.println("getGameState: " + gameEngine.getGameState());
+          bco.getClients().
           forEach(x -> {
             x.sendEvent("LIST_GAMES" , getGameList());
 
           });
-        server.getBroadcastOperations().
-          getClients().
+        bco.getClients().
           forEach(x -> {
 
             x.sendEvent("GAME_UPDATE" , new Gson().toJson(gameEngine.getGameState()));
           });
+
+      bco.getClients().
+              forEach(x -> {
+
+                x.sendEvent("SEND_ROOMNO" , String.valueOf(roomNo));
+              });
     });
 
     server.addEventListener("JOIN_GAME", JoinGameMessage.class, (client, data, ackSender) -> {
+      if (data.getRoomNo() == null) {
+        System.out.println("null");
+        return;
+      }
       ListGamesMessage lgm = roomList.get(data.getRoomNo());
+      System.out.println("data: " + data.toString());
       lgm.setPlayersInRoom(2);
       client.joinRoom(String.valueOf(data.getRoomNo()));
       GameEngine gameEngine = games.get(data.getRoomNo());
@@ -96,18 +109,37 @@ public class Server {
 
     server.addEventListener("PLAYED_CARD", String.class, (client, data, ackSender) -> {
       Set<String> rooms = client.getAllRooms();
+      System.out.println("rooms: " + rooms);
+      System.out.println("data: " + data);
       GameEngine gameEngine = games.get(String.valueOf(rooms.toArray()[1]));
       gameEngine.setPlayedCard(Integer.parseInt(data));
     });
 
+    server.addEventListener("REQUEST_UPDATE", String.class, (client, data, ackSender) -> {
+      if (data == null) {
+        return;
+      }
+      client.joinRoom(data);
+      GameEngine gameEngine = games.get(data);
+      System.out.println("i REQUEST_UPDATE, data: " + data);
+      sendGameUpdateToRoom(gameEngine.getGameState(), Integer.parseInt(data));
+    });
+
     server.addEventListener("AVAILABLE_GAMES", String.class,
-        (client, data, ackSender) -> client.sendEvent("LIST_GAMES",  getGameList()));
-  }
+            (client, data, ackSender) -> client.sendEvent("LIST_GAMES",  getGameList()));
+
+  } // constructor
 
   private String getGameList() {
     List<ListGamesMessage> listGamesMessages = roomList.values().stream()
         .filter(listGamesMessage -> listGamesMessage.getPlayersInRoom() < 2).collect(Collectors.toList());
     return new Gson().toJson(listGamesMessages);
+  }
+
+  private int getNrClientsInRoom(int roomNo) {
+    BroadcastOperations bcO = server.getRoomOperations(String.valueOf(roomNo));
+    Collection<SocketIOClient> clients = bcO.getClients();
+    return clients == null ? 0 : clients.size();
   }
 
   public void sendGameUpdateToRoom(GameState gameState, int roomNo) {

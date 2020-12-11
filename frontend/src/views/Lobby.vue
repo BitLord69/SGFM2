@@ -84,8 +84,8 @@ export default {
     }
 
     function setVisibleJoin() {
+      getGameList()
       state.displayJoin = !state.displayJoin;
-      
     }
 
     function isDisabled() {
@@ -97,6 +97,8 @@ export default {
     }
 
     function joinExistingGame() {
+      console.log("joingamestate activeindex ", joinGameState.activeIndex);
+      console.log("roomno in joinexisting ", gameList.value[joinGameState.activeIndex].roomNo);
       joinGame(state.playername, gameList.value[joinGameState.activeIndex].roomNo)
     }
     

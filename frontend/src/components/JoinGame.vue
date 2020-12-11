@@ -32,7 +32,7 @@ const joinGameState = reactive({
 export default {
   name: "JoinGame",
   setup() {
-    const { gameList, getGameList } = SocketHandler();
+    const { gameList } = SocketHandler();
 
     const componentKey = ref(0);
 
@@ -45,7 +45,6 @@ export default {
       }
     )
 
-    getGameList()
     return {
       joinGameState,
       componentKey,

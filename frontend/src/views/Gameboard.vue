@@ -1,26 +1,34 @@
 <template>
   <div class="gameboard">
     <Dialog
-        id="joinModal"
-        :modal="true"
-        :dismissableMask="true"
-        :visible="state.connectedPlayers < 2 || (gameState && gameState?.currentPlayer != playerId)"
-        :closable="false"
-      >
-        <template #header>
-          <h3 v-if="state.connectedPlayers < 2">Waiting for opponent to connect...</h3>
-          <h3 v-else>Waiting for opponent to finish their turn...</h3>
-        </template>
+      id="joinModal"
+      :modal="true"
+      :dismissableMask="true"
+      :visible="
+        state.connectedPlayers < 2 ||
+        (gameState &&
+          gameState?.currentPlayer != playerId &&
+          gameState?.gameWinner === -1)
+      "
+      :closable="false"
+    >
+      <template #header>
+        <h3 v-if="state.connectedPlayers < 2">
+          Waiting for opponent to connect...
+        </h3>
+        <h3 v-else>Waiting for opponent to finish their turn...</h3>
+      </template>
       <WaitingForPlayer />
-        <template class="p-mx-auto" #footer>
-        </template>
+      <template class="p-mx-auto" #footer> </template>
     </Dialog>
 
     <div class="playerRow p-mt-2">
       <div class="profile profileOpp p-pt-1">
-        <div>{{ opponent?.name || 'waiting...'}}</div>
+        <div>{{ opponent?.name || "waiting..." }}</div>
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
-        <div class="p-mt-1">Points: {{ opponent?.score }}/{{gameState?.pointsToWin}} </div>
+        <div class="p-mt-1">
+          Points: {{ opponent?.score }}/{{ gameState?.pointsToWin }}
+        </div>
       </div>
       <div class="cardsOnHand">
         <div
@@ -28,33 +36,34 @@
           v-for="index in 5"
           :key="index"
           :style="{ backgroundImage: `url(${'../card_back.png'})` }"
-        >
-        </div>
+        ></div>
       </div>
     </div>
     <div class="table">
-      <draggable
-        class="cardsOnTable p-py-2"
-        :list="gameState?.playedCards"
-        group="cards"
-        item-key="index">
+      <div class="cardsOnTable p-py-2" v-if="gameState?.gameWinner == -1">
         <div
           class="card"
           v-for="(card, index) in gameState?.playedCards"
           :key="index"
-          :style="{ backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})` }"
+          :style="{
+            backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})`,
+          }"
         >
-          <!-- :onAdd="playCard(gameState?.playedCards[gameState?.playedCards.length-1].index)" -->
-          <div class="cardPower">{{card.currentPower}}</div>
-          <div class="cardName">{{card.name}}</div>
+          <div class="cardPower">{{ card.currentPower }}</div>
+          <div class="cardName">{{ card.name }}</div>
         </div>
-      </draggable>
+      </div>
+      <div class="gameOver" v-else>
+        <h3>GAME OVER</h3>
+        <div v-if="playerId == gameState.gameWinner">You won!</div>
+        <div v-else>You lost!</div>
+      </div>
     </div>
     <div class="playerRow p-mb-2">
       <div
         class="cardsOnHand"
         :list="gameState?.players[playerId]?.cardsOnHand"
-        :group="{ name: 'cards', pull: true}"
+        :group="{ name: 'cards', pull: true }"
         :clone="moveCard"
         @change="switchIsDisabled"
         item-key="index"
@@ -64,35 +73,37 @@
           class="card p-mx-1"
           v-for="(card, index) in gameState?.players[playerId]?.cardsOnHand"
           :key="getIndex(card, index)"
-          :style="{ backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})` }"
+          :style="{
+            backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})`,
+          }"
           @click="playCard(index)"
         >
-          <div class="cardPower">{{card.currentPower}}</div>
-          <div class="cardName">{{card.name}}</div>
+          <div class="cardPower">{{ card.currentPower }}</div>
+          <div class="cardName">{{ card.name }}</div>
         </div>
       </div>
       <div class="profile profileYou p-pt-1">
         <div>{{ gameState && gameState?.players[playerId]?.name }}</div>
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
-        <div class="p-mt-1">Points: {{ gameState && gameState?.players[playerId]?.score }}/{{gameState?.pointsToWin}}</div>
+        <div class="p-mt-1">
+          Points: {{ gameState && gameState?.players[playerId]?.score }}/{{
+            gameState?.pointsToWin
+          }}
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-
-
 import { reactive, watchEffect, computed } from "vue";
-import { VueDraggableNext } from "vue-draggable-next";
-import SocketHandler from '@/modules/SocketHandler';
-import WaitingForPlayer from '../components/WaitingForPlayer';
-import { useRoute } from 'vue-router'
-
+import SocketHandler from "@/modules/SocketHandler";
+import WaitingForPlayer from "../components/WaitingForPlayer";
+import { useRoute } from "vue-router";
 
 export default {
   name: "Gameboard",
-  components: { draggable: VueDraggableNext, WaitingForPlayer },
+  components: { WaitingForPlayer },
   setup() {
     const route = useRoute();
     const playerId = route.params.player;
@@ -101,29 +112,30 @@ export default {
     const state = reactive({
       connectedPlayers: 1,
       isDisabled: false,
-      cardsOnHandSize: 5
+      cardsOnHandSize: 5,
     });
 
     const opponent = computed(() => {
       let o = playerId == 0 ? 1 : 0;
-      let player = (gameState && gameState.value?.players.length > 1) ? gameState.value?.players[o] : null;
-    console.log("opponent", player || 'null');
+      let player =
+        gameState && gameState.value?.players.length > 1
+          ? gameState.value?.players[o]
+          : null;
+      console.log("opponent", player || "null");
       return player;
     });
 
-    watchEffect(
-      () => {
-        if (gameState.value !== null) {
-          if (gameState.value.players.length > 1) {
-            state.connectedPlayers = 2
-          }
+    watchEffect(() => {
+      if (gameState.value !== null) {
+        if (gameState.value.players.length > 1) {
+          state.connectedPlayers = 2;
         }
       }
-    )
+    });
 
-    function getIndex(card, index){
+    function getIndex(card, index) {
       card.index = index;
-      return index
+      return index;
     }
 
     function getImageName(name) {
@@ -135,7 +147,10 @@ export default {
     }
 
     function switchIsDisabled() {
-      if(gameState.value?.players[playerId].cardsOnHand.length < state.cardsOnHandSize) {
+      if (
+        gameState.value?.players[playerId].cardsOnHand.length <
+        state.cardsOnHandSize
+      ) {
         state.isDisabled = !state.isDisabled;
       }
     }
@@ -149,12 +164,18 @@ export default {
       playCard,
       playerId,
       opponent,
-      getIndex
+      getIndex,
     };
   },
-}
+};
 </script>
 <style scoped>
+
+.gameOver{
+  font-size: 40px;
+  color: red;
+}
+
 .gameboard {
   display: flex;
   flex-direction: column;
@@ -179,11 +200,11 @@ export default {
   display: flex;
   flex-direction: column;
   text-align: center;
-  background-color:  #e2c3a6;
+  background-color: #e2c3a6;
   color: #3b1704;
   border: 2px solid #3b1704;
   border-radius: 2px;
-  font-family: 'MedievalSharp', cursive;
+  font-family: "MedievalSharp", cursive;
   font-weight: bold;
 }
 
@@ -224,7 +245,7 @@ export default {
   position: absolute;
   top: 5%;
   left: 20%;
-  font-family: 'MedievalSharp', cursive;
+  font-family: "MedievalSharp", cursive;
 }
 
 .cardName {
@@ -233,6 +254,6 @@ export default {
   width: 100%;
   text-align: center;
   font-size: 90%;
-  font-family: 'Yanone Kaffeesatz', sans-serif;
+  font-family: "Yanone Kaffeesatz", sans-serif;
 }
 </style>

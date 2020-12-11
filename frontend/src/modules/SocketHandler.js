@@ -8,26 +8,13 @@ const gameList = ref(null);
 let client = null;
 export default function SocketHandler() {
   if (client === null) {
-  client = SocketIO("http://localhost:9092", {
-    "reconnectionDelay": 500,
-    "reconnection": true,
-    "timeout": 2000,
-    // "force new connection": true,
-  });
-}
-
-  /* const connect = async () => {
-    if (isConnected.value) return;
-
-    try {
-      client = SocketIO("http://localhost:9092", {
-        "reconnection delay": 2000,
-        "force new connection": true,
-      });       
-    } catch (e) {
-      error.value = e;
-    }
-  } // connect */
+    client = SocketIO("http://localhost:9092", {
+      "reconnectionDelay": 500,
+      "reconnection": true,
+      "timeout": 2000,
+      // "force new connection": true,
+    });
+  }
 
   client.on("connect", function () {
     isConnected.value = true;

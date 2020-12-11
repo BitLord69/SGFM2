@@ -30,6 +30,7 @@ public class Server {
     Configuration config = new Configuration();
     config.setHostname("localhost");
     config.setPort(9092);
+    config.setPingInterval(30);
     server = new SocketIOServer(config);
     final Server localThis = this;
 
@@ -83,9 +84,9 @@ public class Server {
 
       gameEngine.startGame();
 
-      server.getBroadcastOperations().
-          getClients().
-          forEach(x -> { x.sendEvent("LIST_GAMES" , getGameList()); });
+//      server.getBroadcastOperations().
+//          getClients().
+//          forEach(x -> { x.sendEvent("LIST_GAMES" , getGameList()); });
 
       sendGameUpdateToRoom(gameEngine.getGameState(), Integer.parseInt(data.getRoomNo()));
     });

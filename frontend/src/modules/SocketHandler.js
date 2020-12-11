@@ -7,8 +7,10 @@ const gameList = ref(null);
 
 export default function SocketHandler() {
   let client = SocketIO("http://localhost:9092", {
-    "reconnection delay": 2000,
-    "force new connection": true,
+    "reconnectionDelay": 500,
+    "reconnection": true,
+    "timeout": 2000,
+    // "force new connection": true,
   });
   
 
@@ -74,8 +76,20 @@ export default function SocketHandler() {
     error.value = e;
   });
 
-  client.on("disconnect", () => {
-    console.log("disconnected from the server");
+  client.on("reconnect", (attempt) => {
+    console.log("reconnected to server.... attempt:", attempt);
+  });
+
+  client.on("reconnect_error", (error) => {
+    console.log("reconnect_error.... ", error);
+  });
+
+  client.on("reconnect_failed", () => {
+    console.log("failed to re connect!!! ");
+  });
+
+  client.on("disconnect", (reason) => {
+    console.log("disconnected from the server, reason:", reason);
     isConnected.value  = false;
     // client = null;
   });

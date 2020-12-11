@@ -43,8 +43,8 @@
           v-for="(card, index) in gameState?.playedCards"
           :key="index"
           :style="{ backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})` }"
-          :onAdd="playCard(gameState?.playedCards[gameState?.playedCards.length-1].index)"
         >
+          <!-- :onAdd="playCard(gameState?.playedCards[gameState?.playedCards.length-1].index)" -->
           <div class="cardPower">{{card.currentPower}}</div>
           <div class="cardName">{{card.name}}</div>
         </div>
@@ -65,6 +65,7 @@
           v-for="(card, index) in gameState?.players[playerId]?.cardsOnHand"
           :key="getIndex(card, index)"
           :style="{ backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})` }"
+          @click="playCard(index)"
         >
           <div class="cardPower">{{card.currentPower}}</div>
           <div class="cardName">{{card.name}}</div>

@@ -6,8 +6,10 @@ import java.util.ArrayList;
 public class Player implements Serializable {
 
   private String name;
-  private final ArrayList<Card> victoryPile = new ArrayList<>();
+//  private final ArrayList<Card> victoryPile = new ArrayList<>();
   private final ArrayList<Card> cardsOnHand = new ArrayList<>();
+
+  private int score = 0;
 
   public Player(String name){
     this.name = name;
@@ -18,10 +20,10 @@ public class Player implements Serializable {
   }
 
   public int getScore(){
-    int score = 0;
-    for(Card card : victoryPile){
-      score += card.getCurrentPower();
-    }
+//    int score = 0;
+//    for(Card card : victoryPile){
+//      score += card.getCurrentPower();
+//    }
     return score;
   }
 
@@ -30,7 +32,8 @@ public class Player implements Serializable {
   }
 
   public boolean addToVictoryPile(Card wonCard){
-    return victoryPile.add(wonCard);
+    score += wonCard.getCurrentPower();
+    return true; //victoryPile.add(wonCard);
   }
 
   public ArrayList<Card> getCardOnHandAsList(){

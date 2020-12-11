@@ -32,7 +32,7 @@
         <template #header><h3 class="p-m-0">Create game</h3></template>
         <CreateGame />
         <template class="p-mx-auto" #footer>
-          <router-link to="/gameboard">
+          <router-link to="/gameboard/0">
             <Button label="Create" class="p-d-block p-mx-auto p-button-raised btn-dialog" @click="createNewGame"/>
           </router-link>
         </template>
@@ -47,7 +47,9 @@
         
         <JoinGame />
         <template class="p-mx-auto" #footer>
-          <Button label="Join" class="p-d-block p-mx-auto p-button-raised btn-dialog" @click="joinGame(state.playername, 1)" to="/gameboard"/>
+          <router-link to="/gameboard/1">
+            <Button label="Join" class="p-d-block p-mx-auto p-button-raised btn-dialog" @click="joinExistingGame" />
+          </router-link>
         </template>
       </Dialog>
     </div>
@@ -66,12 +68,17 @@ export default {
   components: { CreateGame, JoinGame },
   setup() {
     const { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected } = SocketHandler();
+    const { CreateGameState } = CreateGame.setup();
+    const { joinGameState  } = JoinGame.setup();
 
     const state = reactive({
       displayCreate: false,
       displayJoin: false,
       playername: null,
+      cardsOnHand: 5,
+      pointsToWin: 15
     });
+
 
     function setVisibleCreate() {
       state.displayCreate = !state.displayCreate;
@@ -87,7 +94,11 @@ export default {
     }
 
     function createNewGame() {
-      createGame(state.playername);
+      createGame(state.playername, CreateGameState.pointsToWin, CreateGameState.cardsOnHand);
+    }
+
+    function joinExistingGame() {
+      joinGame(state.playername, gameList.value[joinGameState.activeIndex].roomNo)
     }
     
     return {
@@ -96,8 +107,9 @@ export default {
       setVisibleJoin,
       isDisabled,
       createNewGame,
-      playCard, joinGame, sendMessage, createGame,
-      error, gameState, isConnected, getGameList, gameList
+      playCard, sendMessage, createGame,
+      error, gameState, isConnected, getGameList, gameList,
+      joinExistingGame
     };
   },
 };

@@ -19,6 +19,10 @@ public class ListGamesMessage {
     this.creator = creator;
   }
 
+  public ListGamesMessage(String roomNo, int playersInRoom, CreateGameMessage data) {
+    this(roomNo, playersInRoom, data.getPointsToWin(), data.getCardsOnHand(), data.getName());
+  }
+
   public String getCreator() {
     return creator;
   }

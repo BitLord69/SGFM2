@@ -1,59 +1,69 @@
 <template>
   <div class="gameboard">
     <Dialog
-        id="joinModal"
-        :modal="true"
-        :dismissableMask="true"
-        :visible="state.connectedPlayers < 2"
-      >
-        <template #header>
-          <h3 v-if="state.connectedPlayers < 2">Waiting for opponent to connect...</h3>
-        </template>
-    <WaitingForPlayer />
-        <template class="p-mx-auto" #footer>
-        </template>
-      </Dialog>
+      id="joinModal"
+      :modal="true"
+      :dismissableMask="true"
+      :visible="
+        state.connectedPlayers < 2 ||
+        (gameState &&
+          gameState?.currentPlayer != playerId &&
+          gameState?.gameWinner === -1)
+      "
+      :closable="false"
+    >
+      <template #header>
+        <h3 v-if="state.connectedPlayers < 2">
+          Waiting for opponent to connect...
+        </h3>
+        <h3 v-else>Waiting for opponent to finish their turn...</h3>
+      </template>
+      <WaitingForPlayer />
+      <template class="p-mx-auto" #footer> </template>
+    </Dialog>
+
     <div class="playerRow p-mt-2">
       <div class="profile profileOpp p-pt-1">
-        <div>Name </div>
+        <div>{{ opponent?.name || "waiting..." }}</div>
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
-        <div class="p-mt-1">Points </div>
+        <div class="p-mt-1">
+          Points: {{ opponent?.score }}/{{ gameState?.pointsToWin }}
+        </div>
       </div>
-      <draggable class="cardsOnHand" :list="state.cardsOnHandOpponent">
+      <div class="cardsOnHand">
         <div
           class="card p-mx-1"
-          v-for="(card, index) in state.cardsOnHandOpponent"
+          v-for="index in 5"
           :key="index"
-          :style="{ backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})` }"
-        >
-          
-        </div>
-      </draggable>
+          :style="{ backgroundImage: `url(${'../card_back.png'})` }"
+        ></div>
+      </div>
     </div>
     <div class="table">
-      <draggable
-        class="cardsOnTable p-py-2"
-        :list="state.playedCards"
-        group="cards"
-        item-key="index"
-         
-      >
+      <div class="cardsOnTable p-py-2" v-if="gameState?.gameWinner == -1">
         <div
           class="card"
-          v-for="(card, index) in state.playedCards"
+          v-for="(card, index) in gameState?.playedCards"
           :key="index"
-          :style="{ backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})` }"
+          :style="{
+            backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})`,
+          }"
         >
-          <div class="cardPower">{{card.power}}</div>
-          <div class="cardName">{{card.name}}</div>
+          <div class="cardPower">{{ card.currentPower }}</div>
+          <div class="cardName">{{ card.name }}</div>
         </div>
-      </draggable>
+      </div>
+      <div class="gameOver" v-else>
+        <h3>GAME OVER</h3>
+        <div v-if="playerId == gameState.gameWinner">You won!</div>
+        <div v-else>You lost!</div>
+      </div>
     </div>
     <div class="playerRow p-mb-2">
-      <draggable
+      <div
         class="cardsOnHand"
-        :list="state.cardsOnHand"
-        :group="{ name: 'cards', pull: true}"
+        :list="gameState?.players[playerId]?.cardsOnHand"
+        :group="{ name: 'cards', pull: true }"
         :clone="moveCard"
         @change="switchIsDisabled"
         item-key="index"
@@ -61,64 +71,72 @@
       >
         <div
           class="card p-mx-1"
-          v-for="(card, index) in state.cardsOnHand"
-          :key="index"
-          :style="{ backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})` }"
+          v-for="(card, index) in gameState?.players[playerId]?.cardsOnHand"
+          :key="getIndex(card, index)"
+          :style="{
+            backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})`,
+          }"
           @click="playCard(index)"
         >
-          <div class="cardPower">{{card.power}}</div>
-          <div class="cardName">{{card.name}}</div>
+          <div class="cardPower">{{ card.currentPower }}</div>
+          <div class="cardName">{{ card.name }}</div>
         </div>
-      </draggable>
+      </div>
       <div class="profile profileYou p-pt-1">
-        <div>Name </div>
+        <div>{{ gameState && gameState?.players[playerId]?.name }}</div>
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
-        <div class="p-mt-1">Points </div>
+        <div class="p-mt-1">
+          Points: {{ gameState && gameState?.players[playerId]?.score }}/{{
+            gameState?.pointsToWin
+          }}
+        </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
-import { reactive, watchEffect } from "vue";
-import { VueDraggableNext } from "vue-draggable-next";
-import SocketHandler from '@/modules/SocketHandler';
-import WaitingForPlayer from '../components/WaitingForPlayer';
+import { reactive, watchEffect, computed } from "vue";
+import SocketHandler from "@/modules/SocketHandler";
+import WaitingForPlayer from "../components/WaitingForPlayer";
+import { useRoute } from "vue-router";
 
 export default {
   name: "Gameboard",
-  components: { draggable: VueDraggableNext, WaitingForPlayer },
+  components: { WaitingForPlayer },
   setup() {
+    const route = useRoute();
+    const playerId = route.params.player;
+
     const { gameState, playCard } = SocketHandler();
     const state = reactive({
-      cardsOnHand: [
-        { name: "Mutated Worm", power: 1 },
-        { name: "Orange Menace", power: 3 },
-        { name: "Sleepy Joe", power: 4 },
-        { name: "Anonymous Hacker", power: 8 },
-        { name: "Super Galaxy Face Melter", power: 10 },
-      ],
-      cardsOnHandOpponent: [
-        { name: "Card Back"},
-        { name: "Card Back"},
-        { name: "Card Back"},
-        { name: "Card Back"},
-        { name: "Card Back"},
-      ],
-      playedCards: [],
       connectedPlayers: 1,
       isDisabled: false,
       cardsOnHandSize: 5,
     });
 
-  watchEffect(
-      () => {
-        if (gameState.value !== null) {
-          if (gameState.value.players.length > 1) {
-            state.connectedPlayers = 2
-          }
+    const opponent = computed(() => {
+      let o = playerId == 0 ? 1 : 0;
+      let player =
+        gameState && gameState.value?.players.length > 1
+          ? gameState.value?.players[o]
+          : null;
+      console.log("opponent", player || "null");
+      return player;
+    });
+
+    watchEffect(() => {
+      if (gameState.value !== null) {
+        if (gameState.value.players.length > 1) {
+          state.connectedPlayers = 2;
         }
       }
-    )
+    });
+
+    function getIndex(card, index) {
+      card.index = index;
+      return index;
+    }
 
     function getImageName(name) {
       return name.replaceAll(" ", "_").toLowerCase();
@@ -129,7 +147,10 @@ export default {
     }
 
     function switchIsDisabled() {
-      if(state.cardsOnHand.length < state.cardsOnHandSize) {
+      if (
+        gameState.value?.players[playerId].cardsOnHand.length <
+        state.cardsOnHandSize
+      ) {
         state.isDisabled = !state.isDisabled;
       }
     }
@@ -141,11 +162,20 @@ export default {
       switchIsDisabled,
       gameState,
       playCard,
+      playerId,
+      opponent,
+      getIndex,
     };
   },
-}
+};
 </script>
 <style scoped>
+
+.gameOver{
+  font-size: 40px;
+  color: red;
+}
+
 .gameboard {
   display: flex;
   flex-direction: column;
@@ -170,11 +200,11 @@ export default {
   display: flex;
   flex-direction: column;
   text-align: center;
-  background-color:  #e2c3a6;
+  background-color: #e2c3a6;
   color: #3b1704;
   border: 2px solid #3b1704;
   border-radius: 2px;
-  font-family: 'MedievalSharp', cursive;
+  font-family: "MedievalSharp", cursive;
   font-weight: bold;
 }
 
@@ -201,7 +231,6 @@ export default {
   display: flex;
   width: 80%;
   justify-content: center;
-
   background-size: 100% 100%;
 }
 
@@ -216,7 +245,7 @@ export default {
   position: absolute;
   top: 5%;
   left: 20%;
-  font-family: 'MedievalSharp', cursive;
+  font-family: "MedievalSharp", cursive;
 }
 
 .cardName {
@@ -225,6 +254,6 @@ export default {
   width: 100%;
   text-align: center;
   font-size: 90%;
-  font-family: 'Yanone Kaffeesatz', sans-serif;
+  font-family: "Yanone Kaffeesatz", sans-serif;
 }
 </style>

@@ -65,11 +65,16 @@ public class GameEngine  {
     return winner;
   }
 
+
+  private int getSecondPlayer() {
+    return gameState.getStartPlayer() == GameState.PLAYER_ONE ? GameState.PLAYER_TWO : GameState.PLAYER_ONE;
+  }
+
   public void finalizingRound(int winner) {
     Card card1 = gameState.getPlayedCards().get(0);
     Card card2 = gameState.getPlayedCards().get(1);
     gameState.getPlayer(gameState.getStartPlayer()).getCardOnHandAsList().remove(card1);
-    gameState.getPlayer(gameState.getCurrentPlayer()).getCardOnHandAsList().remove(card2);
+    gameState.getPlayer(getSecondPlayer()).getCardOnHandAsList().remove(card2);
     if (winner >= 0) {
       if (winner == gameState.getStartPlayer()) {
         handleWinnerCardForStartPlayer(winner, card1, card2);
@@ -107,11 +112,11 @@ public class GameEngine  {
     }
   }
 
-  public void handleWinnerCardForSecondPlayer(int winner, Card card1, Card card2){
+  public void handleWinnerCardForSecondPlayer(int winner, Card card2, Card card1){
       if (winner == GameState.PLAYER_TWO) {
-      handleWinnerCardForPlayer2(card1, card2);
+      handleWinnerCardForPlayer2(card2, card1);
     } else {
-      handleWinnerCardForPlayer1(card1, card2);
+      handleWinnerCardForPlayer1(card2, card1);
     }
   }
 
@@ -145,14 +150,16 @@ public class GameEngine  {
   }
 
   public void setPlayedCard(int card) {
+    int numberOfRounds;
     gameState.setPlayedCard(card);
     if (gameState.getPlayedCards().size() > 1) {
       getRoundWinner();
       isGameOver();
       gameState.changeStartPlayer();
       gameState.clearPlayedCards();
+    } else {
+      gameState.changeCurrentPlayer();
     }
-    gameState.changeCurrentPlayer();
     server.sendGameUpdateToRoom(gameState, roomNo);
   }
 

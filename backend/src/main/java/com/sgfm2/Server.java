@@ -97,6 +97,9 @@ public class Server {
 
     server.addEventListener("PLAYED_CARD", String.class, (client, data, ackSender) -> {
       Set<String> rooms = client.getAllRooms();
+      System.out.println("client uuid: " + client.getSessionId());
+      System.out.println("rooms.size: " + rooms.size());
+      System.out.println("rooms: " + rooms);
       GameEngine gameEngine = games.get(String.valueOf(rooms.toArray()[1]));
       gameEngine.setPlayedCard(Integer.parseInt(data));
     });

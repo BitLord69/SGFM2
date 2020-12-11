@@ -79,6 +79,7 @@ export default {
       pointsToWin: 15
     });
 
+
     function setVisibleCreate() {
       state.displayCreate = !state.displayCreate;
     }

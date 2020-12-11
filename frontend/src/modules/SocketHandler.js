@@ -5,14 +5,16 @@ const gameState = ref(null);
 const isConnected = ref(true);
 const gameList = ref(null);
 
+let client = null;
 export default function SocketHandler() {
-  let client = SocketIO("http://localhost:9092", {
+  if (client === null) {
+  client = SocketIO("http://localhost:9092", {
     "reconnectionDelay": 500,
     "reconnection": true,
     "timeout": 2000,
     // "force new connection": true,
   });
-  
+}
 
   /* const connect = async () => {
     if (isConnected.value) return;
@@ -90,6 +92,10 @@ export default function SocketHandler() {
 
   client.on("disconnect", (reason) => {
     console.log("disconnected from the server, reason:", reason);
+    if (reason === 'transport close') {
+      client.close()
+      console.log("");
+    }
     isConnected.value  = false;
     // client = null;
   });

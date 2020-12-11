@@ -51,7 +51,7 @@
       </draggable>
     </div>
     <div class="playerRow p-mb-2">
-      <draggable
+      <div
         class="cardsOnHand"
         :list="gameState?.players[playerId]?.cardsOnHand"
         :group="{ name: 'cards', pull: true}"
@@ -70,10 +70,9 @@
           <div class="cardPower">{{card.currentPower}}</div>
           <div class="cardName">{{card.name}}</div>
         </div>
-      </draggable>
+      </div>
       <div class="profile profileYou p-pt-1">
         <div>{{ gameState && gameState?.players[playerId]?.name }}</div>
-        <!-- <div>Ditt namn...</div> -->
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
         <div class="p-mt-1">Points: {{ gameState && gameState?.players[playerId]?.score }}/{{gameState?.pointsToWin}}</div>
       </div>

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class ListGamesMessage {
-
   private String roomNo;
   private ArrayList<UUID> clients = new ArrayList<>();
   private int playersInRoom;
@@ -21,6 +20,10 @@ public class ListGamesMessage {
     this.pointsToWin = pointsToWin;
     this.cardsOnHand = cardsOnHand;
     this.creator = creator;
+  }
+
+  public String getRoom(UUID uuid) {
+    return !clients.contains(uuid) ? null : roomNo;
   }
 
   public ListGamesMessage(String roomNo, int playersInRoom, CreateGameMessage data) {
@@ -73,5 +76,12 @@ public class ListGamesMessage {
 
   public boolean hasClient(UUID uuid) {
     return clients.contains(uuid);
+  }
+
+  public void removeClient(UUID sessionId) {
+    Boolean b = clients.remove(sessionId);
+    if (b) {
+      playersInRoom--;
+    }
   }
 }

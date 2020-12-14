@@ -39,6 +39,20 @@ public class Server {
 
     server.addDisconnectListener(client -> {
       System.out.printf("Client %s disconnected.\n", client.getSessionId());
+      List<ListGamesMessage> lgm =  roomList.values().stream().filter(r -> r.hasClient(client.getSessionId())).collect(Collectors.toList());
+      if (lgm.size() > 0) {
+        String room = lgm.get(0).getRoomNo();
+        lgm.get(0).removeClient(client.getSessionId());
+
+        BroadcastOperations bcO = server.getRoomOperations(String.valueOf(roomNo));
+        Collection<SocketIOClient> clients = bcO.getClients();
+        clients.forEach(c -> c.sendEvent("OPPONENT_DISCONNECTED"));
+
+        if (lgm.get(0).getPlayersInRoom() == 0) {
+          games.remove(room);
+          roomList.remove(room);
+        }
+      }
       //client.disconnect();
     });
 
@@ -67,17 +81,19 @@ public class Server {
     server.addEventListener("JOIN_GAME", JoinGameMessage.class, (client, data, ackSender) -> {
       ListGamesMessage lgm = roomList.get(data.getRoomNo());
       lgm.setPlayersInRoom(2);
+      lgm.addClient(client.getSessionId());
+
       client.joinRoom(String.valueOf(data.getRoomNo()));
+
       GameEngine gameEngine = games.get(data.getRoomNo());
       gameEngine.setPlayer(new Player(data.getName()));
 
-//      sendMsgToRoom("Welcome " + data.getName() + " to room # " + roomNo + " - starting game!", Integer.parseInt(data.getRoomNo()));
-
       gameEngine.startGame();
 
-//      server.getBroadcastOperations().
-//          getClients().
-//          forEach(x -> { x.sendEvent("LIST_GAMES" , getGameList()); });
+      // Send updated list of games to all clients (since this one is not available any longer)
+      server.getBroadcastOperations().
+          getClients().
+          forEach(x -> { x.sendEvent("LIST_GAMES" , getGameList()); });
 
       sendGameUpdateToRoom(gameEngine.getGameState(), Integer.parseInt(data.getRoomNo()));
     });

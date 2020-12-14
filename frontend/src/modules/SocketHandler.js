@@ -8,7 +8,8 @@ const gameList = ref(null);
 let client = null;
 export default function SocketHandler() {
   if (client === null) {
-    client = SocketIO("http://localhost:9092", {
+    // client = SocketIO("http://192.168.0.177:9092", {
+   client = SocketIO("http://localhost:9092", {
       "reconnectionDelay": 500,
       "reconnection": true,
       "timeout": 2000,

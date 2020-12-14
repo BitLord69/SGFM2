@@ -21,7 +21,6 @@ public class GameEngine  {
     add(new CardSettings(10, "Super Galaxy Face Melter", 2));
   }};
 
-
   public static final int TIE = 2;
 
   private final GameState gameState;
@@ -64,7 +63,6 @@ public class GameEngine  {
     finalizingRound(winner);
     return winner;
   }
-
 
   private int getSecondPlayer() {
     return gameState.getStartPlayer() == GameState.PLAYER_ONE ? GameState.PLAYER_TWO : GameState.PLAYER_ONE;
@@ -123,12 +121,14 @@ public class GameEngine  {
   public void handleWinnerCardForPlayer1(Card card1, Card card2){
     gameState.getPlayer(GameState.PLAYER_ONE).addToVictoryPile(card2);
     card1.decreasePower(card2.getCurrentPower());
+    card2.setCurrentPower(0);
     gameState.getPlayer(GameState.PLAYER_ONE).addCardToHand(card1);
   }
 
   public void handleWinnerCardForPlayer2(Card card1, Card card2){
     gameState.getPlayer(GameState.PLAYER_TWO).addToVictoryPile(card2);
     card1.decreasePower(card2.getCurrentPower());
+    card2.setCurrentPower(0);
     gameState.getPlayer(GameState.PLAYER_TWO).addCardToHand(card1);
   }
 
@@ -150,11 +150,18 @@ public class GameEngine  {
   }
 
   public void setPlayedCard(int card) {
-    int numberOfRounds;
     gameState.setPlayedCard(card);
     if (gameState.getPlayedCards().size() > 1) {
-      getRoundWinner();
-      isGameOver();
+      gameState.setRoundWinner(getRoundWinner());
+      if (!isGameOver()) {
+        server.sendGameUpdateToRoom(gameState, roomNo);
+        try {
+          Thread.sleep(2500);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+
       gameState.changeStartPlayer();
       gameState.clearPlayedCards();
     } else {

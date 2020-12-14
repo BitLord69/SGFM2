@@ -45,6 +45,7 @@ public class Server {
     server.addEventListener("CREATE_GAME", CreateGameMessage.class, (client, data, ackSender) -> {
       roomNo++;
 
+      // TODO: 2020-12-14 Do we need a new thread here????
       GameEngine gameEngine = new GameEngine(localThis, data.getCardsOnHand(),data.getPointsToWin(), roomNo);
       gameEngine.setPlayer(new Player(data.getName()));
       games.put(String.valueOf(roomNo), gameEngine);
@@ -52,24 +53,15 @@ public class Server {
 
       client.joinRoom(String.valueOf(roomNo));
 
-//      Packet p = new Packet(PacketType.MESSAGE);
-//      p.setSubType(PacketType.EVENT);
-//      p.setName("message");
-//      p.setData("Welcome to room # " + roomNo + " - waiting for an opponent!");
-//      client.send(p);
-
-//      sendMsgToRoom("Welcome to room # " + roomNo + " - waiting for an opponent!", roomNo);
       server.getBroadcastOperations().
           getClients().
-          forEach(x -> {
-            x.sendEvent("LIST_GAMES" , getGameList());
-
+          forEach(x -> { x.sendEvent("LIST_GAMES" , getGameList());
           });
-        server.getBroadcastOperations().
-          getClients().
-          forEach(x -> {
 
-            x.sendEvent("GAME_UPDATE" , new Gson().toJson(gameEngine.getGameState()));
+      // TODO: 2020-12-14 Change to client.sendEvent.... 
+        server.getRoomOperations(String.valueOf(roomNo)).
+          getClients().
+          forEach(x -> { x.sendEvent("GAME_UPDATE" , new Gson().toJson(gameEngine.getGameState()));
           });
     });
 

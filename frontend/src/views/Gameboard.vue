@@ -6,9 +6,9 @@
       :dismissableMask="true"
       :visible="
         state.connectedPlayers < 2 ||
-        (gameState &&
-          gameState?.currentPlayer != playerId &&
-          gameState?.gameWinner === -1)
+          (gameState &&
+            gameState?.currentPlayer != playerId &&
+            gameState?.gameWinner === -1)
       "
       :closable="false"
     >
@@ -70,13 +70,13 @@
         :disabled="state.isDisabled"
       >
         <div
-          class="card p-mx-1"
+          :class="'card' + ' p-mx-1 ' + ' card-' + index"
           v-for="(card, index) in gameState?.players[playerId]?.cardsOnHand"
           :key="getIndex(card, index)"
           :style="{
             backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})`,
           }"
-          @click="playCard(index)"
+          @click="animateCard(index)"
         >
           <div class="cardPower">{{ card.currentPower }}</div>
           <div class="cardName">{{ card.name }}</div>
@@ -130,8 +130,45 @@ export default {
         if (gameState.value.players.length > 1) {
           state.connectedPlayers = 2;
         }
+
+        if (
+          gameState &&
+          // gameState.value.playedCards.length >= 1 &&
+          gameState.value.currentPlayer !== playerId
+        ) {
+          document.getElementsByClassName("hidden").forEach((element) => {
+            element.classList.toggle("hidden");
+          });
+
+          document
+            .getElementsByClassName("cardToAnimate")
+            .forEach((element) => {
+              element.classList.toggle("cardToAnimate");
+              // document.getElementsByClassName('cardsOnHand')[1].appendChild(element);
+            });
+        }
       }
     });
+
+    function animateCard(index) {
+      let cardToAnimate = document.getElementsByClassName("card-" + index)[0];
+      // let playedCardsCopy = document.getElementsByClassName('cardsOnTable')[0];
+
+      cardToAnimate.classList.toggle("cardToAnimate");
+      setTimeout(() => {
+        playCard(index);
+        cardToAnimate.classList.toggle("hidden");
+        // gameState.value.players[playerId].cardsOnHand.slice(index, 1);
+        // cardToAnimate.classList.toggle("cardToAnimate");
+      }, 1000);
+      // toggleHidden(cardToAnimate);
+    }
+
+    // function toggleHidden(cardToAnimate) {
+    //   if (gameState.value.playedCards.length > 0) {
+    //     cardToAnimate.classList.toggle("hidden");
+    //   }
+    // }
 
     function getIndex(card, index) {
       card.index = index;
@@ -161,7 +198,7 @@ export default {
       moveCard,
       switchIsDisabled,
       gameState,
-      playCard,
+      animateCard,
       playerId,
       opponent,
       getIndex,
@@ -170,8 +207,7 @@ export default {
 };
 </script>
 <style scoped>
-
-.gameOver{
+.gameOver {
   font-size: 40px;
   color: red;
 }
@@ -239,6 +275,17 @@ export default {
   background-size: 100% 100%;
   position: relative;
   color: #3b1704;
+  top: 0;
+  left: 0;
+}
+
+.cardToAnimate {
+  transition: all 1s;
+  top: -27vh;
+}
+
+.hidden {
+  display: none;
 }
 
 .cardPower {

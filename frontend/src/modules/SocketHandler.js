@@ -4,6 +4,7 @@ const error = ref(null);
 const gameState = ref(null);
 const isConnected = ref(true);
 const gameList = ref(null);
+const opponentDisconnected = ref(false);
 
 let client = null;
 export default function SocketHandler() {
@@ -37,6 +38,10 @@ export default function SocketHandler() {
     gameState.value = JSON.parse(incomingGameState);
   });
 
+  client.on("OPPONENT_DISCONNECTED", () => {
+    opponentDisconnected.value = true;
+    console.log("OPPONENT_DISCONNECTED received!!!!!!!!!!!!!!!!");
+  });
 
   function createGame(name, pointsToWin, cardsOnHand) {
     client.emit("CREATE_GAME", { name, pointsToWin, cardsOnHand });
@@ -88,5 +93,5 @@ export default function SocketHandler() {
     // client = null;
   });
 
-  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected }
+  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected, opponentDisconnected }
 }

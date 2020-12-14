@@ -1,0 +1,17 @@
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\network\NetworkComHandler.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\gameobjects\GameState.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\messages\Message.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\gameobjects\Player.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\messages\JoinGameMessage.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\gameobjects\Card.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\messages\CreateGameMessage.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\utils\TextUtil.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\gameengine\GameEngine.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\network\ServerHandler.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\gameobjects\CardSettings.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\network\Packet.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\Main.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\messages\ListGamesMessage.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\Server.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\gameobjects\Deck.java
+C:\Users\Alexander\Documents\GitHub\SGFM2\backend\src\main\java\com\sgfm2\network\CommandType.java

@@ -1,8 +1,12 @@
 package com.sgfm2.messages;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class ListGamesMessage {
 
   private String roomNo;
+  private ArrayList<UUID> clients = new ArrayList<>();
   private int playersInRoom;
   private int pointsToWin;
   private int cardsOnHand;
@@ -61,5 +65,13 @@ public class ListGamesMessage {
 
   public void setCardsOnHand(int cardsOnHand) {
     this.cardsOnHand = cardsOnHand;
+  }
+
+  public void addClient(UUID uuid) {
+    this.clients.add(uuid);
+  }
+
+  public boolean hasClient(UUID uuid) {
+    return clients.contains(uuid);
   }
 }

@@ -49,7 +49,10 @@ public class Server {
       GameEngine gameEngine = new GameEngine(localThis, data.getCardsOnHand(),data.getPointsToWin(), roomNo);
       gameEngine.setPlayer(new Player(data.getName()));
       games.put(String.valueOf(roomNo), gameEngine);
-      roomList.put(String.valueOf(roomNo), new ListGamesMessage(String.valueOf(roomNo), 1, data));
+
+      ListGamesMessage lgm = new ListGamesMessage(String.valueOf(roomNo), 1, data);
+      lgm.addClient(client.getSessionId());
+      roomList.put(String.valueOf(roomNo), lgm);
 
       client.joinRoom(String.valueOf(roomNo));
 
@@ -58,11 +61,7 @@ public class Server {
           forEach(x -> { x.sendEvent("LIST_GAMES" , getGameList());
           });
 
-      // TODO: 2020-12-14 Change to client.sendEvent.... 
-        server.getRoomOperations(String.valueOf(roomNo)).
-          getClients().
-          forEach(x -> { x.sendEvent("GAME_UPDATE" , new Gson().toJson(gameEngine.getGameState()));
-          });
+      client.sendEvent("GAME_UPDATE" , new Gson().toJson(gameEngine.getGameState()));
     });
 
     server.addEventListener("JOIN_GAME", JoinGameMessage.class, (client, data, ackSender) -> {

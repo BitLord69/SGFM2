@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import SocketIO from 'socket.io-client'
+import SocketIO from "socket.io-client";
 const error = ref(null);
 const gameState = ref(null);
 const isConnected = ref(true);
@@ -9,16 +9,16 @@ let client = null;
 export default function SocketHandler() {
   if (client === null) {
     client = SocketIO("http://localhost:9092", {
-      "reconnectionDelay": 500,
-      "reconnection": true,
-      "timeout": 2000,
+      reconnectionDelay: 500,
+      reconnection: true,
+      timeout: 2000,
       // "force new connection": true,
     });
   }
 
-  client.on("connect", function () {
+  client.on("connect", function() {
     isConnected.value = true;
-    console.log("Connected to server")
+    console.log("Connected to server");
   });
 
   // Keep if we're going to have a in-game chat function later in sprint 2
@@ -36,7 +36,6 @@ export default function SocketHandler() {
     gameState.value = JSON.parse(incomingGameState);
   });
 
-
   function createGame(name, pointsToWin, cardsOnHand) {
     client.emit("CREATE_GAME", { name, pointsToWin, cardsOnHand });
   }
@@ -51,14 +50,14 @@ export default function SocketHandler() {
     client.emit("PLAYED_CARD", cardId);
   }
 
-  function getGameList(){
+  function getGameList() {
     client.emit("AVAILABLE_GAMES");
   }
 
   client.on("LIST_GAMES", (data) => {
     console.log("LIST_GAMES", JSON.parse(data));
     gameList.value = JSON.parse(data);
-  })
+  });
 
   client.on("connect_error", (e) => {
     console.log("i connect_error:", e);
@@ -79,13 +78,23 @@ export default function SocketHandler() {
 
   client.on("disconnect", (reason) => {
     console.log("disconnected from the server, reason:", reason);
-    if (reason === 'transport close') {
-      client.close()
+    if (reason === "transport close") {
+      client.close();
       console.log("");
     }
-    isConnected.value  = false;
+    isConnected.value = false;
     // client = null;
   });
 
-  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected }
+  return {
+    playCard,
+    sendMessage,
+    createGame,
+    joinGame,
+    getGameList,
+    gameList,
+    error,
+    gameState,
+    isConnected,
+  };
 }

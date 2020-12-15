@@ -23,8 +23,7 @@ export default {
   width: 80vw;
   height: 85vh;
   background-size: 100% 100%;
-  position: relative;
-  justify-content: center;
+  position: absolute;
   display: flex;
 }
 h1 {
@@ -34,7 +33,7 @@ h1 {
   font-family: "Press Start 2P", cursive;
 }
 
-Button:hover{
+Button:hover {
   background-color: #e2c3a6 !important;
   border: 0.2em solid #3b1704 !important;
   color: #3b1704 !important;
@@ -42,7 +41,7 @@ Button:hover{
 
 .p-dialog-content,
 .p-dialog-header,
-.p-dialog-footer{
+.p-dialog-footer {
   background-color: #e2c3a6 !important;
 }
 </style>

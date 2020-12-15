@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 public class Server {
 
-  final SocketIOServer server;
   private int roomNo = 0;
+  final SocketIOServer server;
   private final HashMap<String, GameEngine> games = new HashMap<>();
   private final HashMap<String, ListGamesMessage> roomList = new HashMap<>();
 
@@ -34,15 +34,22 @@ public class Server {
     server = new SocketIOServer(config);
     final Server localThis = this;
 
-    // onConnect
-    server.addConnectListener(client -> System.out.println("Wääääoooww, client connected!!!! " + client.getSessionId()));
+    server.addConnectListener(client -> {
+      System.out.printf("Wääääoooww, client with id %s and token %s connected!!!! \n", client.getSessionId(), getToken(client));
+      System.out.println("Connected with token: " + client.getHandshakeData().getSingleUrlParam("token"));
+      List<ListGamesMessage> lgm = roomList.values().stream().filter(r -> r.hasClient(getToken(client))).collect(Collectors.toList());
+      if (lgm.size() > 0) {
+        System.out.println("Client is already connected to game...");
+        client.sendEvent("ALREADY_CONNECTED_TO_GAME");
+      }
+    });
 
     server.addDisconnectListener(client -> {
       System.out.printf("Client %s disconnected.\n", client.getSessionId());
-      List<ListGamesMessage> lgm =  roomList.values().stream().filter(r -> r.hasClient(client.getSessionId())).collect(Collectors.toList());
+      List<ListGamesMessage> lgm = roomList.values().stream().filter(r -> r.hasClient(getToken(client))).collect(Collectors.toList());
       if (lgm.size() > 0) {
         String room = lgm.get(0).getRoomNo();
-        lgm.get(0).removeClient(client.getSessionId());
+        lgm.get(0).removeClient(getToken(client));
 
         BroadcastOperations bcO = server.getRoomOperations(String.valueOf(roomNo));
         Collection<SocketIOClient> clients = bcO.getClients();
@@ -53,7 +60,6 @@ public class Server {
           roomList.remove(room);
         }
       }
-      //client.disconnect();
     });
 
     server.addEventListener("CREATE_GAME", CreateGameMessage.class, (client, data, ackSender) -> {
@@ -65,7 +71,7 @@ public class Server {
       games.put(String.valueOf(roomNo), gameEngine);
 
       ListGamesMessage lgm = new ListGamesMessage(String.valueOf(roomNo), 1, data);
-      lgm.addClient(client.getSessionId());
+      lgm.addClient(getToken(client));
       roomList.put(String.valueOf(roomNo), lgm);
 
       client.joinRoom(String.valueOf(roomNo));
@@ -81,7 +87,7 @@ public class Server {
     server.addEventListener("JOIN_GAME", JoinGameMessage.class, (client, data, ackSender) -> {
       ListGamesMessage lgm = roomList.get(data.getRoomNo());
       lgm.setPlayersInRoom(2);
-      lgm.addClient(client.getSessionId());
+      lgm.addClient(getToken(client));
 
       client.joinRoom(String.valueOf(data.getRoomNo()));
 
@@ -103,6 +109,9 @@ public class Server {
     });
 
     server.addEventListener("PLAYED_CARD", String.class, (client, data, ackSender) -> {
+      System.out.println("Played card: " + client.getHandshakeData().getSingleUrlParam("token"));
+
+
       Set<String> rooms = client.getAllRooms();
       System.out.println("client uuid: " + client.getSessionId());
       System.out.println("rooms.size: " + rooms.size());
@@ -113,6 +122,12 @@ public class Server {
 
     server.addEventListener("AVAILABLE_GAMES", String.class,
         (client, data, ackSender) -> client.sendEvent("LIST_GAMES",  getGameList()));
+
+    server.addEventListener("FORCE_DISCONNECT", String.class,
+      (client, data, ackSender) -> {
+      client.disconnect();
+      System.out.printf("Client %s, with token %s, disconnected in FORCE_DISCONNECT.\n", client.getSessionId(), getToken(client));
+    });
   }
 
   private String getGameList() {
@@ -131,6 +146,10 @@ public class Server {
     BroadcastOperations bcO = server.getRoomOperations(String.valueOf(roomNo));
     Collection<SocketIOClient> clients = bcO.getClients();
     clients.forEach(client -> client.sendEvent("message", message));
+  }
+
+  private String getToken(SocketIOClient client) {
+    return client.getHandshakeData().getSingleUrlParam("token");
   }
 
   public void start() {

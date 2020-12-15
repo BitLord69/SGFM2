@@ -1,11 +1,10 @@
 package com.sgfm2.messages;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class ListGamesMessage {
   private String roomNo;
-  private ArrayList<UUID> clients = new ArrayList<>();
+  private ArrayList<String> clients = new ArrayList<>();
   private int playersInRoom;
   private int pointsToWin;
   private int cardsOnHand;
@@ -22,8 +21,8 @@ public class ListGamesMessage {
     this.creator = creator;
   }
 
-  public String getRoom(UUID uuid) {
-    return !clients.contains(uuid) ? null : roomNo;
+  public String getRoom(String token) {
+    return !clients.contains(token) ? null : roomNo;
   }
 
   public ListGamesMessage(String roomNo, int playersInRoom, CreateGameMessage data) {
@@ -70,16 +69,16 @@ public class ListGamesMessage {
     this.cardsOnHand = cardsOnHand;
   }
 
-  public void addClient(UUID uuid) {
-    this.clients.add(uuid);
+  public void addClient(String token) {
+    this.clients.add(token);
   }
 
-  public boolean hasClient(UUID uuid) {
-    return clients.contains(uuid);
+  public boolean hasClient(String token) {
+    return clients.contains(token);
   }
 
-  public void removeClient(UUID sessionId) {
-    Boolean b = clients.remove(sessionId);
+  public void removeClient(String sessionId) {
+    boolean b = clients.remove(sessionId);
     if (b) {
       playersInRoom--;
     }

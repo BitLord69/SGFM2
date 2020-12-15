@@ -16,6 +16,7 @@ import com.sgfm2.gameobjects.GameState;
 import com.sgfm2.messages.JoinGameMessage;
 import com.sgfm2.messages.ListGamesMessage;
 import com.sgfm2.messages.CreateGameMessage;
+import com.sgfm2.utils.TextUtil;
 
 public class Server {
   final SocketIOServer server;
@@ -31,11 +32,14 @@ public class Server {
     final Server localThis = this;
 
     server.addConnectListener(client -> {
-      System.out.printf("Wääääoooww, client with id %s and token %s connected!!!! \n", client.getSessionId(), getToken(client));
+      System.out.printf("Wääääoooww, client with id %s and token %s connected!!!! \n",
+          TextUtil.pimpString(client.getSessionId().toString(), TextUtil.LEVEL_INFO),
+          TextUtil.pimpString(getToken(client), TextUtil.LEVEL_INFO));
     });
 
     server.addDisconnectListener(client -> {
-      System.out.printf("Client %s disconnected.\n", client.getSessionId());
+      System.out.printf("Client %s disconnected.\n",
+          TextUtil.pimpString(client.getSessionId().toString(), TextUtil.LEVEL_INFO));
       List<ListGamesMessage> lgm = roomList.values().
           stream().
           filter(r -> r.hasToken(getToken(client))).
@@ -49,7 +53,8 @@ public class Server {
         if (lgm.get(0).getPlayersInRoom() == 0) {
           games.remove(room);
           roomList.remove(room);
-          System.out.printf("No more players in room %s, removing game!\n", room);
+          System.out.printf("No more players in room %s, removing game!\n",
+              TextUtil.pimpString(room, TextUtil.LEVEL_WARNING));
         }
       }
     });
@@ -112,7 +117,9 @@ public class Server {
     server.addEventListener("FORCE_DISCONNECT", String.class,
       (client, data, ackSender) -> {
       client.disconnect();
-      System.out.printf("Client %s, with token %s, disconnected in FORCE_DISCONNECT.\n", client.getSessionId(), getToken(client));
+      System.out.printf("Client %s, with token %s, disconnected in FORCE_DISCONNECT.\n",
+          TextUtil.pimpString(client.getSessionId().toString(), TextUtil.LEVEL_INFO),
+          TextUtil.pimpString(getToken(client), TextUtil.LEVEL_INFO));
     });
   }
 

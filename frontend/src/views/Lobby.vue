@@ -1,11 +1,21 @@
 <template>
   <div class="lobby">
     <h1>Super Galaxy Face Melter</h1>
+
+    <div v-if="alreadyConnectedToGame" class="already-connected">
+      You are already connected to a game - please finish that one first! :)
+    </div>
+
     <span class="p-float-label p-mt-4">
-      <InputText class="inputPlayerName" id="playername" type="text" v-model="state.playername" />
+      <InputText 
+        class="inputPlayerName" 
+        id="playername" 
+        type="text" 
+        v-model="state.playername"
+        :disabled="alreadyConnectedToGame" />
       <label class="inputPlayerNameLabel" for="playername">Playername</label>
     </span>
-    <div class="buttons">
+    <div class="buttons p-mt-6">
       <Button
         id="btn-create"
         label="Create game"
@@ -67,7 +77,7 @@ export default {
   name: "Lobby",
   components: { CreateGame, JoinGame },
   setup() {
-    const { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected } = SocketHandler();
+    const { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, alreadyConnectedToGame } = SocketHandler();
     const { CreateGameState } = CreateGame.setup();
     const { joinGameState  } = JoinGame.setup();
 
@@ -79,7 +89,6 @@ export default {
       pointsToWin: 15
     });
 
-
     function setVisibleCreate() {
       state.displayCreate = !state.displayCreate;
     }
@@ -90,7 +99,7 @@ export default {
     }
 
     function isDisabled() {
-      return state.playername === null || state.playername.trim() === ""
+      return state.playername === null || state.playername.trim() === "" || alreadyConnectedToGame.value
     }
 
     function createNewGame() {
@@ -107,9 +116,15 @@ export default {
       setVisibleJoin,
       isDisabled,
       createNewGame,
-      playCard, sendMessage, createGame,
-      error, gameState, isConnected, getGameList, gameList,
-      joinExistingGame
+      playCard, 
+      sendMessage, 
+      createGame,
+      error, 
+      gameState, 
+      getGameList, 
+      gameList,
+      joinExistingGame,
+      alreadyConnectedToGame,
     };
   },
 };
@@ -143,6 +158,7 @@ h1 {
   padding: 5em;
   justify-content: space-around;
 }
+
 #btn-create,
 #btn-join {
   margin-left: 7em;
@@ -155,6 +171,12 @@ h1 {
   border-radius: 1em;
   font-size: 1rem;
   color: #3b1704;
+  font-family: "Press Start 2P", cursive;
+}
+
+.already-connected {
+  color:red;
+  text-shadow: 2px 2px black;
   font-family: "Press Start 2P", cursive;
 }
 

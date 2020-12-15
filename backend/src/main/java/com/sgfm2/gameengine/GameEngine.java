@@ -27,11 +27,11 @@ public class GameEngine  {
 
   private final Deck deck = new Deck(cardSettings);
   private final int handSize;
-  private final int roomNo;
+  private final String roomNo;
 
   private final Server server;
 
-  public GameEngine(Server server, int handSize, int pointsToWin, int roomNo) {
+  public GameEngine(Server server, int handSize, int pointsToWin, String roomNo) {
     gameState = new GameState(pointsToWin);
     this.handSize = handSize;
     this.server = server;

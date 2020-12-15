@@ -1,15 +1,17 @@
 package com.sgfm2.messages;
 
+import com.corundumstudio.socketio.SocketIOClient;
+
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class ListGamesMessage {
   private String roomNo;
-  private ArrayList<UUID> clients = new ArrayList<>();
-  private int playersInRoom;
+  private String creator;
   private int pointsToWin;
   private int cardsOnHand;
-  private String creator;
+  private int playersInRoom;
+  private transient ArrayList<String> tokens = new ArrayList<>();
+  private transient ArrayList<SocketIOClient> clients = new ArrayList<>();
 
   public ListGamesMessage() {
   }
@@ -20,10 +22,6 @@ public class ListGamesMessage {
     this.pointsToWin = pointsToWin;
     this.cardsOnHand = cardsOnHand;
     this.creator = creator;
-  }
-
-  public String getRoom(UUID uuid) {
-    return !clients.contains(uuid) ? null : roomNo;
   }
 
   public ListGamesMessage(String roomNo, int playersInRoom, CreateGameMessage data) {
@@ -70,18 +68,34 @@ public class ListGamesMessage {
     this.cardsOnHand = cardsOnHand;
   }
 
-  public void addClient(UUID uuid) {
-    this.clients.add(uuid);
+  public void addToken(String token) {
+    this.tokens.add(token);
   }
 
-  public boolean hasClient(UUID uuid) {
-    return clients.contains(uuid);
+  public boolean hasToken(String token) {
+    return tokens.contains(token);
   }
 
-  public void removeClient(UUID sessionId) {
-    Boolean b = clients.remove(sessionId);
+  public void removeToken(String sessionId) {
+    boolean b = tokens.remove(sessionId);
     if (b) {
       playersInRoom--;
     }
+  }
+
+  public void removeClient(SocketIOClient client) {
+    clients.remove(client);
+  }
+
+  public void addClient(SocketIOClient client)  {
+    clients.add(client);
+  }
+
+  public boolean hasClient(SocketIOClient client) {
+    return clients.contains(client);
+  }
+
+  public ArrayList<SocketIOClient> getClients() {
+    return clients;
   }
 }

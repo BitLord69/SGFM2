@@ -18,6 +18,7 @@ Medlemmar:<br/>
   - Initial credentials are: neo4j/neo4j
   - After logging in it'll ask you to set a new password
 - Make sure you have neo4j in your services.msc (systemctl) and have it autostart on boot
+  - https://neo4j.com/docs/operations-manual/current/installation/windows/
 
 ### Install Neo4J plugin
 

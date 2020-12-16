@@ -6,7 +6,7 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const secrets = require('./secrets.json')
 
-app.use(require('connect-favicons')(path.join(__dirname, '../../frontend/src/statics/icons')))
+//app.use(require('connect-favicons')(path.join(__dirname, '../../frontend/src/statics/icons')))
 app.use(express.static(path.join(__dirname, '../../frontend/dist/spa'))) // To-do: nginx
 app.use(express.static(path.join(__dirname, 'uploads')))
 

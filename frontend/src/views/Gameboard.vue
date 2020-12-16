@@ -1,15 +1,31 @@
 <template>
   <div class="gameboard">
+    <div class="messageCont">
+      <div
+        class="waitOppo"
+        v-if="
+          gameState &&
+          gameState?.currentPlayer != playerId &&
+          gameState?.gameWinner === -1
+        "
+      >
+        Waiting for opponent to finish their turn...
+        <WaitingForPlayer />
+      </div>
+    </div>
     <Dialog
       id="joinModal"
+      :style="{
+        opacity:
+          gameState &&
+          gameState?.currentPlayer != playerId &&
+          gameState?.gameWinner === -1
+            ? '0.5'
+            : '1',
+      }"
       :modal="true"
       :dismissableMask="true"
-      :visible="
-        state.connectedPlayers < 2 ||
-          (gameState &&
-            gameState?.currentPlayer != playerId &&
-            gameState?.gameWinner === -1)
-      "
+      :visible="state.connectedPlayers < 2"
       :closable="false"
     >
       <template #header>
@@ -23,7 +39,7 @@
     </Dialog>
 
     <div class="playerRow p-mt-2">
-      <div class="profile profileOpp p-pt-1">
+      <div class="profile profileOpp p-pt-1" :style="{}">
         <div>{{ opponent?.name || "waiting..." }}</div>
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
         <div class="p-mt-1">
@@ -44,6 +60,7 @@
         <div
           class="card"
           v-for="(card, index) in gameState?.playedCards"
+          :id="'card-' + index"
           :key="index"
           :style="{
             backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})`,
@@ -60,15 +77,7 @@
       </div>
     </div>
     <div class="playerRow p-mb-2">
-      <div
-        class="cardsOnHand"
-        :list="gameState?.players[playerId]?.cardsOnHand"
-        :group="{ name: 'cards', pull: true }"
-        :clone="moveCard"
-        @change="switchIsDisabled"
-        item-key="index"
-        :disabled="state.isDisabled"
-      >
+      <div class="cardsOnHand">
         <div
           :class="'card' + ' p-mx-1 ' + ' card-' + index"
           v-for="(card, index) in gameState?.players[playerId]?.cardsOnHand"
@@ -133,24 +142,58 @@ export default {
 
         if (
           gameState &&
-          // gameState.value.playedCards.length >= 1 &&
-          gameState.value.currentPlayer !== playerId
+          //gameState.value.playedCards.length >= 1 &&
+          gameState.value.currentPlayer != playerId
         ) {
-          document.getElementsByClassName("hidden").forEach((element) => {
-            element.classList.toggle("hidden");
-          });
+          let hidden = document.getElementsByClassName("hidden")[0];
+          hidden.classList.remove("hidden");
+          hidden.classList.remove("cardToAnimate");
 
-          document
+          /* document
             .getElementsByClassName("cardToAnimate")
             .forEach((element) => {
               element.classList.toggle("cardToAnimate");
               // document.getElementsByClassName('cardsOnHand')[1].appendChild(element);
-            });
+            }); */
+        }
+
+        if (gameState.value?.playedCards.length == 2) {
+          console.log("watchEffect, playedCards == 2");
+          animateWinnerCard();
         }
       }
     });
 
+    function animateWinnerCard() {
+      console.log("in animateWinnerCard");
+      let profileImg = document.getElementsByClassName("profileYou")[0];
+      let profileOppo = document.getElementsByClassName("profileOpp")[0];
+      let winner = gameState.value.roundWinner;
+      console.log("Winner: ", winner, gameState.value.roundWinner);
+      let winnerCard = -1;
+      if ( winner == gameState.value?.startPlayer ) {
+        winnerCard = document.getElementById("card-1");
+        console.log("winner = startPlayer", winnerCard);
+      } else {
+        winnerCard = document.getElementById("card-0");
+        console.log("else winnerCard", winnerCard);
+      }
+      console.log("row 179 winnerCard", winnerCard);
+      if (winner == playerId) {
+        console.log(winner, playerId);
+        winnerCard.classList.add("animateWinnerCard");
+      } else {
+        winnerCard.classList.add("animateWinnerCard");
+      }
+
+      console.log(profileImg, winnerCard, profileOppo);
+    }
+
     function animateCard(index) {
+      if (gameState.value?.currentPlayer != playerId) {
+        return;
+      }
+
       let cardToAnimate = document.getElementsByClassName("card-" + index)[0];
       // let playedCardsCopy = document.getElementsByClassName('cardsOnTable')[0];
 
@@ -202,11 +245,12 @@ export default {
       playerId,
       opponent,
       getIndex,
+      animateWinnerCard,
     };
   },
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .gameOver {
   font-size: 40px;
   color: red;
@@ -302,5 +346,35 @@ export default {
   text-align: center;
   font-size: 90%;
   font-family: "Yanone Kaffeesatz", sans-serif;
+}
+
+.messageCont {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  z-index: 11;
+  margin: 0 auto;
+}
+
+.waitOppo,
+.spinner {
+  position: relative;
+  background-color: #e2c3a6;
+  opacity: 80%;
+  color: #3b1704;
+  bottom: 0;
+  left: 0;
+  width: 350px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 1% 0;
+}
+
+.animateWinnerCard {
+  scale: 1.5;
+}
+
+.animateWinnerCardOppo {
+  scale: 0.5;
 }
 </style>

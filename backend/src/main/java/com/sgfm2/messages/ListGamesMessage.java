@@ -18,10 +18,10 @@ public class ListGamesMessage {
 
   public ListGamesMessage(String roomNo, int playersInRoom, int pointsToWin, int cardsOnHand, String creator) {
     this.roomNo = roomNo;
-    this.playersInRoom = playersInRoom;
+    this.creator = creator;
     this.pointsToWin = pointsToWin;
     this.cardsOnHand = cardsOnHand;
-    this.creator = creator;
+    this.playersInRoom = playersInRoom;
   }
 
   public ListGamesMessage(String roomNo, int playersInRoom, CreateGameMessage data) {

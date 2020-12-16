@@ -1,0 +1,22 @@
+{
+  "name": "sgfm2",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"npm:backend\" \"npm:frontend\"",
+    "backend": "cd backend/database-server && npm start",
+    "frontend": "cd frontend && npm run serve",
+    "postinstall": "concurrently \"npm:install-backend\" \"npm:install-frontend\"",
+    "install-backend": "cd backend/database-server && npm install",
+    "install-frontend": "cd frontend && npm install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "concurrently": "^5.3.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

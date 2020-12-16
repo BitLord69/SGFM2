@@ -21,6 +21,8 @@
 /.idea
 
 hs_err_pid*
-backend/client/node_modules
+node_modules
 frontend/node_modules/
-
+backend/client/node_modules
+backend/database-server/node_modules
+backend/database-server/secrets.json

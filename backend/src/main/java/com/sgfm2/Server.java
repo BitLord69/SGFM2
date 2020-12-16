@@ -46,10 +46,11 @@ public class Server {
           collect(Collectors.toList());
 
       if (lgm.size() > 0) {
-        lgm.get(0).removeClient(client);
         lgm.get(0).removeToken(getToken(client));
 
         String room = lgm.get(0).getRoomNo();
+        sendEventToRoom("OPPONENT_DISCONNECTED", room, "");
+        System.out.println("room: " + room);
         if (lgm.get(0).getPlayersInRoom() == 0) {
           games.remove(room);
           roomList.remove(room);
@@ -126,14 +127,16 @@ public class Server {
   private String getGameList() {
     List<ListGamesMessage> listGamesMessages = roomList.values().
         stream().
-        filter(listGamesMessage -> listGamesMessage.getPlayersInRoom() < 2).collect(Collectors.toList());
+        filter(listGamesMessage -> listGamesMessage.getPlayersInRoom() < 2).
+        collect(Collectors.toList());
     return new Gson().toJson(listGamesMessages);
   }
 
   private String getRoomNoFromClientToken(String token) {
     List<ListGamesMessage> listGamesMessages = roomList.values().
         stream().
-        filter(listGamesMessage -> listGamesMessage.hasToken(token)).collect(Collectors.toList());
+        filter(listGamesMessage -> listGamesMessage.hasToken(token)).
+        collect(Collectors.toList());
     if (listGamesMessages.size() > 0) {
       return listGamesMessages.get(0).getRoomNo();
     }
@@ -144,7 +147,8 @@ public class Server {
   private void sendEventToRoom(String event, String room, String data) {
     List<ListGamesMessage> listGamesMessages = roomList.values().
         stream().
-        filter(listGamesMessage -> listGamesMessage.getRoomNo().equals(room)).collect(Collectors.toList());
+        filter(listGamesMessage -> listGamesMessage.getRoomNo().equals(room)).
+        collect(Collectors.toList());
     if (listGamesMessages.size() > 0) {
       listGamesMessages.get(0).getClients().forEach(client -> client.sendEvent(event, data));
     }

@@ -50,12 +50,6 @@ export default function SocketHandler() {
     console.log("OPPONENT_DISCONNECTED received!!!!!!!!!!!!!!!!");
   });
 
-  client.on("ALREADY_CONNECTED_TO_GAME", () => {
-    console.log('Got ALREADY_CONNECTED_TO_GAME from server!!!!');
-    alreadyConnectedToGame.value = true;
-    client.emit("FORCE_DISCONNECT", "THIS_ONE");
-  }); 
-
   client.on("LIST_GAMES", (data) => {
     console.log("LIST_GAMES", JSON.parse(data));
     gameList.value = JSON.parse(data);

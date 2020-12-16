@@ -1,19 +1,26 @@
 import { ref } from "vue";
 import SocketIO from 'socket.io-client'
+import { v4 as uuid } from 'uuid';
+
 const error = ref(null);
 const gameState = ref(null);
 const isConnected = ref(true);
 const gameList = ref(null);
 const opponentDisconnected = ref(false);
+const alreadyConnectedToGame = ref(false);
 
 let client = null;
 export default function SocketHandler() {
   if (client === null) {
     // client = SocketIO("http://192.168.0.177:9092", {
    client = SocketIO("http://localhost:9092", {
-      "reconnectionDelay": 500,
-      "reconnection": true,
-      "timeout": 2000,
+    reconnectionDelay: 500,
+    reconnection: false,
+    timeout: 2000,
+    forceNew: true,
+    query: {
+      token: uuid()
+  }
       // "force new connection": true,
     });
   }
@@ -43,12 +50,36 @@ export default function SocketHandler() {
     console.log("OPPONENT_DISCONNECTED received!!!!!!!!!!!!!!!!");
   });
 
+  client.on("LIST_GAMES", (data) => {
+    console.log("LIST_GAMES", JSON.parse(data));
+    gameList.value = JSON.parse(data);
+  })
+
+  client.on("connect_error", (e) => {
+    console.log("i connect_error:", e);
+    error.value = e;
+  });
+
+  client.on("disconnect", (reason) => {
+    console.log("disconnected from the server, reason:", reason);
+    if (reason === 'transport close') {
+      client.close()
+      console.log("");
+    }
+    isConnected.value = false;
+    alreadyConnectedToGame.value = false;
+    // client = null;
+  });
+
+
   function createGame(name, pointsToWin, cardsOnHand) {
     client.emit("CREATE_GAME", { name, pointsToWin, cardsOnHand });
+    alreadyConnectedToGame.value = true;
   }
 
   function joinGame(name, roomNo) {
     client.emit("JOIN_GAME", { name, roomNo });
+    alreadyConnectedToGame.value = true;
   }
 
   // send the played card as an index in a string format
@@ -61,37 +92,5 @@ export default function SocketHandler() {
     client.emit("AVAILABLE_GAMES");
   }
 
-  client.on("LIST_GAMES", (data) => {
-    console.log("LIST_GAMES", JSON.parse(data));
-    gameList.value = JSON.parse(data);
-  })
-
-  client.on("connect_error", (e) => {
-    console.log("i connect_error:", e);
-    error.value = e;
-  });
-
-  client.on("reconnect", (attempt) => {
-    console.log("reconnected to server.... attempt:", attempt);
-  });
-
-  client.on("reconnect_error", (error) => {
-    console.log("reconnect_error.... ", error);
-  });
-
-  client.on("reconnect_failed", () => {
-    console.log("failed to re connect!!! ");
-  });
-
-  client.on("disconnect", (reason) => {
-    console.log("disconnected from the server, reason:", reason);
-    if (reason === 'transport close') {
-      client.close()
-      console.log("");
-    }
-    isConnected.value  = false;
-    // client = null;
-  });
-
-  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected, opponentDisconnected }
+  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected, opponentDisconnected, alreadyConnectedToGame }
 }

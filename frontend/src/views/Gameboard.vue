@@ -55,9 +55,11 @@
         ></div>
       </div>
     </div>
-    <div class="table">
+    <div class="table" data-dis-container>
       <div class="cardsOnTable p-py-2" v-if="gameState?.gameWinner == -1">
         <div
+          data-dis-type="self-contained"
+          data-dis-particle-type="ExplodingParticle"
           class="card"
           v-for="(card, index) in gameState?.playedCards"
           :id="'card-' + index"
@@ -143,50 +145,51 @@ export default {
         if (
           gameState &&
           //gameState.value.playedCards.length >= 1 &&
-          gameState.value.currentPlayer != playerId
+          gameState.value.roundWinner != -1
         ) {
-          let hidden = document.getElementsByClassName("hidden")[0];
-          hidden.classList.remove("hidden");
-          hidden.classList.remove("cardToAnimate");
+          console.log("watchEffect currentplayer != playerId. pId: ", playerId, "cP: ", gameState.value.currentPlayer );
+          document.getElementsByClassName("hidden").forEach((element) => {
+            console.log("element", element)
+            element.classList.remove("hidden");
+          });
 
-          /* document
+          document
             .getElementsByClassName("cardToAnimate")
             .forEach((element) => {
+              console.log("element", element)
               element.classList.toggle("cardToAnimate");
               // document.getElementsByClassName('cardsOnHand')[1].appendChild(element);
-            }); */
+            });
         }
 
-        if (gameState.value?.playedCards.length == 2) {
-          console.log("watchEffect, playedCards == 2");
-          animateWinnerCard();
+        if (gameState.value.playedCards.length == 2) {
+          animateLoserCard();
         }
       }
     });
 
-    function animateWinnerCard() {
-      console.log("in animateWinnerCard");
+    function animateLoserCard() {
+      
       let profileImg = document.getElementsByClassName("profileYou")[0];
       let profileOppo = document.getElementsByClassName("profileOpp")[0];
       let winner = gameState.value.roundWinner;
-      console.log("Winner: ", winner, gameState.value.roundWinner);
-      let winnerCard = -1;
-      if ( winner == gameState.value?.startPlayer ) {
-        winnerCard = document.getElementById("card-1");
-        console.log("winner = startPlayer", winnerCard);
-      } else {
-        winnerCard = document.getElementById("card-0");
-        console.log("else winnerCard", winnerCard);
-      }
-      console.log("row 179 winnerCard", winnerCard);
-      if (winner == playerId) {
-        console.log(winner, playerId);
-        winnerCard.classList.add("animateWinnerCard");
-      } else {
-        winnerCard.classList.add("animateWinnerCard");
-      }
+      let loserCard;
+      setTimeout(() =>{
+        if ( winner == gameState.value?.startPlayer ) {
+          loserCard = document.getElementById("card-1");
+        } else {
+          loserCard = document.getElementById("card-0");
+        }
+        if (winner == playerId) {
+          loserCard.classList.add("CSS-animation");
+        } else {
+          loserCard.classList.add("CSS-animation");
+        }
 
-      console.log(profileImg, winnerCard, profileOppo);
+      }, 300);
+
+
+      console.log(profileImg, profileOppo);
     }
 
     function animateCard(index) {
@@ -200,7 +203,7 @@ export default {
       cardToAnimate.classList.toggle("cardToAnimate");
       setTimeout(() => {
         playCard(index);
-        cardToAnimate.classList.toggle("hidden");
+        //cardToAnimate.classList.toggle("hidden");
         // gameState.value.players[playerId].cardsOnHand.slice(index, 1);
         // cardToAnimate.classList.toggle("cardToAnimate");
       }, 1000);
@@ -245,7 +248,7 @@ export default {
       playerId,
       opponent,
       getIndex,
-      animateWinnerCard,
+      animateLoserCard,
     };
   },
 };
@@ -271,7 +274,7 @@ export default {
 .table {
   display: flex;
   width: 100%;
-  height: 32%;
+  height: 35%;
   justify-content: center;
 }
 
@@ -324,8 +327,27 @@ export default {
 }
 
 .cardToAnimate {
-  transition: all 1s;
-  top: -27vh;
+ /*  transition: all 1s;
+  top: -28vh; */
+  animation: cardMe 1.5s ease 1;
+}
+
+@keyframes cardMe{
+  0% {
+    top: 0;
+    opacity: 1
+  }
+  50% {
+     top: -14vh; 
+  }
+  99% {
+    top: -28vh;
+    opacity: 1;
+  }
+  to {
+    top: -28vh;
+    opacity: 0;
+  }
 }
 
 .hidden {
@@ -350,7 +372,7 @@ export default {
 
 .messageCont {
   position: absolute;
-  width: 100%;
+  width: 79.75%;
   bottom: 0;
   z-index: 11;
   margin: 0 auto;
@@ -364,17 +386,40 @@ export default {
   color: #3b1704;
   bottom: 0;
   left: 0;
+  right: 0;
   width: 350px;
   margin: 0 auto;
   text-align: center;
   padding: 1% 0;
 }
 
-.animateWinnerCard {
+.animateLoserCard {
   scale: 1.5;
 }
 
-.animateWinnerCardOppo {
+.animateLoserCardOppo {
   scale: 0.5;
+}
+
+.CSS-animation {
+  animation: bounceOutDown 2.5s forwards;
+}
+@keyframes bounceOutDown {
+  50% {
+    opacity: 1; transform: translate3d(0, 0, 0);
+  }
+
+  60% {
+    transform: translate3d(0, -20px, 0);
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, 2000px, 0);
+  }
 }
 </style>

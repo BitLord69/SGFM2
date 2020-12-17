@@ -1,12 +1,16 @@
 <template>
-  <router-link to="/lobby">
-    <Button class="p-ripple" label="Play a game"/>
-  </router-link>
+  <div class="login-container p-d-flex p-my-auto p-jc-center"> 
+    <LoginForm/>
+  </div>
 </template>
 
 <script>
+
+import LoginForm from '../components/LoginForm';
+
 export default {
   name: "LandingPage",
+  components: { LoginForm }
 };
 </script>
 
@@ -32,5 +36,11 @@ a:active {
   display: flex;
   color: inherit;
   text-decoration: none;
+}
+
+.login-container{
+  height: 50%;
+  width: 40%;
+  background-color: white;
 }
 </style>

@@ -13,6 +13,7 @@ import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import ScrollPanel from 'primevue/scrollpanel';
 import ProgressSpinner from 'primevue/progressspinner';
+import Password from 'primevue/password';
 
 import "primevue/resources/themes/saga-blue/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -31,5 +32,6 @@ app.component("AccordionTab", AccordionTab);
 app.component("ScrollPanel", ScrollPanel);
 app.component("ProgressSpinner", ProgressSpinner);
 app.directive("ripple", Ripple);
+app.component("Password", Password);
 
 app.mount("#app");

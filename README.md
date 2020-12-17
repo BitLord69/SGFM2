@@ -36,14 +36,22 @@ Medlemmar:<br/>
   ```
 - Make sure `dbms.directories.import` etc are not overriden by the defaults (duplicate entries)
 - Changing your config-file requires you to restart the neo4j-service
-- In the neo4j console, add this constraint
+- In the neo4j console, add these constraints
   ```
-  CREATE CONSTRAINT ON (category:Category)
-  ASSERT category.uuid IS UNIQUE
-  ```
-  and add the uuid
-  ```
-  CALL apoc.uuid.install('Category')
+  CREATE CONSTRAINT ON (user:User)
+  ASSERT user.uuid IS UNIQUE;
+  CREATE CONSTRAINT ON (game:Game)
+  ASSERT game.uuid IS UNIQUE;
+  CREATE CONSTRAINT ON (league:League)
+  ASSERT league.uuid IS UNIQUE;
+
+  CALL apoc.uuid.install('User')
+  YIELD label, installed
+  RETURN label, installed;
+  CALL apoc.uuid.install('Game')
+  YIELD label, installed
+  RETURN label, installed;
+  CALL apoc.uuid.install('League')
   YIELD label, installed
   RETURN label, installed
   ```

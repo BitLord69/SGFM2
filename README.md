@@ -36,6 +36,7 @@ Medlemmar:<br/>
   ```
 - Make sure `dbms.directories.import` etc are not overriden by the defaults (duplicate entries)
 - Changing your config-file requires you to restart the neo4j-service
+
 - In the neo4j console, add these constraints
   ```
   CREATE CONSTRAINT ON (user:User)

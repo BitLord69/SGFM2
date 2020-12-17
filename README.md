@@ -29,7 +29,7 @@ Medlemmar:<br/>
   dbms.directories.plugins=plugins
   # EDIT the import-directory to your relevant filepath
   dbms.directories.import=G:\\servicefy\\backend\\modules
-  dbms.security.procedures.whitelist=apoc.export.*,apoc.uuid.*,apoc.periodic.iterate,apoc.cypher.runFile, apoc.create.uuid, apoc.path.subgraphAll
+  dbms.security.procedures.allowlist=apoc.export.*,apoc.uuid.*,apoc.periodic.iterate,apoc.cypher.runFile, apoc.create.uuid, apoc.path.subgraphAll
   apoc.import.file.enabled=true
   apoc.export.file.enabled=true
   apoc.uuid.enabled=true

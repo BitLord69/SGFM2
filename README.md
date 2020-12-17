@@ -22,7 +22,7 @@ Medlemmar:<br/>
 
 ### Install Neo4J plugin
 
-- Download https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.0.0.12/apoc-4.0.0.12-all.jar
+- Download https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/4.2.0.0/apoc-4.2.0.0-all.jar
 - Place it in your `Neo4Jinstallfolder/plugins` folder
 - Add the following to your `Neo4Jinstallfolder/conf/neo4j.conf`
   ```

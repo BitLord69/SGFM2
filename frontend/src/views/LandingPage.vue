@@ -1,7 +1,5 @@
 <template>
-  <div class="login-container p-d-flex p-my-auto p-jc-center"> 
     <LoginForm/>
-  </div>
 </template>
 
 <script>
@@ -36,11 +34,5 @@ a:active {
   display: flex;
   color: inherit;
   text-decoration: none;
-}
-
-.login-container{
-  height: 50%;
-  width: 40%;
-  background-color: white;
 }
 </style>

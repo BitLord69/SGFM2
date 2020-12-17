@@ -3,7 +3,7 @@ const router = require('express').Router()
 const user = require('../../entities/User')
 
 router.post("/login", async(req, res) => {
-  console.log("req.sess.user", req.session.user);
+  console.log("1: req.sess.user", req.session.user);
   if (req.session.user) {
     return res.json({ error: 'Already logged in!' });
   }
@@ -11,11 +11,12 @@ router.post("/login", async(req, res) => {
   const { email, password } = req.body;
   
   const result = await user.login(email, password);
-
   console.log("result: ", result);
+
   // Log in by adding user to the session
   req.session.user = result;
   delete req.session.user.password
+  console.log("2: req.sess.user", req.session.user);
   return res.json(req.session.user);
 });
 

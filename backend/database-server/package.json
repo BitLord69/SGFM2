@@ -4,7 +4,6 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
-    "body-parser": "^1.19.0",
     "connect-favicons": "^0.1.6",
     "connect-redis": "^5.0.0",
     "cors": "^2.8.5",

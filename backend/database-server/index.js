@@ -3,15 +3,14 @@ const express = require('express')
 const app = express()
 const server = require('http').createServer(app)
 const path = require('path')
-const bodyParser = require('body-parser')
 const secrets = require('./secrets.json')
 
 //app.use(require('connect-favicons')(path.join(__dirname, '../../frontend/src/statics/icons')))
-app.use(express.static(path.join(__dirname, '../../frontend/dist/spa'))) // To-do: nginx
+app.use(express.static(path.join(__dirname, '../../frontend/dist/spa'))) 
 app.use(express.static(path.join(__dirname, 'uploads')))
 
-app.use(bodyParser.json({ limit: '5mb' }))
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json({ limit: '5mb' }))
+app.use(express.urlencoded({ extended: true }))
 
 app.use(require('cors')({ origin: 'http://localhost:8080' }))
 
@@ -19,7 +18,7 @@ app.use('*', require('./middleware/session'))
 app.use('/api', require('./middleware/api'))
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/dist/spa/index.html')) // To-do: nginx
+  res.sendFile(path.join(__dirname, '../../frontend/dist/spa/index.html'))
 })
 
 const shutdownServer = async (signal) => {

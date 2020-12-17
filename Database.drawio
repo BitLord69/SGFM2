@@ -1,16 +1,16 @@
-<mxfile host="app.diagrams.net" modified="2020-12-16T10:36:15.679Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36" etag="ofskZmSU5o_buV8wIIet" version="14.0.1" type="github" pages="2">
+<mxfile host="app.diagrams.net" modified="2020-12-17T07:39:57.196Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36" etag="xodXAbgbq2YjhSualPGK" version="14.0.3" type="github" pages="2">
   <diagram id="06YiXvvxvD93IUthj2dQ" name="simple version">
-    <mxGraphModel dx="981" dy="570" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1422" dy="827" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="hlqRaPhQaMiVC_JoWC2D-1" value="&lt;u style=&quot;font-weight: bold&quot;&gt;User&lt;/u&gt;&lt;br&gt;id: uuid&lt;br&gt;userName: String&lt;br&gt;password: String&lt;br&gt;email: String&lt;br&gt;avatar: int" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+        <mxCell id="hlqRaPhQaMiVC_JoWC2D-1" value="&lt;u style=&quot;font-weight: bold&quot;&gt;User&lt;/u&gt;&lt;br&gt;id: uuid&lt;br&gt;userName: String&lt;br&gt;password: String&lt;br&gt;email: String&lt;br&gt;avatar: int" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
           <mxGeometry x="60" y="170" width="150" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="hlqRaPhQaMiVC_JoWC2D-2" value="&lt;u&gt;&lt;b&gt;Game&lt;/b&gt;&lt;/u&gt;&lt;br&gt;id: uuid&lt;br&gt;date: Date&lt;br&gt;status: Finished/aborted&lt;br&gt;settings: gameSettings" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+        <mxCell id="hlqRaPhQaMiVC_JoWC2D-2" value="&lt;u&gt;&lt;b&gt;Game&lt;/b&gt;&lt;/u&gt;&lt;br&gt;id: uuid&lt;br&gt;date: Date&lt;br&gt;status: Finished/aborted&lt;br&gt;settings: gameSettings" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
           <mxGeometry x="530" y="170" width="150" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="hlqRaPhQaMiVC_JoWC2D-5" value="" style="curved=1;endArrow=classic;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="hlqRaPhQaMiVC_JoWC2D-1" target="hlqRaPhQaMiVC_JoWC2D-2">
+        <mxCell id="hlqRaPhQaMiVC_JoWC2D-5" value="" style="curved=1;endArrow=classic;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" source="hlqRaPhQaMiVC_JoWC2D-1" target="hlqRaPhQaMiVC_JoWC2D-2" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="180" y="200" as="sourcePoint" />
             <mxPoint x="370" y="200" as="targetPoint" />
@@ -19,15 +19,15 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="hlqRaPhQaMiVC_JoWC2D-6" value="playedGame&lt;br&gt;points: int" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="hlqRaPhQaMiVC_JoWC2D-5">
+        <mxCell id="hlqRaPhQaMiVC_JoWC2D-6" value="playedGame&lt;br&gt;points: int&lt;br&gt;winner: boolean" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="hlqRaPhQaMiVC_JoWC2D-5" vertex="1" connectable="0">
           <mxGeometry x="0.0241" y="-34" relative="1" as="geometry">
             <mxPoint x="3.41" y="-6.06" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="hlqRaPhQaMiVC_JoWC2D-7" value="&lt;u&gt;&lt;b&gt;League&lt;/b&gt;&lt;/u&gt;&lt;br&gt;id: uuid&lt;br&gt;name: String" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+        <mxCell id="hlqRaPhQaMiVC_JoWC2D-7" value="&lt;u&gt;&lt;b&gt;League&lt;/b&gt;&lt;/u&gt;&lt;br&gt;id: uuid&lt;br&gt;name: String" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
           <mxGeometry x="274" y="310" width="140" height="140" as="geometry" />
         </mxCell>
-        <mxCell id="hlqRaPhQaMiVC_JoWC2D-8" value="" style="curved=1;endArrow=classic;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.552;entryY=-0.01;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="hlqRaPhQaMiVC_JoWC2D-2" target="hlqRaPhQaMiVC_JoWC2D-7">
+        <mxCell id="hlqRaPhQaMiVC_JoWC2D-8" value="" style="curved=1;endArrow=classic;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.552;entryY=-0.01;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="hlqRaPhQaMiVC_JoWC2D-2" target="hlqRaPhQaMiVC_JoWC2D-7" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="470" y="410" as="sourcePoint" />
             <mxPoint x="660" y="410" as="targetPoint" />
@@ -36,7 +36,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="hlqRaPhQaMiVC_JoWC2D-9" value="inLeague" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="hlqRaPhQaMiVC_JoWC2D-8">
+        <mxCell id="hlqRaPhQaMiVC_JoWC2D-9" value="inLeague" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="hlqRaPhQaMiVC_JoWC2D-8" vertex="1" connectable="0">
           <mxGeometry x="0.1914" y="17" relative="1" as="geometry">
             <mxPoint x="29.43" y="-2" as="offset" />
           </mxGeometry>

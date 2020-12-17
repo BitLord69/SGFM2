@@ -2,17 +2,12 @@
   <div class="lobby">
     <h1>Super Galaxy Face Melter</h1>
 
-    <div v-if="alreadyConnectedToGame" class="already-connected">
-      You are already connected to a game - please finish that one first! :)
-    </div>
-
     <span class="p-float-label p-mt-4">
       <InputText 
         class="inputPlayerName" 
         id="playername" 
         type="text" 
-        v-model="state.playername"
-        :disabled="alreadyConnectedToGame" />
+        v-model="state.playername" />
       <label class="inputPlayerNameLabel" for="playername">Playername</label>
     </span>
     <div class="buttons p-mt-6">
@@ -77,7 +72,7 @@ export default {
   name: "Lobby",
   components: { CreateGame, JoinGame },
   setup() {
-    const { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, alreadyConnectedToGame } = SocketHandler();
+    const { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState } = SocketHandler();
     const { CreateGameState } = CreateGame.setup();
     const { joinGameState  } = JoinGame.setup();
 
@@ -99,7 +94,7 @@ export default {
     }
 
     function isDisabled() {
-      return state.playername === null || state.playername.trim() === "" || alreadyConnectedToGame.value
+      return state.playername === null || state.playername.trim() === ""
     }
 
     function createNewGame() {
@@ -124,7 +119,6 @@ export default {
       getGameList, 
       gameList,
       joinExistingGame,
-      alreadyConnectedToGame,
     };
   },
 };

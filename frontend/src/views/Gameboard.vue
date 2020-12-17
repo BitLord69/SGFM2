@@ -1,28 +1,38 @@
 <template>
   <div class="gameboard">
-    <div class="messageCont">
-      <div
-        class="waitOppo"
-        v-if="
-          gameState &&
-          gameState?.currentPlayer != playerId &&
-          gameState?.gameWinner === -1
-        "
-      >
-        Waiting for opponent to finish their turn...
-        <WaitingForPlayer />
+    <teleport to="#gameWindow">
+      <div class="messageCont">
+        <div
+          class="waitOppo"
+          v-if="
+            gameState &&
+            gameState?.currentPlayer != playerId &&
+            gameState?.gameWinner === -1
+          "
+        >
+          Waiting for opponent to finish their turn...
+          <WaitingForPlayer />
+        </div>
       </div>
-    </div>
+    </teleport>
+
     <Dialog
-      id="joinModal"
-      :style="{
-        opacity:
-          gameState &&
-          gameState?.currentPlayer != playerId &&
-          gameState?.gameWinner === -1
-            ? '0.5'
-            : '1',
-      }"
+      id="opponentDisconnected"
+      :modal="true"
+      :dismissableMask="false"
+      :closable="false"
+      :visible="opponentDisconnected"
+    >
+      <template #header>
+        Communication error
+      </template>
+      Your opponent has disconnected!
+      <template #footer>
+        <Button class="p-ripple" @click="opponentDisconnectedFunc" label="Return to Lobby" />
+      </template>
+    </Dialog>
+    <Dialog
+      id="waitingForConnectionModal"
       :modal="true"
       :dismissableMask="true"
       :visible="state.connectedPlayers < 2"
@@ -107,19 +117,20 @@
 </template>
 
 <script>
-import { reactive, watchEffect, computed } from "vue";
+import { reactive, watchEffect, computed, ref } from "vue";
 import SocketHandler from "@/modules/SocketHandler";
 import WaitingForPlayer from "../components/WaitingForPlayer";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 export default {
   name: "Gameboard",
   components: { WaitingForPlayer },
   setup() {
     const route = useRoute();
+    const router = useRouter();
     const playerId = route.params.player;
 
-    const { gameState, playCard } = SocketHandler();
+    let { gameState, playCard, opponentDisconnected } = SocketHandler();
     const state = reactive({
       connectedPlayers: 1,
       isDisabled: false,
@@ -147,49 +158,66 @@ export default {
           //gameState.value.playedCards.length >= 1 &&
           gameState.value.roundWinner != -1
         ) {
-          console.log("watchEffect currentplayer != playerId. pId: ", playerId, "cP: ", gameState.value.currentPlayer );
           document.getElementsByClassName("hidden").forEach((element) => {
-            console.log("element", element)
             element.classList.remove("hidden");
           });
 
           document
             .getElementsByClassName("cardToAnimate")
             .forEach((element) => {
-              console.log("element", element)
               element.classList.toggle("cardToAnimate");
               // document.getElementsByClassName('cardsOnHand')[1].appendChild(element);
             });
         }
 
-        if (gameState.value.playedCards.length == 2) {
+        if (gameState.value.playedCards.length == 2 && gameState.value.roundWinner != 2) {
           animateLoserCard();
         }
       }
     });
 
     function animateLoserCard() {
-      
-      let profileImg = document.getElementsByClassName("profileYou")[0];
-      let profileOppo = document.getElementsByClassName("profileOpp")[0];
+      let target;
       let winner = gameState.value.roundWinner;
       let loserCard;
+      let root = document.documentElement;
+      let targetY;
+      let targetX;
+      let startY;
+      let startX;
+
       setTimeout(() =>{
         if ( winner == gameState.value?.startPlayer ) {
           loserCard = document.getElementById("card-1");
         } else {
           loserCard = document.getElementById("card-0");
         }
+
         if (winner == playerId) {
-          loserCard.classList.add("CSS-animation");
+          target = document.getElementsByClassName("profileYou")[0];
+          root.style.setProperty('--start',  "-20px");
+          
+          startY = loserCard.getBoundingClientRect().bottom;
+          startX = loserCard.getBoundingClientRect().right;
+
+          targetY = target.getBoundingClientRect().bottom;
+          targetX = target.getBoundingClientRect().right;
         } else {
-          loserCard.classList.add("CSS-animation");
+          target = document.getElementsByClassName("profileOpp")[0];
+          root.style.setProperty('--start',  "50px");
+         
+          startY = loserCard.getBoundingClientRect().top;
+          startX = loserCard.getBoundingClientRect().left;
+
+          targetY = target.getBoundingClientRect().top;
+          targetX = target.getBoundingClientRect().left;
         }
-
+        
+        root.style.setProperty('--target-y',  (targetY - startY) + "px");
+        root.style.setProperty('--target-x', (targetX - startX) + "px");
+        
+        loserCard.classList.add("CSS-animation");
       }, 300);
-
-
-      console.log(profileImg, profileOppo);
     }
 
     function animateCard(index) {
@@ -238,6 +266,12 @@ export default {
       }
     }
 
+    function opponentDisconnectedFunc(){
+      opponentDisconnected.value = false;
+      gameState = ref(null);
+      router.push("/lobby");
+    }
+
     return {
       state,
       getImageName,
@@ -249,11 +283,20 @@ export default {
       opponent,
       getIndex,
       animateLoserCard,
+      opponentDisconnected,
+      opponentDisconnectedFunc
     };
   },
 };
 </script>
 <style lang="scss" scoped>
+
+:root{
+  --target-x: 0px;
+  --target-y: 0px;
+  --start: 0px;
+}
+
 .gameOver {
   font-size: 40px;
   color: red;
@@ -327,12 +370,11 @@ export default {
 }
 
 .cardToAnimate {
- /*  transition: all 1s;
-  top: -28vh; */
-  animation: cardMe 1.5s ease 1;
+  transition: all 1s;
+  animation: playCard 1s ease 1;
 }
 
-@keyframes cardMe{
+@keyframes playCard{
   0% {
     top: 0;
     opacity: 1
@@ -372,8 +414,8 @@ export default {
 
 .messageCont {
   position: absolute;
-  width: 79.75%;
-  bottom: 0;
+  width: 100%;
+  bottom: 1vh;
   z-index: 11;
   margin: 0 auto;
 }
@@ -393,33 +435,25 @@ export default {
   padding: 1% 0;
 }
 
-.animateLoserCard {
-  scale: 1.5;
-}
-
-.animateLoserCardOppo {
-  scale: 0.5;
-}
-
 .CSS-animation {
-  animation: bounceOutDown 2.5s forwards;
+  animation: bounceOutDown 1.5s forwards;
 }
 @keyframes bounceOutDown {
   50% {
-    opacity: 1; transform: translate3d(0, 0, 0);
+    opacity: 1; transform: translate3d(0, 0, 0); z-index: 15;
   }
 
   60% {
-    transform: translate3d(0, -20px, 0);
+    transform: translate3d(0, var(--start), 0);
   }
 
-  70% {
+  90% {
     opacity: 1;
   }
 
   to {
     opacity: 0;
-    transform: translate3d(0, 2000px, 0);
+    transform: translate3d(var(--target-x), var(--target-y), 0);
   }
 }
 </style>

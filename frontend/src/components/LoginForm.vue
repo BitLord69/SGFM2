@@ -4,7 +4,7 @@
       <div class="input p-field p-my-4">
         <span class="p-float-label">
           <InputText
-            class="input inputBox"
+            class="input"
             id="email"
             type="email"
             v-model="form.email"
@@ -102,11 +102,6 @@ button {
 
 .input {
   color: #3b1704;
-}
-
-.inputBox {
-  box-shadow: inset 0 0 3px #000000;
-  border: 0;
 }
 
 .login-container {

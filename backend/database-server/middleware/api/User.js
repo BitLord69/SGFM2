@@ -7,7 +7,8 @@ router.get('/', async (req, res) => {
 
 router.post('/register', async(req, res) => {
   const { username, email, password, avatar } = req.body;
-  return res.json(await user.registerNewUser(username, email, password, avatar))
+  const result = res.json(await user.registerNewUser(username, email, password, avatar))
+  console.log("result:", result);
 })
 
 

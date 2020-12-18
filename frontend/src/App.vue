@@ -1,7 +1,7 @@
 <template>
   <h1>Super Galaxy Face Melter</h1>
   <div class="container">
-    <div class="gameWindow" :style="{ backgroundImage: `url(${'../bg.png'})` }">
+    <div class="gameWindow" id="gameWindow" :style="{ backgroundImage: `url(${'../bg.png'})` }">
       <router-view />
     </div>
   </div>

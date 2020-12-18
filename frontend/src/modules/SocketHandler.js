@@ -3,11 +3,10 @@ import SocketIO from 'socket.io-client'
 import { v4 as uuid } from 'uuid';
 
 const error = ref(null);
-const gameState = ref(null);
+let gameState = ref(null);
 const isConnected = ref(true);
 const gameList = ref(null);
 const opponentDisconnected = ref(false);
-const alreadyConnectedToGame = ref(false);
 
 let client = null;
 export default function SocketHandler() {
@@ -31,13 +30,13 @@ export default function SocketHandler() {
   });
 
   // Keep if we're going to have a in-game chat function later in sprint 2
-  client.on("message", (data) => {
+  client.on("MESSAGE", (data) => {
     console.log("data i message: ", data);
   });
 
   // Keep if we're going to have a in-game chat function later in sprint 2
   function sendMessage(message) {
-    client.emit("send", message);
+    client.emit("SEND", message);
   }
 
   client.on("GAME_UPDATE", (incomingGameState) => {
@@ -67,19 +66,15 @@ export default function SocketHandler() {
       console.log("");
     }
     isConnected.value = false;
-    alreadyConnectedToGame.value = false;
     // client = null;
   });
 
-
   function createGame(name, pointsToWin, cardsOnHand) {
     client.emit("CREATE_GAME", { name, pointsToWin, cardsOnHand });
-    alreadyConnectedToGame.value = true;
   }
 
   function joinGame(name, roomNo) {
     client.emit("JOIN_GAME", { name, roomNo });
-    alreadyConnectedToGame.value = true;
   }
 
   // send the played card as an index in a string format
@@ -92,5 +87,5 @@ export default function SocketHandler() {
     client.emit("AVAILABLE_GAMES");
   }
 
-  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected, opponentDisconnected, alreadyConnectedToGame }
+  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected, opponentDisconnected }
 }

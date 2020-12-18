@@ -81,24 +81,6 @@ public class GameEngine  {
       }
 
       //Deal new card to LOSER, if TIE both players receive a new card.
-      switch (winner) {
-        case GameState.PLAYER_ONE:
-          gameState.getPlayer(GameState.PLAYER_TWO).addCardToHand(deck.getTopCard());
-          break;
-
-        case GameState.PLAYER_TWO:
-          gameState.getPlayer(GameState.PLAYER_ONE).addCardToHand(deck.getTopCard());
-          break;
-
-        case TIE:
-          gameState.getPlayer(GameState.PLAYER_ONE).addCardToHand(deck.getTopCard());
-          gameState.getPlayer(GameState.PLAYER_TWO).addCardToHand(deck.getTopCard());
-          break;
-
-        default:
-          System.out.println("Wrong winner state!");
-          break;
-      }
     }
   }
 
@@ -149,17 +131,41 @@ public class GameEngine  {
     gameState.getPlayer(GameState.PLAYER_TWO).addCardsToHand((ArrayList<Card>) deck.getHand(handSize));
   }
 
+  public void dealNewCards(int winner) {
+    switch (winner) {
+      case GameState.PLAYER_ONE:
+        gameState.getPlayer(GameState.PLAYER_TWO).addCardToHand(deck.getTopCard());
+        break;
+
+      case GameState.PLAYER_TWO:
+        gameState.getPlayer(GameState.PLAYER_ONE).addCardToHand(deck.getTopCard());
+        break;
+
+      case TIE:
+        gameState.getPlayer(GameState.PLAYER_ONE).addCardToHand(deck.getTopCard());
+        gameState.getPlayer(GameState.PLAYER_TWO).addCardToHand(deck.getTopCard());
+        break;
+
+      default:
+        System.out.println("Wrong winner state!");
+        break;
+    }
+  }
+
   public void setPlayedCard(int card) {
+    int winner = -1;
     gameState.setPlayedCard(card);
     if (gameState.getPlayedCards().size() > 1) {
-      gameState.setRoundWinner(getRoundWinner());
+      winner = getRoundWinner();
+      gameState.setRoundWinner(winner);
       if (!isGameOver()) {
         server.sendGameUpdateToRoom(gameState, roomNo);
         try {
-          Thread.sleep(2500);
+          Thread.sleep(2000);
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
+        dealNewCards(winner);
       }
 
       gameState.changeStartPlayer();

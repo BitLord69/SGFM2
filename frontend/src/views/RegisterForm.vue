@@ -34,14 +34,28 @@
           <label class="input" for="password">Password</label>
         </span>
       </div>
+      <div class="input p-field p-mt-5 p-mx-6">
+        <span class="p-float-label">
+          <InputText
+            class="input"
+            id="rePassword"
+            type="password"
+            v-model="state.rePassword"
+          />
+          <label class="input" for="password">Password (again)</label>
+        </span>
+      </div>
+      <div class="p-text-center p-invalid" v-if="!passwordMatch()">
+        <p>Password doesn't match!</p>
+      </div>
       <div class="p-formgroup-inline p-d-flex p-jc-center">
         <p class="p-mt-0">Choose your avatar:</p>
         <div class="p-d-flex p-jc-center">
-          <img class="p-mr-3 avatar active" src="../assets/avatar/1.png"/>
-          <img class="p-mr-3 avatar" src="../assets/avatar/2.png"/>
-          <img class="p-mr-3 avatar" src="../assets/avatar/3.png"/>
-          <img class="p-mr-3 avatar" src="../assets/avatar/4.png"/>
-          <img class="avatar" src="../assets/avatar/5.png"/>
+          <img class="p-mr-3 avatar" v-bind:class="{ active: form.avatar === 1 }" @click="setAvatar(1)" src="../assets/avatar/1.png"/>
+          <img class="p-mr-3 avatar" v-bind:class="{ active: form.avatar === 2 }" @click="setAvatar(2)" src="../assets/avatar/2.png"/>
+          <img class="p-mr-3 avatar" v-bind:class="{ active: form.avatar === 3 }" @click="setAvatar(3)" src="../assets/avatar/3.png"/>
+          <img class="p-mr-3 avatar" v-bind:class="{ active: form.avatar === 4 }" @click="setAvatar(4)" src="../assets/avatar/4.png"/>
+          <img class="avatar" v-bind:class="{ active: form.avatar === 5 }" @click="setAvatar(5)" src="../assets/avatar/5.png"/>
         </div>
       </div>
       <div class="p-text-center p-mb-4">
@@ -68,10 +82,23 @@ import { reactive } from "vue";
   avatar: 1,
 });
 
+const state = reactive({
+  rePassword: null,
+})
+
 export default {
   name: "RegisterForm",
 
   setup() {
+
+    function setAvatar(choice) {
+      form.avatar = choice
+    }
+
+    function passwordMatch() {
+      console.log(form.password + " - " + state.rePassword);
+      return form.password === state.rePassword
+    }
 
     async function register() {
        let result = await (
@@ -92,7 +119,10 @@ export default {
    
     return {
       form,
+      state,
       register,
+      setAvatar,
+      passwordMatch
     };
   },
 }
@@ -120,6 +150,7 @@ button {
   width: 13%;
   border: 2px solid #3b1704;
   border-radius: 50%;
+  cursor: pointer;
 }
 
 .active {

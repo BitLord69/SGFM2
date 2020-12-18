@@ -26,7 +26,7 @@
       </template>
       Your opponent has disconnected!
       <template #footer>
-        <Button class="p-ripple" @click="returnToLobbyFunc" label="Return to Lobby" />
+        <Button class="p-ripple" @click="returnToLobbyFunc(true)" label="Return to Lobby" />
       </template>
     </Dialog>
 
@@ -88,7 +88,7 @@
         <div v-if="playerId == gameState.gameWinner">You won!</div>
         <div v-else>You lost!</div>
         <div class="p-my-5">
-          <Button class="p-ripple" @click="returnToLobbyFunc" label="Return to Lobby" />
+          <Button class="p-ripple" @click="returnToLobbyFunc(false)" label="Return to Lobby" />
         </div>
       </div>
     </div>
@@ -136,7 +136,7 @@ export default {
     const router = useRouter();
     const playerId = route.params.player;
 
-    const { gameState, playCard, opponentDisconnected, resetGameState } = SocketHandler();
+    const { gameState, playCard, opponentDisconnected, resetGameState, removeGame } = SocketHandler();
     const state = reactive({
       connectedPlayers: 1,
       isDisabled: false,
@@ -178,6 +178,10 @@ export default {
 
         if (gameState.value.playedCards.length == 2 && gameState.value.roundWinner != 2) {
           animateLoserCard();
+        }
+
+        if(gameState.value.gameWinner == playerId){
+          console.log("in watchEffect - gameWinner === playerId");
         }
       }
     });
@@ -272,8 +276,11 @@ export default {
       }
     }
 
-    function returnToLobbyFunc(){
+    function returnToLobbyFunc(remove){
       opponentDisconnected.value = false;
+      if(remove){
+        removeGame();
+      }
       resetGameState();
       router.push("/lobby");
     }

@@ -166,14 +166,17 @@ public class GameEngine  {
           e.printStackTrace();
         }
         dealNewCards(winner);
+        gameState.changeStartPlayer();
+        gameState.clearPlayedCards();
       }
-
-      gameState.changeStartPlayer();
-      gameState.clearPlayedCards();
+      server.sendGameUpdateToRoom(gameState, roomNo);
+      if(isGameOver()){
+        server.removeGame(roomNo);
+      }
     } else {
       gameState.changeCurrentPlayer();
+      server.sendGameUpdateToRoom(gameState, roomNo);
     }
-    server.sendGameUpdateToRoom(gameState, roomNo);
   }
 
   public GameState getGameState() {

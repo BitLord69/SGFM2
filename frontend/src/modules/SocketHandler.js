@@ -87,5 +87,9 @@ export default function SocketHandler() {
     client.emit("AVAILABLE_GAMES");
   }
 
-  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected, opponentDisconnected }
+  function resetGameState() {
+    gameState = ref(null);
+  }
+
+  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected, opponentDisconnected, resetGameState }
 }

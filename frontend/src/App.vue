@@ -1,19 +1,35 @@
 <template>
   <h1>Super Galaxy Face Melter</h1>
-  <div class="container">
+  <div class="container" :key="redrawCounter">
     <div class="gameWindow" id="gameWindow" :style="{ backgroundImage: `url(${'../bg.png'})` }">
-      <router-view />
+      <router-view :key="$route.path" />
     </div>
   </div>
 </template>
 
 <script>
+import { useRoute } from "vue-router";
+import { watchEffect, ref } from "vue";
+
 export default {
   name: "App",
-};
+  setup() {
+    const route = useRoute();
+    const redrawCounter = ref(0);
+
+    watchEffect(() => {
+      // Without this "hack" the game board will still be visible when coming back to the lobby
+      if (route.path === '/lobby') {
+        redrawCounter.value++;
+      }
+    })
+
+    return { redrawCounter };
+  }
+}
 </script>
 
-<style>
+<style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz&family=MedievalSharp&family=Press+Start+2P&display=swap");
 .container {
   justify-content: center;
@@ -35,7 +51,7 @@ h1 {
 }
 
 Button:hover{
-  background-color: #e2c3a6 !important;
+  background-color: rgba($color: #e2c3a6, $alpha: 0.8) !important;
   border: 0.2em solid #3b1704 !important;
   color: #3b1704 !important;
 }

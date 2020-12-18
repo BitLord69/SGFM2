@@ -25,7 +25,8 @@ public class Server {
 
   public Server() {
     Configuration config = new Configuration();
-    config.setHostname("localhost");
+    config.setHostname("192.168.1.8");
+    //config.setHostname("localhost");
     config.setPort(9092);
     config.setPingInterval(30);
     server = new SocketIOServer(config);
@@ -122,6 +123,10 @@ public class Server {
           TextUtil.pimpString(client.getSessionId().toString(), TextUtil.LEVEL_INFO),
           TextUtil.pimpString(getToken(client), TextUtil.LEVEL_INFO));
     });
+
+    server.addEventListener("REMOVE_GAME", null, (client, data, ackSender) -> {
+      removeGame(getRoomNoFromClientToken(getToken(client)));
+    });
   }
 
   private String getGameList() {
@@ -172,5 +177,10 @@ public class Server {
 
   public void stop() {
     server.stop();
+  }
+
+  public void removeGame(String roomNo) {
+    System.out.println("In removeGame: " + roomNo);
+    games.remove(roomNo);
   }
 }

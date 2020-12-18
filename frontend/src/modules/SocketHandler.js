@@ -11,8 +11,8 @@ const opponentDisconnected = ref(false);
 let client = null;
 export default function SocketHandler() {
   if (client === null) {
-    // client = SocketIO("http://192.168.0.177:9092", {
-   client = SocketIO("http://localhost:9092", {
+    client = SocketIO("http://98.128.140.50:9092", {
+   //client = SocketIO("http://localhost:9092", {
     reconnectionDelay: 500,
     reconnection: false,
     timeout: 2000,
@@ -34,10 +34,7 @@ export default function SocketHandler() {
     console.log("data i message: ", data);
   });
 
-  // Keep if we're going to have a in-game chat function later in sprint 2
-  function sendMessage(message) {
-    client.emit("SEND", message);
-  }
+  
 
   client.on("GAME_UPDATE", (incomingGameState) => {
     console.log("GAME_UPDATE received", JSON.parse(incomingGameState));
@@ -69,6 +66,11 @@ export default function SocketHandler() {
     // client = null;
   });
 
+  // Keep if we're going to have a in-game chat function later in sprint 2
+  function sendMessage(message) {
+    client.emit("SEND", message);
+  }
+
   function createGame(name, pointsToWin, cardsOnHand) {
     client.emit("CREATE_GAME", { name, pointsToWin, cardsOnHand });
   }
@@ -91,5 +93,9 @@ export default function SocketHandler() {
     gameState = ref(null);
   }
 
-  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected, opponentDisconnected, resetGameState }
+  function removeGame(){
+    client.emit("REMOVE_GAME");
+  }
+
+  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected, opponentDisconnected, resetGameState, removeGame }
 }

@@ -13,6 +13,7 @@ app.use(express.json({ limit: '5mb' }))
 app.use(express.urlencoded({ extended: true }))
 
 app.use(require('cors')({ origin: 'http://localhost:8080' }))
+//app.use(require('cors')({ origin: 'http://98.128.140.50:8080' }))
 
 app.use('*', require('./middleware/session'))
 app.use('/api', require('./middleware/api'))

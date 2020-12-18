@@ -7,9 +7,7 @@
           v-if="
             gameState &&
             gameState?.currentPlayer != playerId &&
-            gameState?.gameWinner === -1
-          "
-        >
+            gameState?.gameWinner === -1">
           Waiting for opponent to finish their turn...
           <WaitingForPlayer />
         </div>
@@ -28,9 +26,10 @@
       </template>
       Your opponent has disconnected!
       <template #footer>
-        <Button class="p-ripple" @click="opponentDisconnectedFunc" label="Return to Lobby" />
+        <Button class="p-ripple" @click="returnToLobbyFunc(true)" label="Return to Lobby" />
       </template>
     </Dialog>
+
     <Dialog
       id="waitingForConnectionModal"
       :modal="true"
@@ -65,6 +64,7 @@
         ></div>
       </div>
     </div>
+
     <div class="table" data-dis-container>
       <div class="cardsOnTable p-py-2" v-if="gameState?.gameWinner == -1">
         <div
@@ -82,12 +82,17 @@
           <div class="cardName">{{ card.name }}</div>
         </div>
       </div>
-      <div class="gameOver" v-else>
-        <h3>GAME OVER</h3>
+
+      <div class="gameOver p-px-5 p-my-3" v-else>
+        <h4>GAME OVER</h4>
         <div v-if="playerId == gameState.gameWinner">You won!</div>
         <div v-else>You lost!</div>
+        <div class="p-my-5">
+          <Button class="p-ripple" @click="returnToLobbyFunc(false)" label="Return to Lobby" />
+        </div>
       </div>
     </div>
+
     <div class="playerRow p-mb-2">
       <div class="cardsOnHand">
         <div
@@ -103,6 +108,7 @@
           <div class="cardName">{{ card.name }}</div>
         </div>
       </div>
+
       <div class="profile profileYou p-pt-1">
         <div>{{ gameState && gameState?.players[playerId]?.name }}</div>
         <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
@@ -117,7 +123,7 @@
 </template>
 
 <script>
-import { reactive, watchEffect, computed, ref } from "vue";
+import { reactive, watchEffect, computed } from "vue";
 import SocketHandler from "@/modules/SocketHandler";
 import WaitingForPlayer from "../components/WaitingForPlayer";
 import { useRoute, useRouter } from "vue-router";
@@ -130,7 +136,7 @@ export default {
     const router = useRouter();
     const playerId = route.params.player;
 
-    let { gameState, playCard, opponentDisconnected } = SocketHandler();
+    const { gameState, playCard, opponentDisconnected, resetGameState, removeGame } = SocketHandler();
     const state = reactive({
       connectedPlayers: 1,
       isDisabled: false,
@@ -172,6 +178,10 @@ export default {
 
         if (gameState.value.playedCards.length == 2 && gameState.value.roundWinner != 2) {
           animateLoserCard();
+        }
+
+        if(gameState.value.gameWinner == playerId){
+          console.log("in watchEffect - gameWinner === playerId");
         }
       }
     });
@@ -266,9 +276,12 @@ export default {
       }
     }
 
-    function opponentDisconnectedFunc(){
+    function returnToLobbyFunc(remove){
       opponentDisconnected.value = false;
-      gameState = ref(null);
+      if(remove){
+        removeGame();
+      }
+      resetGameState();
       router.push("/lobby");
     }
 
@@ -284,7 +297,7 @@ export default {
       getIndex,
       animateLoserCard,
       opponentDisconnected,
-      opponentDisconnectedFunc
+      returnToLobbyFunc
     };
   },
 };
@@ -300,6 +313,30 @@ export default {
 .gameOver {
   font-size: 40px;
   color: red;
+  text-align: center;
+  // padding:0 20px;
+  // margin:10px 0;
+  background-color: rgba($color: #e2c3a6, $alpha: 0.8);
+  border: 2px solid #3b1704;
+  border-radius: 10px;
+
+  h4 {
+    text-shadow: 2px 2px black;
+    font-family: "Press Start 2P", cursive;
+  }
+
+  div {
+    font-size: 30px;
+    font-family: "Press Start 2P", cursive;
+  }
+
+  Button {
+    background-color: darken(#e2c3a6, 10%);
+    border: 0.2em solid #3b1704;
+    box-shadow: 0.2em 0.2em black;
+    color: #3b1704;
+    font-family: "Press Start 2P", cursive;
+  }
 }
 
 .gameboard {

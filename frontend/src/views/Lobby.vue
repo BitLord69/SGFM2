@@ -42,6 +42,7 @@
           </router-link>
         </template>
       </Dialog>
+
       <Dialog
         id="joinModal"
         :modal="true"
@@ -72,7 +73,7 @@ export default {
   name: "Lobby",
   components: { CreateGame, JoinGame },
   setup() {
-    const { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState } = SocketHandler();
+    const { createGame, joinGame, gameList, error } = SocketHandler();
     const { CreateGameState } = CreateGame.setup();
     const { joinGameState  } = JoinGame.setup();
 
@@ -81,7 +82,7 @@ export default {
       displayJoin: false,
       playername: null,
       cardsOnHand: 5,
-      pointsToWin: 15
+      pointsToWin: 15,
     });
 
     function setVisibleCreate() {
@@ -111,13 +112,7 @@ export default {
       setVisibleJoin,
       isDisabled,
       createNewGame,
-      playCard, 
-      sendMessage, 
-      createGame,
       error, 
-      gameState, 
-      getGameList, 
-      gameList,
       joinExistingGame,
     };
   },

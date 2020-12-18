@@ -3,19 +3,22 @@ const router = require('express').Router()
 const user = require('../../entities/User')
 
 router.post("/login", async(req, res) => {
-  console.log("req.sess.user", req.session.user);
+
   if (req.session.user) {
     return res.json({ error: 'Already logged in!' });
   }
 
   const { email, password } = req.body;
-  
   const result = await user.login(email, password);
 
-  console.log("result: ", result);
+  if (result === null) {
+   return res.json({ error: 'Incorrect username or password!' })
+  }
+
   // Log in by adding user to the session
   req.session.user = result;
   delete req.session.user.password
+  console.log("2: req.sess.user", req.session.user);
   return res.json(req.session.user);
 });
 

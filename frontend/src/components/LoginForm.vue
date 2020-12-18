@@ -1,5 +1,5 @@
 <template>
-    <div class="login-container p-d-flex p-my-auto p-jc-center">
+  <div class="login-container p-d-flex p-my-auto p-jc-center">
     <div class="p-fluid p-mt-3">
       <div class="input p-field p-my-4">
         <span class="p-float-label">
@@ -52,6 +52,8 @@ const state = reactive({
 })
 
 export default {
+  name: "LoginForm",
+
   setup() {
 
     async function login() {
@@ -113,15 +115,4 @@ button {
   font-size: 120%;
   font-family: "Yanone Kaffeesatz", sans-serif;
 }
-
-/* a:link,
-a:visited,
-a:active {
-  bottom: 10em;
-  position: absolute;
-  justify-content: center;
-  display: flex;
-  color: inherit;
-  text-decoration: none;
-} */
 </style>

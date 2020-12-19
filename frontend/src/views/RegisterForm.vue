@@ -34,19 +34,23 @@
           <label class="input" for="password">Password</label>
         </span>
       </div>
+      <div class="p-text-center p-invalid" v-if="!checkPassword()">
+        <p class="p-mx-6 p-text-left p-my-0">Password must have atleast 8 characters, consist of uppercase, lowercase and numeric character!</p>
+      </div>
       <div class="input p-field p-mt-5 p-mx-6">
         <span class="p-float-label">
           <InputText
             class="input"
             id="rePassword"
             type="password"
+            v-bind:class="{ 'p-invalid': !passwordMatch() }"
             v-model="state.rePassword"
           />
           <label class="input" for="password">Password (again)</label>
         </span>
       </div>
       <div class="p-text-center p-invalid" v-if="!passwordMatch()">
-        <p>Password doesn't match!</p>
+        <p class="p-mx-6 p-text-left p-mt-0">Password doesn't match!</p>
       </div>
       <div class="p-formgroup-inline p-d-flex p-jc-center">
         <p class="p-mt-0">Choose your avatar:</p>
@@ -84,6 +88,7 @@ import { reactive } from "vue";
 
 const state = reactive({
   rePassword: null,
+  users: []
 })
 
 export default {
@@ -99,6 +104,17 @@ export default {
       console.log(form.password + " - " + state.rePassword);
       return form.password === state.rePassword
     }
+
+    function checkPassword() {
+      let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/
+      checkUsername()
+      return regex.exec(form.password)
+    }
+
+    async function checkUsername() {
+    let res = await fetch("http://localhost:8070/api/user");
+    console.log("users: ", res);
+  }
 
     async function register() {
        let result = await (
@@ -122,7 +138,9 @@ export default {
       state,
       register,
       setAvatar,
-      passwordMatch
+      passwordMatch,
+      checkPassword,
+      checkUsername
     };
   },
 }

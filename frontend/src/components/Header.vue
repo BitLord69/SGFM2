@@ -1,6 +1,6 @@
 <template>
 <teleport to="body">
-  <div class="profile-img"  v-if="currentUser !== null">
+  <div class="sidebar" v-if="currentUser !== null">
     <img @click="toggleNav" :src="'/avatar/' + currentUser.avatar + '.png'" alt="" />
     <div class="sidebar-hidden" id="sidebar">
       <div class="sidebar-content">
@@ -44,31 +44,33 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.profile-img {
+.sidebar {
   width: 100px;
   height: 100px;
   color:#3b1704;
   position: absolute;
-  right: 11vw;
-  top: 2vh;
+  right: 12vw;
+  top: 3vh;
   border-radius: 50px;
   img {
+    position: relative;
     width: 100px;
     height: 100px;
     border: 2px solid #2c3e50;
-    border-radius: 50px;
+    border-radius: 50px; 
     z-index: 100;
   }
 }
 
 .sidebar-visible {
-  position: relative;
+  position: absolute;
   visibility: visible;
   transition: ease-in 500ms;
-  top: 0;
-  right: 3vw;
-  width: 10.2vw;
-  height: 70vh;
+  z-index: 15;
+  top: -1vh;
+  right: -1vw;
+  width: 250px;
+  height: 82vh;
   background-color:#e2c3a6;
   border: 2px solid #3b1704;
   border-radius: 2px;
@@ -92,17 +94,15 @@ export default {
 }
 
 .sidebar-hidden {
-  position: relative;
+  position: absolute;
   visibility: hidden;
   overflow-x: hidden;
-  right: -2.5vw;
-  width: 0vw;
-  height: 70vh;
+  top: -1vh;
+  right: -1vw;
+  width: 0;
+  height: 82vh;
   transition: ease-in 500ms;
-  .sidebar-content & .sb-logout{
-    transition: ease-in 500ms;
-    display: none;
-  }
+  
 }
 
 .sb-logout{
@@ -114,7 +114,7 @@ export default {
   text-transform: uppercase;
   &:hover{
     cursor: pointer;
-    color: darken($color: #e2c3a6, $amount: 50%);
+    background-color: darken($color: #e2c3a6, $amount: 30%);
   }
 }
 </style>

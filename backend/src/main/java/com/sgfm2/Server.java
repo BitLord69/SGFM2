@@ -25,7 +25,7 @@ public class Server {
 
   public Server() {
     Configuration config = new Configuration();
-//    config.setHostname("192.168.1.8");
+    //config.setHostname("192.168.1.8");
     config.setHostname("localhost");
     config.setPort(9092);
     config.setPingInterval(30);

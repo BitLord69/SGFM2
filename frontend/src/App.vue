@@ -1,6 +1,14 @@
 <template>
   <!-- <h1>Super Galaxy Face Melter</h1> -->
   <div class="container" :key="redrawCounter">
+    <Suspense>
+      <template #default>
+        <CheckLoggedIn />
+      </template>
+      <template #fallback>
+        <div>Loading...</div>
+      </template>
+    </Suspense>
     <div class="gameWindow" id="gameWindow" :style="{ backgroundImage: `url(${'../bg.png'})` }">
       <router-view :key="$route.path" />
     </div>
@@ -10,12 +18,16 @@
 <script>
 import { useRoute } from "vue-router";
 import { watchEffect, ref } from "vue";
+import CheckLoggedIn from "@/components/CheckLoggedIn"
+//import UserHandler from "@/modules/UserHandler.js"
 
 export default {
   name: "App",
+  components: {CheckLoggedIn},
   setup() {
     const route = useRoute();
     const redrawCounter = ref(0);
+    //const {startApp} = UserHandler()
 
     watchEffect(() => {
       // Without this "hack" the game board will still be visible when coming back to the lobby
@@ -23,6 +35,8 @@ export default {
         redrawCounter.value++;
       }
     })
+
+    //await startApp()
 
     return { redrawCounter };
   }

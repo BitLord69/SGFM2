@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import UserHandler from "@/modules/UserHandler.js"
 
@@ -53,8 +53,6 @@ const form = reactive({
 const state = reactive({
   incorrect: false,
 });
-
-//export const user = ref(null);
 
 export default {
   setup() {
@@ -67,19 +65,12 @@ export default {
 
     function performLogin() {
       login(form.email, form.password)
-
-      if (result.error) {
-        state.incorrect = true;
+      
+      if (isLoggedIn.value) {
+        router.push('/lobby')
       } else {
-        /* console.log("result i else", result);
-        user.value = {
-          email: result.email,
-          username: result.username,
-          avatar: result.avatar,
-        }; */
-        router.push("/lobby");
-        
-      }
+        state.incorrect = true
+      } 
     }
 
     return {

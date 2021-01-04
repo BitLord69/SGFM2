@@ -1,21 +1,36 @@
 <template>
-  <div class="profile-img" @click="toggleNav" v-if="user !== null">
-    <img :src="'/avatar/' + user.avatar + '.png'" alt="" />
+<teleport to="body">
+  <div class="profile-img"  v-if="currentUser !== null">
+    <img @click="toggleNav" :src="'/avatar/' + currentUser.avatar + '.png'" alt="" />
     <div class="sidebar-hidden" id="sidebar">
-      <p>Logout</p>
+      <div class="sidebar-content">
+      </div>
+      <div class="sb-logout" @click="logMeOut">Logout</div>
     </div>
   </div>
+</teleport>
 </template>
 
 <script>
-import { user } from "../views/LandingPage";
+import UserHandler from "../modules/UserHandler";
+import {useRouter} from "vue-router"
 
 export default {
   name: "Header",
   setup() {
+    const router = useRouter();
+    const { currentUser, isLoggedIn, logout } = UserHandler();
+
+    async function logMeOut(){
+      await logout();
+      router.push("/")
+    }
+    
     return {
-      user,
       toggleNav,
+      currentUser,
+      isLoggedIn,
+      logMeOut
     };
 
     function toggleNav() {
@@ -32,10 +47,10 @@ export default {
 .profile-img {
   width: 100px;
   height: 100px;
-  color: red;
+  color:#3b1704;
   position: absolute;
-  right: -2.5vw;
-  top: 0.5vh;
+  right: 11vw;
+  top: 2vh;
   border-radius: 50px;
   img {
     width: 100px;
@@ -49,15 +64,57 @@ export default {
 .sidebar-visible {
   position: relative;
   visibility: visible;
-  transition: 500ms ease;
-  width: 50px;
-  height: 150px;
-  background-color: royalblue;
+  transition: ease-in 500ms;
+  top: 0;
+  right: 3vw;
+  width: 10.2vw;
+  height: 70vh;
+  background-color:#e2c3a6;
+  border: 2px solid #3b1704;
+  border-radius: 2px;
+  .sidebar-content{
+    transition: ease-in 500ms;
+    display: flex;
+    flex-direction: column;
+    height: 95%;
+    div{
+      margin: 0;
+      padding: 0.2rem;
+      font-size: 18px;
+      text-transform: uppercase;
+      text-align: center;
+    }
+  }
+  .sb-logout{
+    transition: ease-in 500ms;
+    display: flex;
+  }
 }
 
 .sidebar-hidden {
   position: relative;
   visibility: hidden;
-  transition: 500ms ease;
+  overflow-x: hidden;
+  right: -2.5vw;
+  width: 0vw;
+  height: 70vh;
+  transition: ease-in 500ms;
+  .sidebar-content & .sb-logout{
+    transition: ease-in 500ms;
+    display: none;
+  }
+}
+
+.sb-logout{
+  height: 5%;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  &:hover{
+    cursor: pointer;
+    color: darken($color: #e2c3a6, $amount: 50%);
+  }
 }
 </style>

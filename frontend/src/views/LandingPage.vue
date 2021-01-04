@@ -58,15 +58,15 @@ export default {
   setup() {
     const router = useRouter();
     const { isLoggedIn, currentUser, login} = UserHandler();
-
-    if (isLoggedIn) {
+console.log("isLoggedIn: ", isLoggedIn.value);
+    if (isLoggedIn.value) {
       router.push('/lobby')
     }
 
     function performLogin() {
       login(form.email, form.password)
 
-      if (isLoggedIn) {
+      if (isLoggedIn.value) {
         router.push('/lobby')
       } else {
         state.incorrect = true

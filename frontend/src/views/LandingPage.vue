@@ -67,7 +67,7 @@ export default {
         state.incorrect = true;
       }
       else {
-        // window.location.href = '/lobby';
+        window.location.href = '/lobby';
       }
     }
 

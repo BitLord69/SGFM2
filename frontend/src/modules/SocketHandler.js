@@ -11,8 +11,8 @@ const opponentDisconnected = ref(false);
 let client = null;
 export default function SocketHandler() {
   if (client === null) {
-    client = SocketIO("http://98.128.140.50:9092", {
-   //client = SocketIO("http://localhost:9092", {
+    // client = SocketIO("http://98.128.140.50:9092", {
+   client = SocketIO("http://localhost:9092", {
     reconnectionDelay: 500,
     reconnection: false,
     timeout: 2000,

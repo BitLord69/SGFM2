@@ -1,5 +1,5 @@
 <template>
-    <div class="login-container p-d-flex p-my-auto p-jc-center">
+  <div class="login-container p-d-flex p-my-auto p-jc-center">
     <div class="p-fluid p-mt-3">
       <div class="input p-field p-my-4">
         <span class="p-float-label">
@@ -41,7 +41,8 @@
 </template>
 
 <script>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const form = reactive({
   email: null,
@@ -49,10 +50,13 @@ const form = reactive({
 });
 const state = reactive({
   incorrect: false,
-})
+});
+
+export const user = ref(null);
 
 export default {
   setup() {
+    const router = useRouter();
 
     async function login() {
       let result = await (
@@ -65,9 +69,15 @@ export default {
 
       if (result.error) {
         state.incorrect = true;
-      }
-      else {
-        // window.location.href = '/lobby';
+      } else {
+        console.log("result i else", result);
+        user.value = {
+          email: result.email,
+          username: result.username,
+          avatar: result.avatar,
+        };
+        router.push("/lobby");
+        
       }
     }
 
@@ -75,6 +85,7 @@ export default {
       form,
       state,
       login,
+      user,
     };
   },
 };

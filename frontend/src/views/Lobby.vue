@@ -1,5 +1,6 @@
 <template>
   <div class="lobby">
+    <Header/>
     <h1>Super Galaxy Face Melter</h1>
 
     <span class="p-float-label p-mt-4">
@@ -66,12 +67,13 @@
 import { reactive } from "vue";
 import CreateGame from "@/components/CreateGame";
 import JoinGame from "@/components/JoinGame";
+import Header from "@/components/Header";
 
 import SocketHandler from '@/modules/SocketHandler';
 
 export default {
   name: "Lobby",
-  components: { CreateGame, JoinGame },
+  components: { CreateGame, JoinGame, Header },
   setup() {
     const { createGame, joinGame, gameList, error } = SocketHandler();
     const { CreateGameState } = CreateGame.setup();

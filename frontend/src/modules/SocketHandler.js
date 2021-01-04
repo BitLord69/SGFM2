@@ -85,8 +85,8 @@ export default function SocketHandler() {
     client.emit("PLAYED_CARD", cardId);
   }
 
-  function getGameList(){
-    client.emit("AVAILABLE_GAMES");
+  function getGameList(username){
+    client.emit("AVAILABLE_GAMES", username);
   }
 
   function resetGameState() {

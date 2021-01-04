@@ -1,8 +1,9 @@
 import { createWebHistory, createRouter } from "vue-router";
-import LandingPage from "../views/LandingPage.vue"
-import Lobby from "../views/Lobby.vue"
-import Gameboard from "../views/Gameboard.vue"
-import RegisterForm from "../views/RegisterForm.vue"
+import LandingPage from "@/views/LandingPage"
+import Lobby from "@/views/Lobby"
+import Gameboard from "@/views/Gameboard"
+import RegisterPage from "@/views/RegisterPage"
+import LoginPage from "@/views/LoginPage"
 
 
 const routes = [
@@ -24,7 +25,12 @@ const routes = [
   {
     path: "/register",
     name: "Register",
-    component: RegisterForm,
+    component: RegisterPage,
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: LoginPage,
   }
 ];
 

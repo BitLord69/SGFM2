@@ -1,6 +1,6 @@
 <template>
   <div class="login-container p-d-flex p-my-auto p-jc-center">
-    <div class="p-fluid p-mt-3">
+    <div class="p-fluid p-mt-3" v-if="!isLoggedIn">
       <div class="input p-field p-my-4">
         <span class="p-float-label">
           <InputText
@@ -26,22 +26,18 @@
       <div class="p-text-center p-invalid" v-if="state.incorrect">
         <p>Incorrect email or password!</p>
       </div>
-      <div class="p-text-center p-mb-4">
-        <p class="p-mb-0">Don't have an account?</p>
-        <p class="p-mt-0">
-          Register <router-link to="/register">here</router-link>!
-        </p>
-      </div>
       <div class="btn-group">
-        <Button class="p-ripple p-mb-4" @click="login" label="Login" />
-        <Button class="p-ripple" label="Login as guest" />
+        <Button class="p-ripple p-mb-4" @click="performLogin" label="Login" />
       </div>
     </div>
+    <div v-else>WELCOME {{currentUser}}!</div>
   </div>
 </template>
 
 <script>
 import { reactive } from "vue";
+import { useRouter } from "vue-router"
+import UserHandler from "@/modules/UserHandler.js"
 
 const form = reactive({
   email: null,
@@ -52,24 +48,21 @@ const state = reactive({
 })
 
 export default {
-  name: "LoginForm",
-
   setup() {
+    const router = useRouter();
+    const { isLoggedIn, currentUser, login} = UserHandler();
+console.log("isLoggedIn: ", isLoggedIn.value);
+    if (isLoggedIn.value) {
+      router.push('/lobby')
+    }
 
-    async function login() {
-      let result = await (
-        await fetch("http://localhost:8070/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        })
-      ).json();
+    async function performLogin() {
+      await login(form.email, form.password)
 
-      if (result.error) {
-        state.incorrect = true;
-      }
-      else {
-        // window.location.href = '/lobby';
+      if (isLoggedIn.value) {
+        router.push('/lobby')
+      } else {
+        state.incorrect = true
       }
     }
 
@@ -77,6 +70,9 @@ export default {
       form,
       state,
       login,
+      isLoggedIn,
+      currentUser,
+      performLogin
     };
   },
 };
@@ -115,4 +111,15 @@ button {
   font-size: 120%;
   font-family: "Yanone Kaffeesatz", sans-serif;
 }
+
+/* a:link,
+a:visited,
+a:active {
+  bottom: 10em;
+  position: absolute;
+  justify-content: center;
+  display: flex;
+  color: inherit;
+  text-decoration: none;
+} */
 </style>

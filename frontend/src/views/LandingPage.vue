@@ -1,43 +1,17 @@
 <template>
-  <div class="login-container p-d-flex p-my-auto p-jc-center">
-    <div class="p-fluid p-mt-3" v-if="!isLoggedIn">
-      <div class="input p-field p-my-4">
-        <span class="p-float-label">
-          <InputText
-            class="input"
-            id="email"
-            type="email"
-            v-model="form.email"
-          />
-          <label class="input" for="email">Email</label>
-        </span>
-      </div>
-      <div class="input p-field p-mt-5">
-        <span class="p-float-label">
-          <InputText
-            class="input"
-            id="password"
-            type="password"
-            v-model="form.password"
-          />
-          <label class="input" for="password">Password</label>
-        </span>
-      </div>
-      <div class="p-text-center p-invalid" v-if="state.incorrect">
-        <p>Incorrect email or password!</p>
-      </div>
-      <div class="p-text-center p-mb-4">
+  <div class="login-container p-grid p-my-auto p-jc-around">
+    <div class="p-col-12 p-text-center">
+      <router-link to="/login"><Button class="p-ripple">Login</Button></router-link>
+    </div>
+    <div class="p-col-12 p-text-center">
+      <Button class="p-ripple">Login as guest</Button>
+    </div>
+    <div class="p-text-center p-mb-4 p-col-12">
         <p class="p-mb-0">Don't have an account?</p>
         <p class="p-mt-0">
           Register <router-link to="/register">here</router-link>!
         </p>
       </div>
-      <div class="btn-group">
-        <Button class="p-ripple p-mb-4" @click="performLogin" label="Login" />
-        <Button class="p-ripple" label="Login as guest" />
-      </div>
-    </div>
-    <div v-else>WELCOME {{currentUser}}!</div>
   </div>
 </template>
 
@@ -63,8 +37,8 @@ console.log("isLoggedIn: ", isLoggedIn.value);
       router.push('/lobby')
     }
 
-    function performLogin() {
-      login(form.email, form.password)
+    async function performLogin() {
+      await login(form.email, form.password)
 
       if (isLoggedIn.value) {
         router.push('/lobby')
@@ -91,8 +65,7 @@ console.log("isLoggedIn: ", isLoggedIn.value);
   flex-direction: column;
 }
 
-button {
-  align-self: center;
+ Button {
   height: 4em;
   width: 17em;
   background-color: #e2c3a6;
@@ -101,7 +74,7 @@ button {
   border-radius: 1em;
   color: #3b1704;
   font-family: "Press Start 2P", cursive;
-}
+} 
 
 .input {
   color: #3b1704;

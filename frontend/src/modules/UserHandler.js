@@ -48,7 +48,6 @@ export default function UserHandler() {
 
     try {
       result = await extFetch("/api/auth/whoami/"); 
-      console.log("starttApp: result = ", result);
       if (result.error) {
         isLoggedIn.value = false;
         error.value = result.error;

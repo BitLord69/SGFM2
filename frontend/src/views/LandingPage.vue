@@ -4,7 +4,7 @@
       <router-link to="/login"><Button class="p-ripple">Login</Button></router-link>
     </div>
     <div class="p-col-12 p-text-center">
-      <Button class="p-ripple">Login as guest</Button>
+      <Button class="p-ripple" @click="performLoginAsGuest">Login as guest</Button>
     </div>
     <div class="p-text-center p-mb-4 p-col-12">
         <p class="p-mb-0">Don't have an account?</p>
@@ -31,7 +31,7 @@ const state = reactive({
 export default {
   setup() {
     const router = useRouter();
-    const { isLoggedIn, currentUser, login} = UserHandler();
+    const { isLoggedIn, currentUser, login, loginAsGuest} = UserHandler();
 console.log("isLoggedIn: ", isLoggedIn.value);
     if (isLoggedIn.value) {
       router.push('/lobby')
@@ -47,13 +47,19 @@ console.log("isLoggedIn: ", isLoggedIn.value);
       }
     }
 
+    function performLoginAsGuest() {
+      loginAsGuest();
+      router.push('/lobby')
+    }
+
     return {
       form,
       state,
       login,
       isLoggedIn,
       currentUser,
-      performLogin
+      performLogin,
+      performLoginAsGuest
     };
   },
 };
@@ -65,7 +71,7 @@ console.log("isLoggedIn: ", isLoggedIn.value);
   flex-direction: column;
 }
 
- Button {
+ button {
   height: 4em;
   width: 17em;
   background-color: #e2c3a6;

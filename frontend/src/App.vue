@@ -9,6 +9,9 @@
         <div>Loading...</div>
       </template>
     </Suspense>
+    <div v-if="isLoggedIn || isLoggedInAsGuest">
+      WELCOME {{currentUser.username}}!
+    </div>
     <div class="gameWindow" id="gameWindow" :style="{ backgroundImage: `url(${'../bg.png'})` }">
       <router-view :key="$route.path" />
     </div>
@@ -19,7 +22,7 @@
 import { useRoute } from "vue-router";
 import { watchEffect, ref } from "vue";
 import CheckLoggedIn from "@/components/CheckLoggedIn"
-//import UserHandler from "@/modules/UserHandler.js"
+import UserHandler from "@/modules/UserHandler.js"
 
 export default {
   name: "App",
@@ -27,7 +30,7 @@ export default {
   setup() {
     const route = useRoute();
     const redrawCounter = ref(0);
-    //const {startApp} = UserHandler()
+    const {currentUser, isLoggedIn, isLoggedInAsGuest} = UserHandler()
 
     watchEffect(() => {
       // Without this "hack" the game board will still be visible when coming back to the lobby
@@ -38,7 +41,7 @@ export default {
 
     //await startApp()
 
-    return { redrawCounter };
+    return { redrawCounter, currentUser, isLoggedIn, isLoggedInAsGuest };
   }
 }
 </script>

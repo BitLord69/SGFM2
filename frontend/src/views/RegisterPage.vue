@@ -78,6 +78,8 @@
 <script>
 
 import { reactive } from "vue";
+import { useRouter } from "vue-router"
+import UserHandler from "@/modules/UserHandler"
 
   const form = reactive({
   username: null,
@@ -92,9 +94,12 @@ const state = reactive({
 })
 
 export default {
-  name: "RegisterForm",
+  name: "RegisterPage",
 
   setup() {
+
+    const {createUser, isLoggedIn} = UserHandler();
+    const router = useRouter();
 
     function setAvatar(choice) {
       form.avatar = choice
@@ -107,29 +112,14 @@ export default {
 
     function checkPassword() {
       let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/
-      checkUsername()
       return regex.exec(form.password)
     }
 
-    async function checkUsername() {
-    let res = await fetch("http://localhost:8070/api/user");
-    console.log("users: ", res);
-  }
-
     async function register() {
-       let result = await (
-        await fetch("http://localhost:8070/api/user/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        })
-      ).json();
+      await createUser(form)
 
-      if (result.error) {
-        console.log("error i register:", result.error);
-      }
-      else {
-        console.log("successfully registered! result:", result);
+      if (isLoggedIn.value) {
+        router.push("/lobby")
       }
     }
    
@@ -139,8 +129,7 @@ export default {
       register,
       setAvatar,
       passwordMatch,
-      checkPassword,
-      checkUsername
+      checkPassword
     };
   },
 }

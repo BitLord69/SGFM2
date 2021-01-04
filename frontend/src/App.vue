@@ -1,6 +1,6 @@
 <template>
   <h1>Super Galaxy Face Melter</h1>
-  <div class="container" :key="redrawCounter">
+  <div class="p-grid p-jc-center" :key="redrawCounter">
     <Suspense>
       <template #default>
         <CheckLoggedIn />
@@ -19,7 +19,7 @@
 import { useRoute } from "vue-router";
 import { watchEffect, ref } from "vue";
 import CheckLoggedIn from "@/components/CheckLoggedIn"
-//import UserHandler from "@/modules/UserHandler.js"
+import UserHandler from "@/modules/UserHandler.js"
 
 export default {
   name: "App",
@@ -27,7 +27,7 @@ export default {
   setup() {
     const route = useRoute();
     const redrawCounter = ref(0);
-    //const {startApp} = UserHandler()
+    const {currentUser, isLoggedIn, isLoggedInAsGuest} = UserHandler()
 
     watchEffect(() => {
       // Without this "hack" the game board will still be visible when coming back to the lobby
@@ -38,17 +38,14 @@ export default {
 
     //await startApp()
 
-    return { redrawCounter };
+    return { redrawCounter, currentUser, isLoggedIn, isLoggedInAsGuest };
   }
 }
 </script>
 
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz&family=MedievalSharp&family=Press+Start+2P&display=swap");
-.container {
-  justify-content: center;
-  display: flex;
-}
+
 .gameWindow {
   width: 80vw;
   height: 85vh;
@@ -63,7 +60,6 @@ h1 {
   word-spacing: -0.5em;
   font-family: "Press Start 2P", cursive;
 }
-
 Button:hover{
   background-color: rgba($color: #e2c3a6, $alpha: 0.8) !important;
   border: 0.2em solid #3b1704 !important;

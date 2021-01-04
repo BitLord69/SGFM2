@@ -78,13 +78,13 @@ export default {
     const { createGame, joinGame, gameList, error } = SocketHandler();
     const { CreateGameState } = CreateGame.setup();
     const { joinGameState  } = JoinGame.setup();
-    const {logout} = UserHandler();
+    const {logout, currentUser} = UserHandler();
     const router = useRouter();
 
     const state = reactive({
       displayCreate: false,
       displayJoin: false,
-      playername: null,
+      playername: currentUser.value.username,
       cardsOnHand: 5,
       pointsToWin: 15,
     });

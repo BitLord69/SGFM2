@@ -9,9 +9,6 @@
         <div>Loading...</div>
       </template>
     </Suspense>
-    <div v-if="isLoggedIn || isLoggedInAsGuest">
-      WELCOME {{currentUser.username}}!
-    </div>
     <div class="gameWindow" id="gameWindow" :style="{ backgroundImage: `url(${'../bg.png'})` }">
       <router-view :key="$route.path" />
     </div>

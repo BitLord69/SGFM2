@@ -22,6 +22,7 @@
 <script>
 import { reactive, watchEffect, ref } from "vue";
 import SocketHandler from "@/modules/SocketHandler";
+import UserHandler from "@/modules/UserHandler";
 
 const joinGameState = reactive({
   activeIndex: 0,
@@ -32,6 +33,7 @@ const joinGameState = reactive({
 export default {
   name: "JoinGame",
   setup() {
+    const { currentUser } = UserHandler();
     const { gameList, getGameList } = SocketHandler();
 
     const componentKey = ref(0);
@@ -45,7 +47,7 @@ export default {
       }
     )
 
-    getGameList()
+    getGameList(currentUser.value.username)
     return {
       joinGameState,
       componentKey,

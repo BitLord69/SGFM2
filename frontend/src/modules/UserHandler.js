@@ -3,15 +3,17 @@ import { extFetch } from "./extFetch";
 
 const currentUser = ref(null);
 const isLoggedIn = ref(false);
+const isLoggedInAsGuest = ref(false);
 const error = ref(null);
 
 export default function UserHandler() {
   async function logout() {
     try {
-      await extFetch("/api/auth/logout/");
+      await extFetch("/api/auth/logout/", "POST");
     } catch (e) {
       error.value = e
     }    
+    console.log("logout Userhandler", error.value);
     currentUser.value = null;
     isLoggedIn.value = false;
   }
@@ -30,9 +32,9 @@ export default function UserHandler() {
     }
   }
 
-  async function createUser(email, userName, password) {
+  async function createUser(form) {
     try {
-      const result = await extFetch("/api/users/", "POST", {"email" : email, "userName" : userName, "password" : password});
+      const result = await extFetch("/api/user/", "POST", form);
       
       console.log(result);
     } catch (e) {
@@ -40,7 +42,7 @@ export default function UserHandler() {
       return 
     }
   
-    await login(userName, password)
+    await login(form.email, form.password)
   }
   
   async function startApp() {
@@ -48,6 +50,7 @@ export default function UserHandler() {
 
     try {
       result = await extFetch("/api/auth/whoami/"); 
+      console.log("who am i: ", result);
       if (result.error) {
         isLoggedIn.value = false;
         error.value = result.error;
@@ -63,5 +66,5 @@ export default function UserHandler() {
   }
 
 
-  return { currentUser, isLoggedIn, error, logout, login, createUser, startApp };
+  return { currentUser, isLoggedIn, isLoggedInAsGuest, error, logout, login, createUser, startApp };
 }

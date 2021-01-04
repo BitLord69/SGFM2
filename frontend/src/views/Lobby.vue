@@ -2,6 +2,7 @@
   <div class="lobby">
     <Header/>
     <h1>Super Galaxy Face Melter</h1>
+    <button @click="performlogout">LOGGA UT</button>
 
     <span class="p-float-label p-mt-4">
       <InputText 
@@ -69,7 +70,9 @@ import CreateGame from "@/components/CreateGame";
 import JoinGame from "@/components/JoinGame";
 import Header from "@/components/Header";
 
+import UserHandler from "@/modules/UserHandler"
 import SocketHandler from '@/modules/SocketHandler';
+import {useRouter} from "vue-router"
 
 export default {
   name: "Lobby",
@@ -78,6 +81,8 @@ export default {
     const { createGame, joinGame, gameList, error } = SocketHandler();
     const { CreateGameState } = CreateGame.setup();
     const { joinGameState  } = JoinGame.setup();
+    const {logout} = UserHandler();
+    const router = useRouter();
 
     const state = reactive({
       displayCreate: false,
@@ -107,6 +112,11 @@ export default {
     function joinExistingGame() {
       joinGame(state.playername, gameList.value[joinGameState.activeIndex].roomNo)
     }
+
+    async function performlogout() {
+      await logout()
+      router.push("/")
+    }
     
     return {
       state,
@@ -115,6 +125,7 @@ export default {
       isDisabled,
       createNewGame,
       error, 
+      performlogout,
       joinExistingGame,
     };
   },

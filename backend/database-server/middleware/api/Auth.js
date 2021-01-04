@@ -18,7 +18,6 @@ router.post("/login", async(req, res) => {
   // Log in by adding user to the session
   req.session.user = result;
   delete req.session.user.password
-  console.log("2: req.sess.user", req.session.user);
   return res.json(req.session.user);
 });
 

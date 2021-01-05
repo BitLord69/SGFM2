@@ -1,6 +1,13 @@
 <template>
   <div class="login-container p-grid p-my-auto p-jc-around">
-      <Leaderboard class="leaderboard"/>
+    <Suspense>
+      <template #default>
+        <Leaderboard class="leaderboard"/>
+      </template>
+      <template #fallback>
+        <div>Loading stats...</div>
+      </template>
+    </Suspense>
     <div class="p-col-12 p-text-center">
       <router-link to="/login"><Button class="p-ripple">Login</Button></router-link>
     </div>

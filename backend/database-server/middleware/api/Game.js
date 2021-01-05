@@ -8,6 +8,10 @@ router.get('/', async (req, res) => {
   return res.json(await game.getAll(req.session.user.username));
 })
 
+router.get('/leaderboard', async (req, res) => { 
+  return res.json(await game.getLeaderboard());
+})
+
 router.post('/', async (req, res) => {
   console.log("game.save, body: ", req.body);
   return res.json(await game.saveGame(req.body));

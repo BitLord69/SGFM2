@@ -5,17 +5,11 @@
 <script>
 
 export default {
-  /* props: ["stats"],
-  data() {
-    return { stat: this.stats}
-  }, */
   setup(context, props) {
     const statistics = props.attrs.stats;
-    console.log("in statistics setup: statistics", statistics);
     let numberOfLosses = statistics.filter(losses => losses.winner !== true);
-    console.log("losses:", numberOfLosses);
     let numberOfWins = statistics.filter(wins => wins.winner === true);
-    console.log("wins:", numberOfWins);
+
     const chartData = {
       labels: ["Wins", "Losses"],
       datasets: [
@@ -26,17 +20,6 @@ export default {
         },
       ],
     }
-    
-    /* function numberOfWins(){
-      return props.stats.filter(wins => wins.winner === true);
-    }
-
-    function totalGames(){
-      return props.stats.size;
-    }
-
-    numberOfWins();
-    totalGames(); */
     
     return {
       chartData

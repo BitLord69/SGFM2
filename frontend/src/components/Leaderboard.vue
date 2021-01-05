@@ -17,65 +17,19 @@
 </template>
 
 <script>
+import StatsHandler from "@/modules/StatsHandler"
+
 export default {
   name: "Leaderboard",
 
-  setup() {
-    const leaderboard = [
-      {
-        username: "tomtis",
-        wins: 4,
-        losses: 2,
-      },
-      {
-        username: "tomtemor",
-        wins: 5,
-        losses: 4,
-      },
-      {
-        username: "tomtepojke",
-        wins: 3,
-        losses: 1,
-      },
-      {
-        username: "tomtis",
-        wins: 4,
-        losses: 2,
-      },
-      {
-        username: "tomtemor",
-        wins: 5,
-        losses: 4,
-      },
-      {
-        username: "tomtepojke",
-        wins: 3,
-        losses: 1,
-      },
-      {
-        username: "tomtis",
-        wins: 4,
-        losses: 2,
-      },
-      {
-        username: "tomtemor",
-        wins: 5,
-        losses: 4,
-      },
-      {
-        username: "tomtepojke",
-        wins: 3,
-        losses: 1,
-      },
-      {
-        username: "tomtepojke",
-        wins: 1000,
-        losses: 1,
-      }
-    ];
+  async setup() {
+
+    const {leaderboard, statsError, getLeaderboard} = StatsHandler();
+
+    await getLeaderboard();
 
     return {
-      leaderboard,
+      leaderboard, statsError
     };
   },
 };

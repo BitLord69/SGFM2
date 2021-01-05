@@ -12,14 +12,12 @@ class User {
   async login(email, password) {
     const res = (await Neo4j.query(`MATCH (u:User {email: $email, password: $password})
                                     RETURN u`, {email, password}))[0];
-                                    console.log("res:", res);
     return res === undefined ? null : { ...res.u.properties }
   }
 
   async registerNewUser (username, email, password, avatar) {
     const res = (await Neo4j.query(`CREATE (u: User {username: $username, email: $email, password: $password,
                                     avatar: $avatar}) RETURN u`, {username, email, password, avatar}));
-    console.log("res i registeruser", res);
     return res;
   }
 }

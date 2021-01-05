@@ -1,8 +1,14 @@
 package com.sgfm2.gameengine;
 
+import com.google.gson.Gson;
 import com.sgfm2.Server;
 import com.sgfm2.gameobjects.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,6 +166,7 @@ public class GameEngine  {
       gameState.setRoundWinner(winner);
       if (!isGameOver()) {
         server.sendGameUpdateToRoom(gameState, roomNo);
+        // Sleep for a short bit so the players have time to see who won the round
         try {
           Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -169,14 +176,37 @@ public class GameEngine  {
         gameState.changeStartPlayer();
         gameState.clearPlayedCards();
       }
+
       server.sendGameUpdateToRoom(gameState, roomNo);
-      if(isGameOver()){
+
+      if(isGameOver()) {
+        // If it's not a guest game, save it in the database
+        if (!gameState.getPlayer(0).getName().startsWith("guest")) {
+          saveGameInDatabase();
+        }
         server.removeGame(roomNo);
       }
     } else {
       gameState.changeCurrentPlayer();
       server.sendGameUpdateToRoom(gameState, roomNo);
     }
+  }
+
+  private void saveGameInDatabase() {
+    HttpRequest request = null;
+    try {
+      request = HttpRequest
+          .newBuilder()
+          .uri(new URI("http://localhost:8070/api/game"))
+          .header("Content-Type", "application/json")
+          .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(gameState)))
+          .build();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+    }
+
+    var response = HttpClient.newBuilder().build().sendAsync(request, HttpResponse.BodyHandlers.ofString());
+    response.thenApply(HttpResponse::body).join();
   }
 
   public GameState getGameState() {

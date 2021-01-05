@@ -1,5 +1,6 @@
 <template>
   <div class="login-container p-grid p-my-auto p-jc-around">
+      <Leaderboard class="leaderboard"/>
     <div class="p-col-12 p-text-center">
       <router-link to="/login"><Button class="p-ripple">Login</Button></router-link>
     </div>
@@ -19,6 +20,7 @@
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import UserHandler from "@/modules/UserHandler.js"
+import Leaderboard from '../components/Leaderboard.vue';
 
 const form = reactive({
   email: null,
@@ -29,6 +31,8 @@ const state = reactive({
 });
 
 export default {
+  components: { Leaderboard },
+
   setup() {
     const router = useRouter();
     const { isLoggedIn, currentUser, login} = UserHandler();
@@ -78,6 +82,12 @@ export default {
 
 .input {
   color: #3b1704;
+}
+
+.leaderboard {
+  position: absolute;
+  top: 2vh;
+  right: 1vw;
 }
 
 .login-container {

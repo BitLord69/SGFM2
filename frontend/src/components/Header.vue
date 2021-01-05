@@ -7,6 +7,9 @@
         <div class="username">
           {{currentUser.username}}
         </div>
+        <div class="p-mt-5">
+          <Statistics/>
+        </div>
       </div>
       <div class="sb-logout" @click="logMeOut">Logout</div>
     </div>
@@ -17,8 +20,10 @@
 <script>
 import UserHandler from "../modules/UserHandler";
 import {useRouter} from "vue-router"
+import Statistics from './Statistics.vue';
 
 export default {
+  components: { Statistics },
   name: "Header",
   setup() {
     const router = useRouter();
@@ -74,7 +79,7 @@ export default {
 .sidebar-visible {
   position: absolute;
   visibility: visible;
-  transition: ease-in 500ms;
+  transition: ease-in 400ms;
   z-index: 15;
   top: -1vh;
   right: -1vw;
@@ -84,7 +89,7 @@ export default {
   border: 2px solid #3b1704;
   border-top-left-radius: 40px;
   .sidebar-content{
-    transition: ease-in 500ms;
+    transition: ease-in 400ms;
     display: flex;
     flex-direction: column;
     height: 95%;
@@ -97,7 +102,7 @@ export default {
     }
   }
   .sb-logout{
-    transition: ease-in 500ms;
+    transition: ease-in 400ms;
     display: flex;
   }
 }
@@ -110,7 +115,7 @@ export default {
   right: -1vw;
   width: 0;
   height: 82vh;
-  transition: ease-in 500ms;
+  transition: ease-in 400ms;
   border-top-left-radius: 40px;
 }
 
@@ -133,11 +138,11 @@ export default {
 
 .profile-sb-open {
   right: 3.75vw;
-  transition: ease-in 500ms;
+  transition: ease-in 400ms;
 }
 
 .profile-sb-close {
   right: 0;
-  transition: ease-in 500ms;
+  transition: ease-in 400ms;
 }
 </style>

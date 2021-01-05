@@ -18,7 +18,7 @@
 import { useRoute } from "vue-router";
 import { watchEffect, ref } from "vue";
 import CheckLoggedIn from "@/components/CheckLoggedIn"
-//import UserHandler from "@/modules/UserHandler.js"
+import UserHandler from "@/modules/UserHandler.js"
 
 export default {
   name: "App",
@@ -26,7 +26,7 @@ export default {
   setup() {
     const route = useRoute();
     const redrawCounter = ref(0);
-    //const {startApp} = UserHandler()
+    const {currentUser, isLoggedIn, isLoggedInAsGuest} = UserHandler()
 
     watchEffect(() => {
       // Without this "hack" the game board will still be visible when coming back to the lobby
@@ -37,7 +37,7 @@ export default {
 
     //await startApp()
 
-    return { redrawCounter };
+    return { redrawCounter, currentUser, isLoggedIn, isLoggedInAsGuest };
   }
 }
 </script>

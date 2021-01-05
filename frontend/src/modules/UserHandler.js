@@ -16,6 +16,7 @@ export default function UserHandler() {
     console.log("logout Userhandler", error.value);
     currentUser.value = null;
     isLoggedIn.value = false;
+    isLoggedInAsGuest.value = false;
   }
 
   const login = async (email, password) => {
@@ -30,6 +31,11 @@ export default function UserHandler() {
       error.value = e
       return 
     }
+  }
+
+  function loginAsGuest() {
+    isLoggedInAsGuest.value = true;
+    currentUser.value = {username: "guest" + Date.now()};
   }
 
   async function createUser(form) {
@@ -66,5 +72,5 @@ export default function UserHandler() {
   }
 
 
-  return { currentUser, isLoggedIn, isLoggedInAsGuest, error, logout, login, createUser, startApp };
+  return { currentUser, isLoggedIn, isLoggedInAsGuest, error, logout, login, loginAsGuest, createUser, startApp };
 }

@@ -76,7 +76,7 @@ public class Server {
       roomList.put(room, lgm);
 
       server.getBroadcastOperations().
-          getClients().forEach(x -> x.sendEvent("LIST_GAMES" , getGameList()));
+          getClients().forEach(x -> x.sendEvent("LIST_GAMES" , getGameList(data.getName())));
 
       client.sendEvent("GAME_UPDATE" , new Gson().toJson(gameEngine.getGameState()));
     });
@@ -96,7 +96,7 @@ public class Server {
       // Send updated list of games to all clients (since this one is not available any longer)
       server.getBroadcastOperations().
           getClients().
-          forEach(x -> { x.sendEvent("LIST_GAMES" , getGameList()); });
+          forEach(x -> { x.sendEvent("LIST_GAMES" , getGameList(data.getName())); });
 
       sendGameUpdateToRoom(gameEngine.getGameState(), data.getRoomNo());
     });
@@ -114,7 +114,7 @@ public class Server {
     });
 
     server.addEventListener("AVAILABLE_GAMES", String.class,
-        (client, data, ackSender) -> client.sendEvent("LIST_GAMES",  getGameList()));
+        (client, data, ackSender) -> client.sendEvent("LIST_GAMES",  getGameList(data)));
 
     server.addEventListener("FORCE_DISCONNECT", String.class,
       (client, data, ackSender) -> {
@@ -129,10 +129,16 @@ public class Server {
     });
   }
 
-  private String getGameList() {
+  private String getGameList(String username) {
     List<ListGamesMessage> listGamesMessages = roomList.values().
         stream().
         filter(listGamesMessage -> listGamesMessage.getPlayersInRoom() < 2).
+        filter(listGamesMessage -> {
+          if (username.startsWith("guest")){
+            return listGamesMessage.getCreator().startsWith("guest");
+          }
+          return !listGamesMessage.getCreator().startsWith("guest");
+        }).
         collect(Collectors.toList());
     return new Gson().toJson(listGamesMessages);
   }

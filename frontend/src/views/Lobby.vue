@@ -2,7 +2,6 @@
   <div class="lobby">
     <Header/>
     <h1>Super Galaxy Face Melter</h1>
-    <button @click="performlogout">LOGGA UT</button>
 
     <span class="p-float-label p-mt-4">
       <InputText 

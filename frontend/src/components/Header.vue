@@ -1,9 +1,12 @@
 <template>
 <teleport to="body">
   <div class="sidebar" v-if="currentUser !== null">
-    <img @click="toggleNav" :src="'/avatar/' + currentUser.avatar + '.png'" alt="" />
+    <img class="profile-sb-close" id="profile-img" @click="toggleNav" :src="'/avatar/' + currentUser.avatar + '.png'" alt="" />
     <div class="sidebar-hidden" id="sidebar">
       <div class="sidebar-content">
+        <div class="username">
+          {{currentUser.username}}
+        </div>
       </div>
       <div class="sb-logout" @click="logMeOut">Logout</div>
     </div>
@@ -37,7 +40,9 @@ export default {
       let sidebar = document.getElementById("sidebar");
       sidebar.classList.toggle("sidebar-hidden");
       sidebar.classList.toggle("sidebar-visible");
-      console.log("profile-bar klickad");
+      let profileImg = document.getElementById('profile-img');
+      profileImg.classList.toggle('profile-sb-open');
+      profileImg.classList.toggle('profile-sb-close');
     }
   },
 };
@@ -51,7 +56,11 @@ export default {
   position: absolute;
   right: 12vw;
   top: 3vh;
-  border-radius: 50px;
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  letter-spacing: 2px;
+  font-weight: bold;
+  font-size: 18px;
+  
   img {
     position: relative;
     width: 100px;
@@ -73,14 +82,14 @@ export default {
   height: 82vh;
   background-color:#e2c3a6;
   border: 2px solid #3b1704;
-  border-radius: 2px;
+  border-top-left-radius: 40px;
   .sidebar-content{
     transition: ease-in 500ms;
     display: flex;
     flex-direction: column;
     height: 95%;
     div{
-      margin: 0;
+      // margin: 0;
       padding: 0.2rem;
       font-size: 18px;
       text-transform: uppercase;
@@ -102,7 +111,7 @@ export default {
   width: 0;
   height: 82vh;
   transition: ease-in 500ms;
-  
+  border-top-left-radius: 40px;
 }
 
 .sb-logout{
@@ -116,5 +125,19 @@ export default {
     cursor: pointer;
     background-color: darken($color: #e2c3a6, $amount: 30%);
   }
+}
+
+.username {
+  margin-top: 120px;
+}
+
+.profile-sb-open {
+  right: 3.75vw;
+  transition: ease-in 500ms;
+}
+
+.profile-sb-close {
+  right: 0;
+  transition: ease-in 500ms;
 }
 </style>

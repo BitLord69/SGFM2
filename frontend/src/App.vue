@@ -1,5 +1,4 @@
 <template>
-  <h1>Super Galaxy Face Melter</h1>
   <div class="p-grid p-jc-center" :key="redrawCounter">
     <Suspense>
       <template #default>

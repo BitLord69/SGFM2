@@ -14,6 +14,7 @@ import AccordionTab from 'primevue/accordiontab';
 import ScrollPanel from 'primevue/scrollpanel';
 import ProgressSpinner from 'primevue/progressspinner';
 import Password from 'primevue/password';
+import Chart from 'primevue/chart';
 
 import "primevue/resources/themes/saga-blue/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -33,5 +34,6 @@ app.component("ScrollPanel", ScrollPanel);
 app.component("ProgressSpinner", ProgressSpinner);
 app.directive("ripple", Ripple);
 app.component("Password", Password);
+app.component("Chart", Chart);
 
 app.mount("#app");

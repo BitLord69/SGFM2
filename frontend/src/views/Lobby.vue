@@ -1,7 +1,7 @@
 <template>
   <div class="lobby">
+    <Header/>
     <h1>Super Galaxy Face Melter</h1>
-    <button @click="performlogout">LOGGA UT</button>
 
     <span class="p-float-label p-mt-4">
       <InputText 
@@ -67,13 +67,15 @@
 import { reactive } from "vue";
 import CreateGame from "@/components/CreateGame";
 import JoinGame from "@/components/JoinGame";
+import Header from "@/components/Header";
+
 import UserHandler from "@/modules/UserHandler"
 import SocketHandler from '@/modules/SocketHandler';
 import {useRouter} from "vue-router"
 
 export default {
   name: "Lobby",
-  components: { CreateGame, JoinGame },
+  components: { CreateGame, JoinGame, Header },
   setup() {
     const { createGame, joinGame, gameList, error } = SocketHandler();
     const { CreateGameState } = CreateGame.setup();

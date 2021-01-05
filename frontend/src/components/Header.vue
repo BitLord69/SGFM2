@@ -7,8 +7,8 @@
         <div class="username">
           {{currentUser.username}}
         </div>
-        <div class="p-mt-5">
-          <Statistics/>
+        <div class="p-mt-5" v-if="stats !== null">
+          <Statistics v-bind:stats="stats"/>
         </div>
       </div>
       <div class="sb-logout" @click="logMeOut">Logout</div>
@@ -21,6 +21,8 @@
 import UserHandler from "../modules/UserHandler";
 import {useRouter} from "vue-router"
 import Statistics from './Statistics.vue';
+import { extFetch } from '../modules/extFetch';
+import { ref } from "vue";
 
 export default {
   components: { Statistics },
@@ -28,7 +30,8 @@ export default {
   setup() {
     const router = useRouter();
     const { currentUser, isLoggedIn, logout } = UserHandler();
-
+    let toggle = false;
+    const stats = ref(null);
     async function logMeOut(){
       await logout();
       router.push("/")
@@ -38,10 +41,20 @@ export default {
       toggleNav,
       currentUser,
       isLoggedIn,
-      logMeOut
+      logMeOut,
+      stats
     };
 
-    function toggleNav() {
+    async function toggleNav() {
+      toggle = !toggle;
+      if(toggle){
+        try {
+           stats.value = await extFetch("/api/game/", "GET")
+           console.log(stats.value);
+        } catch (e) {
+         console.log("toggleNav fetch statistics:", e);
+        }    
+      }
       let sidebar = document.getElementById("sidebar");
       sidebar.classList.toggle("sidebar-hidden");
       sidebar.classList.toggle("sidebar-visible");
@@ -67,6 +80,7 @@ export default {
   font-size: 18px;
   
   img {
+    cursor: pointer;
     position: relative;
     width: 100px;
     height: 100px;

@@ -2,7 +2,10 @@ const router = require('express').Router()
 const game = require('../../entities/Game')
 
 router.get('/', async (req, res) => {
-  return res.json(await game.getAll());
+  if (!req.session.user) {
+    return res.json({ error: 'Not logged in!' });
+  }  
+  return res.json(await game.getAll(req.session.user.username));
 })
 
 router.post('/', async (req, res) => {

@@ -1,10 +1,10 @@
 const Neo4j = require('../modules/neo4j')
 
 class Game {
-  async getAll(){
-    const res = (await Neo4j.query(`MATCH (g:Game)
-                                    RETURN g`, {}))
-    return res.map//(o => ({ ...o.p.properties }))
+  async getAll(username){
+    const res = (await Neo4j.query(`MATCH (u:User{username: $username})-[p:PLAYED_GAME]->(g:Game)
+                                    RETURN p, g`, {username: username}))
+    return res.map(o => ({...o.g.properties, ...o.p.properties}))
   }
 
   async saveGame(body) {
@@ -22,7 +22,6 @@ class Game {
                                       winner2: body.gameWinner == '1',
                                       pointsToWin: body.pointsToWin
                                     }));
-    console.log("res i saveGame:", res);
     return res;
   }
 }

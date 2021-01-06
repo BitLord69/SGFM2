@@ -65,7 +65,7 @@ public class Server {
       String room = getToken(client);
 
       // TODO: 2020-12-14 Do we need a new thread here????
-      GameEngine gameEngine = new GameEngine(localThis, data.getCardsOnHand(),data.getPointsToWin(), room);
+      GameEngine gameEngine = new GameEngine(localThis, data.getCardsOnHand(),data.getPointsToWin(), room, data.getLeague());
       gameEngine.setPlayer(new Player(data.getName()));
       games.put(room, gameEngine);
 

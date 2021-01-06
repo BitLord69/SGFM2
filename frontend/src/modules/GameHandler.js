@@ -1,8 +1,13 @@
 import { extFetch } from "./extFetch";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 
 const error = ref(null);
 const stats = ref(null);
+const CreateGameState = reactive({
+  cardsOnHand: 5,
+  pointsToWin: 15,
+  selectedLeague: null
+});
 
 export default function GameHandler() {
   async function getGames() {
@@ -14,5 +19,5 @@ export default function GameHandler() {
     }  
   }
 
-  return { getGames, error, stats }
+  return { getGames, error, stats, CreateGameState }
 }

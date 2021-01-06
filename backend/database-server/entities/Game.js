@@ -20,10 +20,18 @@ class Game {
   }
 
   async saveGame(body) {
-    const res = (await Neo4j.query(`MATCH (u1: User{ username: $name1 }), (u2: User{ username: $name2 })
-                                    CREATE (u1)-[pg1: PLAYED_GAME{ points: $points1, winner: $winner1, isStartPlayer: true }]->(g:Game{date: timestamp(), status: 'Finished', pointsToWin: $pointsToWin})
-                                    MERGE (u2)-[pg2: PLAYED_GAME{ points: $points2, winner: $winner2, isStartPlayer: false }]->(g)
-                                    RETURN u1, u2, pg1, pg2, g`,
+    console.log("game BODY:", body);
+    let queryString = `MATCH (u1: User{ username: $name1 }), (u2: User{ username: $name2 })
+    CREATE (u1)-[pg1: PLAYED_GAME{ points: $points1, winner: $winner1, isStartPlayer: true }]->(g:Game{date: timestamp(), status: 'Finished', pointsToWin: $pointsToWin})
+    MERGE (u2)-[pg2: PLAYED_GAME{ points: $points2, winner: $winner2, isStartPlayer: false }]->(g)`;
+
+    if (body.league) {
+      queryString += ` WITH u1, u2, pg1, pg2, g  
+                       MATCH (l: League {league: $league}) 
+                       MERGE (g)-[:IN_LEAGUE]->(l)`
+    }
+    queryString += " RETURN u1, u2, pg1, pg2, g";
+    const res = (await Neo4j.query(queryString,
                                     {
                                       name1: body.players[0].name,
                                       name2: body.players[1].name,
@@ -31,7 +39,8 @@ class Game {
                                       winner1: body.gameWinner == '0',
                                       points2: body.players[1].score,
                                       winner2: body.gameWinner == '1',
-                                      pointsToWin: body.pointsToWin
+                                      pointsToWin: body.pointsToWin,
+                                      league: body.league
                                     }));
     return res;
   }

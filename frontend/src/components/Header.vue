@@ -21,8 +21,8 @@
 import UserHandler from "../modules/UserHandler";
 import {useRouter} from "vue-router"
 import Statistics from './Statistics.vue';
-import { extFetch } from '../modules/extFetch';
-import { ref } from "vue";
+import GameHandler from "../modules/GameHandler";
+
 
 export default {
   components: { Statistics },
@@ -30,8 +30,8 @@ export default {
   setup() {
     const router = useRouter();
     const { currentUser, isLoggedIn, logout } = UserHandler();
+    const { stats, getGames } = GameHandler();
     let toggle = false;
-    const stats = ref(null);
     async function logMeOut(){
       await logout();
       router.push("/")
@@ -48,12 +48,7 @@ export default {
     async function toggleNav() {
       toggle = !toggle;
       if(toggle){
-        try {
-           stats.value = await extFetch("/api/game/", "GET")
-           console.log(stats.value);
-        } catch (e) {
-         console.log("toggleNav fetch statistics:", e);
-        }    
+        getGames();
       }
       let sidebar = document.getElementById("sidebar");
       sidebar.classList.toggle("sidebar-hidden");

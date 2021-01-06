@@ -15,6 +15,7 @@ import ScrollPanel from 'primevue/scrollpanel';
 import ProgressSpinner from 'primevue/progressspinner';
 import Password from 'primevue/password';
 import Chart from 'primevue/chart';
+import Dropdown from 'primevue/dropdown';
 
 import "primevue/resources/themes/saga-blue/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -25,6 +26,7 @@ const app = createApp(App).use(router);
 
 app.config.globalProperties.$primevue = { ripple: true };
 app.component("InputText", InputText);
+app.component("Dropdown", Dropdown);
 app.component("Dialog", Dialog);
 app.component("Button", Button);
 app.component("Slider", Slider);

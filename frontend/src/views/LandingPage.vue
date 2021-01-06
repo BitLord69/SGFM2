@@ -8,12 +8,24 @@
         <div>Loading stats...</div>
       </template>
     </Suspense>
-    <div class="p-col-12 p-text-center">
+    
+    <router-link class="login-link" to="/login">
+      <div class="loginCard">
+        <div class="loginCardText">Login</div>
+      </div>
+    </router-link>
+
+    <div class="guestCard" @click="performLoginAsGuest">
+      <div class="guestCardText">Login as Guest</div>
+    </div>
+
+
+    <!-- <div class="p-col-12 p-text-center">
       <router-link to="/login"><Button class="p-ripple">Login</Button></router-link>
     </div>
     <div class="p-col-12 p-text-center">
       <Button class="p-ripple" @click="performLoginAsGuest">Login as guest</Button>
-    </div>
+    </div> -->
     <div class="p-text-center p-mb-4 p-col-12">
         <p class="p-mb-0">Don't have an account?</p>
         <p class="p-mt-0">
@@ -125,4 +137,45 @@ a:active {
   color: inherit;
   text-decoration: none;
 } */
+
+.login-link{
+  color: inherit;
+}
+.loginCard{
+  position: absolute;
+  cursor: pointer;
+  width: 17.5%;
+  height: 40%;
+  top: 25%;
+  left: 30%;
+  background-size: 100% 100%;
+  transform: rotate(-10deg);
+  background-image: url("/radiated_zombie.png");
+}
+
+.loginCardText{
+  position: absolute;
+  bottom: 9%;
+  left: 45%;
+  font-size: 1em;
+}
+
+.guestCard{
+  position: absolute;
+  cursor: pointer;
+  width: 17.5%;
+  height: 40%;
+  left: 55%;
+  top: 25%;
+  background-size: 100% 100%;
+  transform: rotate(10deg);
+  background-image: url("/screaming_toddler.png");
+}
+
+.guestCardText{
+  position: absolute;
+  bottom: 9%;
+  left: 32%;
+  font-size: 1em;
+}
 </style>

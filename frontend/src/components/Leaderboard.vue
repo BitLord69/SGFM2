@@ -37,6 +37,7 @@ export default {
 
 <style scoped lang="scss">
 #leaderboard {
+  color: #3b1704;
   background-color: #e2c3a6;
   padding: 1%;
   border: 2px solid #3b1704;

@@ -7,7 +7,7 @@
         <div class="username">
           {{currentUser.username}}
         </div>
-        <div class="p-mt-5" v-if="stats !== null">
+        <div class="p-mt-5" v-if="!isLoggedInAsGuest && stats !== null">
           <Statistics v-bind:stats="stats"/>
         </div>
       </div>
@@ -29,7 +29,7 @@ export default {
   name: "Header",
   setup() {
     const router = useRouter();
-    const { currentUser, isLoggedIn, logout } = UserHandler();
+    const { currentUser, isLoggedIn, logout, isLoggedInAsGuest } = UserHandler();
     const { stats, getGames } = GameHandler();
     let toggle = false;
     async function logMeOut(){
@@ -42,12 +42,13 @@ export default {
       currentUser,
       isLoggedIn,
       logMeOut,
-      stats
+      stats,
+      isLoggedInAsGuest
     };
 
     async function toggleNav() {
       toggle = !toggle;
-      if(toggle){
+      if(toggle && !isLoggedInAsGuest.value){
         getGames();
       }
       let sidebar = document.getElementById("sidebar");

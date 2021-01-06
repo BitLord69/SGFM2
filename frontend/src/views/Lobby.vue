@@ -1,14 +1,15 @@
 <template>
   <div class="lobby">
-    <Header/>
+    <Header />
     <h1>Super Galaxy Face Melter</h1>
 
     <span class="p-float-label p-mt-4">
-      <InputText 
-        class="inputPlayerName" 
-        id="playername" 
-        type="text" 
-        v-model="state.playername" />
+      <InputText
+        class="inputPlayerName"
+        id="playername"
+        type="text"
+        v-model="state.playername"
+      />
       <label class="inputPlayerNameLabel" for="playername">Playername</label>
     </span>
     <div class="buttons p-mt-6">
@@ -36,10 +37,21 @@
         :visible="state.displayCreate"
       >
         <template #header><h3 class="p-m-0">Create game</h3></template>
-        <CreateGame />
+        <Suspense>
+          <template #default>
+            <CreateGame />
+          </template>
+          <template #fallback>
+            <div>Loading leagues...</div>
+          </template>
+        </Suspense>
         <template class="p-mx-auto" #footer>
           <router-link to="/gameboard/0">
-            <Button label="Create" class="p-d-block p-mx-auto p-button-raised btn-dialog" @click="createNewGame"/>
+            <Button
+              label="Create"
+              class="p-d-block p-mx-auto p-button-raised btn-dialog"
+              @click="createNewGame"
+            />
           </router-link>
         </template>
       </Dialog>
@@ -51,11 +63,15 @@
         :visible="state.displayJoin"
       >
         <template #header><h3 class="p-m-0">Join game</h3></template>
-        
+
         <JoinGame />
         <template class="p-mx-auto" #footer>
           <router-link to="/gameboard/1">
-            <Button label="Join" class="p-d-block p-mx-auto p-button-raised btn-dialog" @click="joinExistingGame" />
+            <Button
+              label="Join"
+              class="p-d-block p-mx-auto p-button-raised btn-dialog"
+              @click="joinExistingGame"
+            />
           </router-link>
         </template>
       </Dialog>
@@ -68,19 +84,21 @@ import { reactive } from "vue";
 import CreateGame from "@/components/CreateGame";
 import JoinGame from "@/components/JoinGame";
 import Header from "@/components/Header";
+// import CreateGameState from "@/components/CreateGame";
 
-import UserHandler from "@/modules/UserHandler"
-import SocketHandler from '@/modules/SocketHandler';
-import {useRouter} from "vue-router"
+import UserHandler from "@/modules/UserHandler";
+import SocketHandler from "@/modules/SocketHandler";
+import GameHandler from "@/modules/GameHandler";
+import { useRouter } from "vue-router";
 
 export default {
   name: "Lobby",
   components: { CreateGame, JoinGame, Header },
   setup() {
     const { createGame, joinGame, gameList, error } = SocketHandler();
-    const { CreateGameState } = CreateGame.setup();
-    const { joinGameState  } = JoinGame.setup();
-    const {logout, currentUser} = UserHandler();
+    const { CreateGameState } = GameHandler();
+    const { joinGameState } = JoinGame.setup();
+    const { logout, currentUser } = UserHandler();
     const router = useRouter();
 
     const state = reactive({
@@ -97,33 +115,41 @@ export default {
 
     function setVisibleJoin() {
       state.displayJoin = !state.displayJoin;
-      
     }
 
     function isDisabled() {
-      return state.playername === null || state.playername.trim() === ""
+      return state.playername === null || state.playername.trim() === "";
     }
 
     function createNewGame() {
-      createGame(state.playername, CreateGameState.pointsToWin, CreateGameState.cardsOnHand);
+      console.log("createGameState i createnewgame", CreateGameState);
+      let vadsomhelst = CreateGameState;
+      if (CreateGameState.selectedLeague) {
+        vadsomhelst = { ...CreateGameState.selectedLeague };
+        console.log("vadsomhelst i createnewgame:", vadsomhelst);
+      }
+      createGame(state.playername, vadsomhelst);
     }
 
     function joinExistingGame() {
-      joinGame(state.playername, gameList.value[joinGameState.activeIndex].roomNo)
+      joinGame(
+        state.playername,
+        gameList.value[joinGameState.activeIndex].roomNo
+      );
     }
 
     async function performlogout() {
-      await logout()
-      router.push("/")
+      await logout();
+      router.push("/");
     }
-    
+
     return {
       state,
       setVisibleCreate,
       setVisibleJoin,
       isDisabled,
       createNewGame,
-      error, 
+      error,
       performlogout,
       joinExistingGame,
     };
@@ -133,7 +159,7 @@ export default {
 
 <style scoped>
 .inputPlayerName {
-  background-color:  #e2c3a6;
+  background-color: #e2c3a6;
   color: #3b1704;
 }
 
@@ -176,12 +202,12 @@ h1 {
 }
 
 .already-connected {
-  color:red;
+  color: red;
   text-shadow: 2px 2px black;
   font-family: "Press Start 2P", cursive;
 }
 
-.btn-dialog{
+.btn-dialog {
   background-color: #e2c3a6;
   border: 0.2em solid #3b1704;
   box-shadow: 0.2em 0.2em black;

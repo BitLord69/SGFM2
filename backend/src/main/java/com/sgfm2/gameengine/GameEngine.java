@@ -37,8 +37,8 @@ public class GameEngine  {
 
   private final Server server;
 
-  public GameEngine(Server server, int handSize, int pointsToWin, String roomNo) {
-    gameState = new GameState(pointsToWin);
+  public GameEngine(Server server, int handSize, int pointsToWin, String roomNo, String league) {
+    gameState = new GameState(pointsToWin, league);
     this.handSize = handSize;
     this.server = server;
     this.roomNo = roomNo;
@@ -46,6 +46,7 @@ public class GameEngine  {
 
   public void startGame() {
     dealCards();
+    System.out.println("i startGame");
     server.sendGameUpdateToRoom(gameState, roomNo);
   }
 

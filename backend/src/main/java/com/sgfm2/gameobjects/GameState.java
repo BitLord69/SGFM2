@@ -9,6 +9,7 @@ public class GameState implements Serializable {
   public static final byte PLAYER_TWO = 1;
 
   private final int pointsToWin;
+  private final String league;
   private final ArrayList<Player> players = new ArrayList<>();
   private final ArrayList<Card> playedCards = new ArrayList<>();
   private int startPlayer = 0;
@@ -24,8 +25,9 @@ public class GameState implements Serializable {
 //  public GameState() {
 //  }
 
-  public GameState(int pointsToWin) {
+  public GameState(int pointsToWin, String league) {
     this.pointsToWin = pointsToWin;
+    this.league = league;
   }
 
   public int getCurrentPlayer() {

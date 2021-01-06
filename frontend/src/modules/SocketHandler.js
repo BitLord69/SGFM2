@@ -71,8 +71,9 @@ export default function SocketHandler() {
     client.emit("SEND", message);
   }
 
-  function createGame(name, pointsToWin, cardsOnHand) {
-    client.emit("CREATE_GAME", { name, pointsToWin, cardsOnHand });
+  function createGame(name, createGameState) {
+    console.log("creategameState:", createGameState);
+    client.emit("CREATE_GAME", { name, ...createGameState });
   }
 
   function joinGame(name, roomNo) {

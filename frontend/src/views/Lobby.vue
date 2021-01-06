@@ -1,22 +1,10 @@
 <template>
   <div class="lobby">
-    <Header />
-    <h1>Super Galaxy Face Melter</h1>
-
-    <span class="p-float-label p-mt-4">
-      <InputText
-        class="inputPlayerName"
-        id="playername"
-        type="text"
-        v-model="state.playername"
-      />
-      <label class="inputPlayerNameLabel" for="playername">Playername</label>
-    </span>
+    <Sidebar />
     <div class="buttons p-mt-6">
       <Button
         id="btn-create"
         label="Create game"
-        :disabled="isDisabled()"
         class="p-button-raised p-ripple"
         @click="setVisibleCreate()"
       />
@@ -24,7 +12,6 @@
       <Button
         id="btn-join"
         label="Join game"
-        :disabled="isDisabled()"
         class="p-button-raised p-ripple"
         @click="setVisibleJoin()"
       />
@@ -94,7 +81,7 @@
 import { reactive } from "vue";
 import CreateGame from "@/components/CreateGame";
 import JoinGame from "@/components/JoinGame";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 // import CreateGameState from "@/components/CreateGame";
 
 import UserHandler from "@/modules/UserHandler";
@@ -104,7 +91,7 @@ import { useRouter } from "vue-router";
 
 export default {
   name: "Lobby",
-  components: { CreateGame, JoinGame, Header },
+  components: { CreateGame, JoinGame, Sidebar },
   setup() {
     const { createGame, joinGame, gameList, error } = SocketHandler();
     const { CreateGameState } = GameHandler();
@@ -115,7 +102,6 @@ export default {
     const state = reactive({
       displayCreate: false,
       displayJoin: false,
-      playername: currentUser.value.username,
       cardsOnHand: 5,
       pointsToWin: 15,
     });
@@ -128,10 +114,6 @@ export default {
       state.displayJoin = !state.displayJoin;
     }
 
-    function isDisabled() {
-      return state.playername === null || state.playername.trim() === "";
-    }
-
     function createNewGame() {
       console.log("createGameState i createnewgame", CreateGameState);
       let vadsomhelst = CreateGameState;
@@ -139,12 +121,12 @@ export default {
         vadsomhelst = { ...CreateGameState.selectedLeague };
         console.log("vadsomhelst i createnewgame:", vadsomhelst);
       }
-      createGame(state.playername, vadsomhelst);
+      createGame(currentUser.value.username, vadsomhelst);
     }
 
     function joinExistingGame() {
       joinGame(
-        state.playername,
+        currentUser.value.username,
         gameList.value[joinGameState.activeIndex].roomNo
       );
     }
@@ -158,7 +140,6 @@ export default {
       state,
       setVisibleCreate,
       setVisibleJoin,
-      isDisabled,
       createNewGame,
       error,
       performlogout,
@@ -169,14 +150,6 @@ export default {
 </script>
 
 <style scoped>
-.inputPlayerName {
-  background-color: #e2c3a6;
-  color: #3b1704;
-}
-
-.inputPlayerNameLabel {
-  color: #3b1704;
-}
 
 .lobby {
   position: relative;

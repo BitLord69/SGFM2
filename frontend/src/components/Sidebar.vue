@@ -26,7 +26,7 @@ import GameHandler from "../modules/GameHandler";
 
 export default {
   components: { Statistics },
-  name: "Header",
+  name: "Sidebar",
   setup() {
     const router = useRouter();
     const { currentUser, isLoggedIn, logout, isLoggedInAsGuest } = UserHandler();
@@ -64,13 +64,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+$sidebarTop: 3vh;
+$sidebarWidth: 250px;
+$imageSize: 100px;
+$imageRight: 18px;
+
 .sidebar {
   width: 100px;
   height: 100px;
   color:#3b1704;
   position: absolute;
-  right: 12vw;
-  top: 3vh;
+  right: $imageRight;
+  top: $sidebarTop;
   font-family: "Yanone Kaffeesatz", sans-serif;
   letter-spacing: 2px;
   font-weight: bold;
@@ -79,8 +85,8 @@ export default {
   img {
     cursor: pointer;
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: $imageSize;
+    height: $imageSize;
     border: 2px solid #2c3e50;
     border-radius: 50px; 
     z-index: 100;
@@ -94,8 +100,8 @@ export default {
   z-index: 15;
   top: -1vh;
   right: -1vw;
-  width: 250px;
-  height: 82vh;
+  width: $sidebarWidth;
+  height: calc(100vh - #{$sidebarTop});
   background-color:#e2c3a6;
   border: 2px solid #3b1704;
   border-top-left-radius: 40px;
@@ -148,7 +154,7 @@ export default {
 }
 
 .profile-sb-open {
-  right: 3.75vw;
+  right: calc(calc(calc(#{$sidebarWidth} - #{$imageSize}) / 2) - #{$imageRight});
   transition: ease-in 400ms;
 }
 

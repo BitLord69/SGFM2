@@ -1,5 +1,8 @@
 <template>
-  <div class="p-grid p-jc-center" :key="redrawCounter">
+  <div class="p-grid p-jc-center main" :key="redrawCounter">
+    <div class="gameTitle p-my-3">
+        <h1>Super Galaxy Face Melter</h1>
+    </div>
     <Suspense>
       <template #default>
         <CheckLoggedIn />
@@ -8,7 +11,7 @@
         <div>Loading...</div>
       </template>
     </Suspense>
-    <div class="gameWindow" id="gameWindow" :style="{ backgroundImage: `url(${'../bg.png'})` }">
+    <div class="gameWindow" id="gameWindow">
       <router-view :key="$route.path" />
     </div>
   </div>
@@ -45,13 +48,33 @@ export default {
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz&family=MedievalSharp&family=Press+Start+2P&display=swap");
 
+$topMargin: 50px;
+
+body{
+  background-image: url("/bg.png");
+  background-size: cover;
+  background-position: center;
+  margin: 0;
+  height:100vh;
+  overflow: hidden;
+  
+  .gameTitle{
+    height: $topMargin;
+  h1{
+    word-wrap: none;
+    text-shadow: 2px 2px black;
+  }
+}
+}
+
 .gameWindow {
-  width: 80vw;
-  height: 85vh;
-  background-size: 100% 100%;
+  width: 100vw;
+  height: calc(100vh - #{$topMargin});
   position: relative;
   justify-content: center;
   display: flex;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 h1 {
   text-align: left;
@@ -59,6 +82,7 @@ h1 {
   word-spacing: -0.5em;
   font-family: "Press Start 2P", cursive;
 }
+
 Button:hover{
   background-color: rgba($color: #e2c3a6, $alpha: 0.8) !important;
   border: 0.2em solid #3b1704 !important;

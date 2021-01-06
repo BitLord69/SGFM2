@@ -164,7 +164,6 @@ a:active {
   transition: ease-in 200ms;
   border-radius: 5px;
   &:hover{
-    scale: 110%;
     box-shadow: 0px 0px 15px 2px #eee;
     z-index: 10;
   }
@@ -173,7 +172,9 @@ a:active {
   left: 30%;
   transform: rotate(-10deg);
   background-image: url("/radiated_zombie.png");
-  
+  &:hover{
+    -webkit-transform: scale(1.1) rotate(-10deg);
+  }
 }
 
 .loginCardText{
@@ -187,6 +188,9 @@ a:active {
   left: 55%;
   transform: rotate(10deg);
   background-image: url("/screaming_toddler.png");
+    &:hover{
+    -webkit-transform: scale(1.1) rotate(10deg);
+  }
 }
 
 .guestCardText{

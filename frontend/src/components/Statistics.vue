@@ -3,14 +3,20 @@
 </template>
 
 <script>
+import { watchEffect, ref } from "vue"
+import GameHandler from "@/modules/GameHandler"
 
 export default {
-  setup(context, props) {
-    const statistics = props.attrs.stats;
-    let numberOfLosses = statistics.filter(losses => losses.winner !== true);
-    let numberOfWins = statistics.filter(wins => wins.winner === true);
+  setup() {
+    const {stats} = GameHandler();
+    let numberOfLosses;
+    let numberOfWins;
+    const chartData = ref(null);
 
-    const chartData = {
+    watchEffect(() => {
+      numberOfLosses = stats.value.filter(losses => losses.winner !== true);
+      numberOfWins = stats.value.filter(wins => wins.winner === true);
+      chartData.value = {
       labels: ["Wins", "Losses"],
       datasets: [
         {
@@ -19,7 +25,8 @@ export default {
           hoverBackgroundColor: ["#00917c", "#c70039"],
         },
       ],
-    }
+      }
+    })
     
     return {
       chartData

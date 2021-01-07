@@ -1,20 +1,15 @@
 <template>
-  <div class="lobby">
-    <Sidebar />
-    <div class="buttons p-mt-6">
-      <Button
-        id="btn-create"
-        label="Create game"
-        class="p-button-raised p-ripple"
-        @click="setVisibleCreate()"
-      />
-
-      <Button
-        id="btn-join"
-        label="Join game"
-        class="p-button-raised p-ripple"
-        @click="setVisibleJoin()"
-      />
+    <div class="p-grid" style="width: 100%">
+      <div class="first-container p-col-6 p-offset-3 p-d-flex p-jc-center">
+        <div class="container p-d-flex p-jc-center">
+            <div class="leftCardButtonLobby p-shadow-24" @click="setVisibleCreate()">
+              <div class="leftCardButtonLobbyText">Create Game</div>
+            </div>
+          <div class="rightCardButtonLobby p-shadow-24" @click="setVisibleJoin()">
+            <div class="rightCardButtonLobbyText">Join Game</div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="modals">
       <Dialog
@@ -74,7 +69,7 @@
         </template>
       </Dialog>
     </div>
-  </div>
+    <Sidebar />
 </template>
 
 <script>
@@ -157,12 +152,6 @@ export default {
   flex-direction: column;
   align-items: center;
 }
-h1 {
-  word-spacing: -0.5em;
-  filter: brightness(130%);
-  text-shadow: 2px 2px black;
-  font-family: "Press Start 2P", cursive;
-}
 
 .buttons {
   display: flex;
@@ -197,5 +186,21 @@ h1 {
   box-shadow: 0.2em 0.2em black;
   color: #3b1704;
   font-family: "Press Start 2P", cursive;
+}
+
+.leftCardButtonLobby{
+  background-image: url("/space_nerd.png");
+}
+
+.leftCardButtonLobbyText{
+  left: 36%;
+}
+
+.rightCardButtonLobby{
+  background-image: url("/anonymous_hacker.png");
+}
+
+.rightCardButtonLobbyText{
+  left: 38%;
 }
 </style>

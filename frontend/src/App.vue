@@ -94,4 +94,60 @@ Button:hover{
 .p-dialog-footer{
   background-color: #e2c3a6 !important;
 }
+
+.container {
+  width: 100%;
+  background-image: linear-gradient(#b99778, #e2c3a6);
+  color: #3b1704;
+  padding: 10px;
+  border: 0.2em solid #3b1704;
+  box-shadow: 0.2em 0.2em black;
+  border-radius: 1em;
+  font-size: 120%;
+  font-family: "Yanone Kaffeesatz", sans-serif;
+}
+
+.first-container {
+  position: relative;
+  margin-top: 25%;
+  height:25%;
+}
+
+.leftCardButtonLandingPage, .rightCardButtonLandingPage, .leftCardButtonLobby, .rightCardButtonLobby{
+  color: #3b1704;
+  position: absolute;
+  cursor: pointer;
+  width: 25%;
+  height: 160%;
+  top: -230px;
+  background-size: 100% 100%;
+  transition: ease-in 200ms;
+  border-radius: 5px;
+  &:hover{
+    box-shadow: 0px 0px 15px 2px #eee;
+    z-index: 10;
+  }
+}
+
+.leftCardButtonLandingPage, .leftCardButtonLobby {
+  left: 17%;
+  transform: rotate(-10deg);
+  &:hover{
+    -webkit-transform: scale(1.1) rotate(-10deg);
+  }
+}
+
+.rightCardButtonLandingPage, .rightCardButtonLobby {
+  right: 17%;
+  transform: rotate(10deg);
+    &:hover{
+    -webkit-transform: scale(1.1) rotate(10deg);
+  }
+}
+
+.leftCardButtonLandingPageText, .leftCardButtonLobbyText, .rightCardButtonLandingPageText, .rightCardButtonLobbyText {
+  position: absolute;
+  bottom: 9.6%;
+  font-size: 1em;
+}
 </style>

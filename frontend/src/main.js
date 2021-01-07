@@ -16,6 +16,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import Password from 'primevue/password';
 import Chart from 'primevue/chart';
 import Dropdown from 'primevue/dropdown';
+import Carousel from 'primevue/carousel';
 
 import "primevue/resources/themes/saga-blue/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -37,5 +38,6 @@ app.component("ProgressSpinner", ProgressSpinner);
 app.directive("ripple", Ripple);
 app.component("Password", Password);
 app.component("Chart", Chart);
+app.component("Carousel", Carousel);
 
 app.mount("#app");

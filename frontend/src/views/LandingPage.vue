@@ -8,6 +8,7 @@
       </template>
   </Suspense>
   <div class="p-grid">
+    <img class="aniCard" src="/sleepy_joe.png" />
     <div class="first-container p-col-6 p-offset-3 p-d-flex p-jc-center">
       <div class="container p-d-flex p-jc-center">
         <router-link class="login-link" to="/login">
@@ -30,9 +31,19 @@
     </div>
     <div class="p-col-6 p-offset-5 p-d-flex p-jc-center">
       <div class="container">
-        <h4>Rules</h4>
+        <h3>Game Rules</h3>
           <p class="p-mt-0">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint laudantium, alias ipsum eveniet molestias cupiditate quisquam consequuntur ab delectus, temporibus voluptatem iste eaque debitis. Similique labore suscipit asperiores saepe. Saepe?
+            <ul>
+              <li>Both players draw from one deck of cards. Each card has a name and power. Power determines both attack and health points.</li>
+              <li>One turn consists of each player playing one card. Starting player changes each turn.</li>
+              <li>
+                The winner of the turn is decided by the card with the highest current power. The winning card's power decreases
+                by the losing card's current power and returns to the player's hand. The losing card is discarded and the player gets a new card.
+              </li>
+              <li>In the case of a tie, both cards are discarded and both players draw new cards.</li>
+              <li>Points are awarded from the current power of the losing card.</li>
+              <li>The game is over when one player reach the agreed upon amount of points to win.</li>
+            </ul>
           </p>
       </div>
     </div>
@@ -106,6 +117,31 @@ console.log("isLoggedIn: ", isLoggedIn.value);
   flex-direction: column;
 }
 
+.aniCard {
+  position: absolute;
+  height: 250px;
+  top: 1vh;
+  left: 8vw;
+  animation: cardAnimation 6s infinite;
+  animation-direction: alternate-reverse;
+}
+@keyframes cardAnimation{
+  0%{
+    top: 0vh;
+    -webkit-transform: rotate(0deg);
+  }
+  //45%{rotate: 320deg;}
+  50%{
+    top:66vh;
+    -webkit-transform: rotate(360deg);
+  }
+  //55%{rotate: 420deg;}
+  100%{
+    top:0vh;
+    -webkit-transform: rotate(720deg);
+    }
+}
+
  button {
   height: 4em;
   width: 17em;
@@ -120,6 +156,10 @@ console.log("isLoggedIn: ", isLoggedIn.value);
   position: absolute;
   top: 2vh;
   right: 1vw;
+}
+
+ul {
+  line-height: 1.1;
 }
 
 /* a:link,

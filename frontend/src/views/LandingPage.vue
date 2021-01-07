@@ -1,25 +1,49 @@
 <template>
-  <div class="login-container p-grid p-my-auto p-jc-around">
-    <Suspense>
+  <Suspense>
       <template #default>
         <Leaderboard class="leaderboard"/>
       </template>
       <template #fallback>
         <div>Loading stats...</div>
       </template>
-    </Suspense>
-    <div class="p-col-12 p-text-center">
-      <router-link to="/login"><Button class="p-ripple">Login</Button></router-link>
-    </div>
-    <div class="p-col-12 p-text-center">
-      <Button class="p-ripple" @click="performLoginAsGuest">Login as guest</Button>
-    </div>
-    <div class="p-text-center p-mb-4 p-col-12">
-        <p class="p-mb-0">Don't have an account?</p>
-        <p class="p-mt-0">
-          Register <router-link to="/register">here</router-link>!
-        </p>
+  </Suspense>
+  <div class="p-grid">
+    <div class="first-container p-col-6 p-offset-3 p-d-flex p-jc-center">
+      <div class="container p-d-flex p-jc-center">
+        <router-link class="login-link" to="/login">
+          <div class="leftCardButtonLandingPage p-shadow-24">
+            <div class="leftCardButtonLandingPageText">Login</div>
+          </div>
+        </router-link>
+
+        <div class="rightCardButtonLandingPage p-shadow-24" @click="performLoginAsGuest">
+          <div class="rightCardButtonLandingPageText">Login as Guest</div>
+        </div>
+
+        <div class="p-text-center p-as-end">
+          <p class="p-mb-0">Don't have an account?</p>
+          <p class="p-mt-0">
+            Register <router-link to="/register">here</router-link>!
+          </p>
+        </div>
       </div>
+    </div>
+    <div class="p-col-6 p-offset-5 p-d-flex p-jc-center">
+      <div class="container">
+        <h4>Rules</h4>
+          <p class="p-mt-0">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint laudantium, alias ipsum eveniet molestias cupiditate quisquam consequuntur ab delectus, temporibus voluptatem iste eaque debitis. Similique labore suscipit asperiores saepe. Saepe?
+          </p>
+      </div>
+    </div>
+    <div class="p-col-6 p-offset-2 p-d-flex p-jc-center">
+      <div class="container">
+          <h4>How to play</h4>
+          <p class="p-mt-0">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint laudantium, alias ipsum eveniet molestias cupiditate quisquam consequuntur ab delectus, temporibus voluptatem iste eaque debitis. Similique labore suscipit asperiores saepe. Saepe?
+          </p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -76,7 +100,7 @@ console.log("isLoggedIn: ", isLoggedIn.value);
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .btn-group {
   display: flex;
   flex-direction: column;
@@ -92,27 +116,10 @@ console.log("isLoggedIn: ", isLoggedIn.value);
   color: #3b1704;
   font-family: "Press Start 2P", cursive;
 } 
-
-.input {
-  color: #3b1704;
-}
-
 .leaderboard {
   position: absolute;
   top: 2vh;
   right: 1vw;
-}
-
-.login-container {
-  height: 53%;
-  width: 40%;
-  background-image: linear-gradient(#b99778, #e2c3a6);
-  color: #3b1704;
-  border: 0.2em solid #3b1704;
-  box-shadow: 0.2em 0.2em black;
-  border-radius: 1em;
-  font-size: 120%;
-  font-family: "Yanone Kaffeesatz", sans-serif;
 }
 
 /* a:link,
@@ -125,4 +132,30 @@ a:active {
   color: inherit;
   text-decoration: none;
 } */
+
+.register{
+  position: absolute;
+  bottom: 17vh;
+  color: #3b1704;
+}
+
+.login-link{
+  color: inherit;
+}
+
+.leftCardButtonLandingPage{
+  background-image: url("/radiated_zombie.png");
+}
+
+.leftCardButtonLandingPageText{
+  left: 45%;
+}
+
+.rightCardButtonLandingPage{
+  background-image: url("/screaming_toddler.png");
+}
+
+.rightCardButtonLandingPageText{
+  left: 32%;
+}
 </style>

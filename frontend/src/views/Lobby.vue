@@ -1,42 +1,30 @@
 <template>
-  <div class="lobby">
-    <Header />
-    <h1>Super Galaxy Face Melter</h1>
-
-    <span class="p-float-label p-mt-4">
-      <InputText
-        class="inputPlayerName"
-        id="playername"
-        type="text"
-        v-model="state.playername"
-      />
-      <label class="inputPlayerNameLabel" for="playername">Playername</label>
-    </span>
-    <div class="buttons p-mt-6">
-      <Button
-        id="btn-create"
-        label="Create game"
-        :disabled="isDisabled()"
-        class="p-button-raised p-ripple"
-        @click="setVisibleCreate()"
-      />
-
-      <Button
-        id="btn-join"
-        label="Join game"
-        :disabled="isDisabled()"
-        class="p-button-raised p-ripple"
-        @click="setVisibleJoin()"
-      />
+    <div class="p-grid" style="width: 100%">
+      <div class="first-container p-col-6 p-offset-3 p-d-flex p-jc-center">
+        <div class="container p-d-flex p-jc-center">
+            <div class="leftCardButtonLobby p-shadow-24" @click="setVisibleCreate()">
+              <div class="leftCardButtonLobbyText">Create Game</div>
+            </div>
+          <div class="rightCardButtonLobby p-shadow-24" @click="setVisibleJoin()">
+            <div class="rightCardButtonLobbyText">Join Game</div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="modals">
       <Dialog
         id="createModal"
         :modal="true"
         :dismissableMask="true"
+        :closable="false"
         :visible="state.displayCreate"
       >
-        <template #header><h3 class="p-m-0">Create game</h3></template>
+        <template #header>
+          <div class="p-grid" style="width: 100%">
+            <h3 class="p-m-0 p-col-11 p-pb-0">Create game</h3>
+            <i class="pi pi-times-circle p-col-1 p-mt-2" @click="setVisibleCreate" style="cursor: pointer"></i>
+          </div>
+        </template>
         <Suspense>
           <template #default>
             <CreateGame />
@@ -60,10 +48,15 @@
         id="joinModal"
         :modal="true"
         :dismissableMask="true"
+        :closable="false"
         :visible="state.displayJoin"
       >
-        <template #header><h3 class="p-m-0">Join game</h3></template>
-
+        <template #header>
+          <div class="p-grid" style="width: 100%">
+            <h3 class="p-m-0 p-col-11 p-pb-0">Join game</h3>
+            <i class="pi pi-times-circle p-col-1 p-mt-2" @click="setVisibleJoin" style="cursor: pointer"></i>
+          </div>
+        </template>
         <JoinGame />
         <template class="p-mx-auto" #footer>
           <router-link to="/gameboard/1">
@@ -76,14 +69,14 @@
         </template>
       </Dialog>
     </div>
-  </div>
+    <Sidebar />
 </template>
 
 <script>
 import { reactive } from "vue";
 import CreateGame from "@/components/CreateGame";
 import JoinGame from "@/components/JoinGame";
-import Header from "@/components/Header";
+import Sidebar from "@/components/Sidebar";
 // import CreateGameState from "@/components/CreateGame";
 
 import UserHandler from "@/modules/UserHandler";
@@ -93,7 +86,7 @@ import { useRouter } from "vue-router";
 
 export default {
   name: "Lobby",
-  components: { CreateGame, JoinGame, Header },
+  components: { CreateGame, JoinGame, Sidebar },
   setup() {
     const { createGame, joinGame, gameList, error } = SocketHandler();
     const { CreateGameState } = GameHandler();
@@ -104,7 +97,6 @@ export default {
     const state = reactive({
       displayCreate: false,
       displayJoin: false,
-      playername: currentUser.value.username,
       cardsOnHand: 5,
       pointsToWin: 15,
     });
@@ -117,10 +109,6 @@ export default {
       state.displayJoin = !state.displayJoin;
     }
 
-    function isDisabled() {
-      return state.playername === null || state.playername.trim() === "";
-    }
-
     function createNewGame() {
       console.log("createGameState i createnewgame", CreateGameState);
       let vadsomhelst = CreateGameState;
@@ -128,12 +116,12 @@ export default {
         vadsomhelst = { ...CreateGameState.selectedLeague };
         console.log("vadsomhelst i createnewgame:", vadsomhelst);
       }
-      createGame(state.playername, vadsomhelst);
+      createGame(currentUser.value.username, vadsomhelst);
     }
 
     function joinExistingGame() {
       joinGame(
-        state.playername,
+        currentUser.value.username,
         gameList.value[joinGameState.activeIndex].roomNo
       );
     }
@@ -147,7 +135,6 @@ export default {
       state,
       setVisibleCreate,
       setVisibleJoin,
-      isDisabled,
       createNewGame,
       error,
       performlogout,
@@ -158,26 +145,12 @@ export default {
 </script>
 
 <style scoped>
-.inputPlayerName {
-  background-color: #e2c3a6;
-  color: #3b1704;
-}
-
-.inputPlayerNameLabel {
-  color: #3b1704;
-}
 
 .lobby {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-h1 {
-  word-spacing: -0.5em;
-  filter: brightness(130%);
-  text-shadow: 2px 2px black;
-  font-family: "Press Start 2P", cursive;
 }
 
 .buttons {
@@ -213,5 +186,21 @@ h1 {
   box-shadow: 0.2em 0.2em black;
   color: #3b1704;
   font-family: "Press Start 2P", cursive;
+}
+
+.leftCardButtonLobby{
+  background-image: url("/space_nerd.png");
+}
+
+.leftCardButtonLobbyText{
+  left: 36%;
+}
+
+.rightCardButtonLobby{
+  background-image: url("/anonymous_hacker.png");
+}
+
+.rightCardButtonLobbyText{
+  left: 38%;
 }
 </style>

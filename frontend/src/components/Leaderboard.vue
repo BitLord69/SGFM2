@@ -37,6 +37,7 @@ export default {
 
 <style scoped lang="scss">
 #leaderboard {
+  color: #3b1704;
   background-color: #e2c3a6;
   padding: 1%;
   border: 2px solid #3b1704;
@@ -53,63 +54,63 @@ export default {
 
 .info-row{ 
   display: grid;
-  grid-template-columns: 2vw 9vw 3vw;
+  grid-template-columns: 1vw 9vw 4vw;
   grid-row: 1/2;
 }
 .p1 {
   display: grid;
-  grid-template-columns: 20px 1fr 50px;
+  grid-template-columns: 1vw 9vw 4vw;
   grid-row: 2/3;
 }
 
 .p2{
   display: grid;
-  grid-template-columns: 20px 1fr 50px;
+  grid-template-columns: 1vw 9vw 4vw;
   grid-row: 3/4;
 }
 .p3 {
   display: grid;
-  grid-template-columns: 20px 1fr 50px;
+  grid-template-columns: 1vw 9vw 4vw;
   grid-row:4/5;
 }
 
 .p4{
   display: grid;
-  grid-template-columns: 20px 1fr 50px;
+  grid-template-columns: 1vw 9vw 4vw;
   grid-row: 5/6;
 }
 .p5 {
   display: grid;
-  grid-template-columns: 20px 1fr 50px;
+  grid-template-columns: 1vw 9vw 4vw;
   grid-row: 6/7;
 }
 
 .p6{
   display: grid;
-  grid-template-columns: 20px 1fr 50px;
+  grid-template-columns: 1vw 9vw 4vw;
   grid-row: 7/8;
 }
 .p7 {
   display: grid;
-  grid-template-columns: 20px 1fr 50px;
+  grid-template-columns: 1vw 9vw 4vw;
   grid-row: 8/9;
 }
 
 .p8{
   display: grid;
-  grid-template-columns: 20px 1fr 50px;
+  grid-template-columns: 1vw 9vw 4vw;
   grid-row: 9/10;
 }
 
 .p9 {
   display: grid;
-  grid-template-columns: 20px 1fr 50px;
+  grid-template-columns: 1vw 9vw 4vw;
   grid-row: 10/11;
 }
 
 .p10{
   display: grid;
-  grid-template-columns: 20px 1fr 50px;
+  grid-template-columns: 1vw 9vw 4vw;
   grid-row: 11/12;
 }
 </style>

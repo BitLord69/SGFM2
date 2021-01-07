@@ -17,9 +17,19 @@
       </Column>
       <Column>
         <template #body="slotProps">
-          <div class="initialSize">
+          <span class="initialSize">
             {{ slotProps.data.username }}
-          </div>
+          </span>
+        </template>
+      </Column>
+      <Column>
+        <template #body="slotProps">
+          <Button
+            icon="pi pi-trash"
+            v-if="props.showDeleteIcon"
+            class="p-button-rounded p-button-warning"
+            @click="confirmDeleteFriend(slotProps.data)"
+          />
         </template>
       </Column>
       <template class="initialSize" #footer>
@@ -33,6 +43,7 @@
         <Button
           label="Handle friends"
           class="p-d-block p-mx-auto p-button-raised friends-btn"
+          v-if="!props.showDeleteIcon"
         />
       </router-link>
     </div>
@@ -47,12 +58,13 @@ import FriendHandler from "../modules/FriendHandler";
 export default {
   name: "FriendList",
   components: { DataTable, Column },
+  props: { showDeleteIcon: Boolean },
 
-  async setup() {
+  async setup(props) {
     const { getFriends, friendError, friends } = FriendHandler();
     await getFriends();
 
-    return { getFriends, friendError, friends };
+    return { getFriends, friendError, friends, props };
   },
 };
 </script>

@@ -13,7 +13,7 @@
         <div class="p-mt-4">
           <Suspense>
           <template #default>
-            <FriendList />
+            <FriendList/>
           </template>
           <template #fallback>
             <div>Loading friends...</div>

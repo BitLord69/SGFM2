@@ -1,10 +1,10 @@
 import { createWebHistory, createRouter } from "vue-router";
-import LandingPage from "@/views/LandingPage"
-import Lobby from "@/views/Lobby"
-import Gameboard from "@/views/Gameboard"
-import RegisterPage from "@/views/RegisterPage"
-import LoginPage from "@/views/LoginPage"
-
+import LandingPage from "@/views/LandingPage";
+import Lobby from "@/views/Lobby";
+import Gameboard from "@/views/Gameboard";
+import RegisterPage from "@/views/RegisterPage";
+import LoginPage from "@/views/LoginPage";
+import Friends from "@/views/Friends";
 
 const routes = [
   {
@@ -35,8 +35,8 @@ const routes = [
   {
     path: "/friends",
     name: "Friends",
-    component: LoginPage,
-  }
+    component: Friends,
+  },
 ];
 
 const router = createRouter({

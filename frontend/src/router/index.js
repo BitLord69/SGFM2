@@ -31,6 +31,11 @@ const routes = [
     path: "/login",
     name: "Login",
     component: LoginPage,
+  },
+  {
+    path: "/friends",
+    name: "Friends",
+    component: LoginPage,
   }
 ];
 

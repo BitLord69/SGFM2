@@ -10,6 +10,16 @@
         <div class="p-mt-5" v-if="!isLoggedInAsGuest && stats !== null">
           <Statistics />
         </div>
+        <div class="p-mt-4">
+          <Suspense>
+          <template #default>
+            <FriendList />
+          </template>
+          <template #fallback>
+            <div>Loading friends...</div>
+          </template>
+        </Suspense>
+        </div>
       </div>
       <div class="sb-logout" @click="logMeOut">Logout</div>
     </div>
@@ -22,10 +32,10 @@ import UserHandler from "../modules/UserHandler";
 import {useRouter} from "vue-router"
 import Statistics from './Statistics.vue';
 import GameHandler from "../modules/GameHandler";
-
+import FriendList from './FriendList.vue';
 
 export default {
-  components: { Statistics },
+  components: { Statistics, FriendList },
   name: "Sidebar",
   setup() {
     const router = useRouter();

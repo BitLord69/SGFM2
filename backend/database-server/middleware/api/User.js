@@ -16,7 +16,7 @@ router.post("/friends/", async (req, res) => {
   if (!req.session.user) {
     return res.json({ error: "Not logged in!" });
   }
-  return res.json(await user.createFriendRequest(req.session.user.username, req.body.friendname));
+  return res.json(await user.createOrAcceptFriendRequest(req.session.user.username, req.body.friendname));
 });
 
 router.delete("/friends/", async (req, res) => {
@@ -39,5 +39,12 @@ router.get("/friends/requests/", async (req, res) => {
   }
   return res.json(await user.getFriendRequests(req.session.user.username));
 });
+
+// router.post("/friends/", async (req, res) => {
+//   if (!req.session.user) {
+//     return res.json({ error: "Not logged in!" });
+//   }
+//   return res.json(await user.createOrAcceptFriendRequest(req.session.user.username, req.body.friendname));
+// });
 
 module.exports = router;

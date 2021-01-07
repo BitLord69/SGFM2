@@ -37,6 +37,7 @@ class User {
       `MATCH (u: User {username: $username})-[f:FRIENDS]-(friend:User) WHERE COALESCE(f.pendingRequest, false) <> true RETURN friend`,
       { username }
     );
+
     return res === undefined
       ? null
       : res
@@ -62,12 +63,23 @@ class User {
           });
   }
 
-  async createFriendRequest(username, friendname) {
+  // async acceptFriendRequest(username, friendname) {
+  //   const res = await Neo4j.query(
+  //     `MATCH (u: User {username: $username}),(friend:User {username: $friendname})
+  //     MERGE (u)<-[f:FRIENDS]->(friend)
+  //     RETURN u, friend, f`,
+  //     { username, friendname }
+  //     );
+  //     return res;
+  //   }
+
+  async createOrAcceptFriendRequest(username, friendname) {
     const res = await Neo4j.query(
       `MATCH (u: User {username: $username}),(friend:User {username: $friendname})
-      MERGE (u)<-[f:FRIENDS]->(friend)
-      ON CREATE SET f.pendingRequest = true
-      RETURN u, friend, f`,
+        MERGE (u)<-[f:FRIENDS]->(friend)
+        ON CREATE SET f.pendingRequest = true
+        ON MATCH SET f.pendingRequest = false
+        RETURN u, friend, f`,
       { username, friendname }
     );
     return res;

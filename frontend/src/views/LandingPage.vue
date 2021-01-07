@@ -31,7 +31,7 @@
     </div>
     <div class="p-col-6 p-offset-5 p-d-flex p-jc-center">
       <div class="container">
-        <h3>Game Rules</h3>
+        <h3>How to play</h3>
           <p class="p-mt-0">
             <ul>
               <li>Both players draw from one deck of cards. Each card has a name and power. Power determines both attack and health points.</li>
@@ -47,12 +47,27 @@
           </p>
       </div>
     </div>
-    <div class="p-col-6 p-offset-2 p-d-flex p-jc-center">
-      <div class="container">
-          <h4>How to play</h4>
-          <p class="p-mt-0">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint laudantium, alias ipsum eveniet molestias cupiditate quisquam consequuntur ab delectus, temporibus voluptatem iste eaque debitis. Similique labore suscipit asperiores saepe. Saepe?
-          </p>
+    <div class="p-col-6 p-offset-2 p-d-flex p-jc-center ">
+      <div class="container p-mb-4">
+        <h3 class="p-mt-1 p-mb-2">Card Gallery</h3>
+        <div class="card">
+          <Carousel :value="cardGallery" :numVisible="3" :numScroll="1" :circular="true" :autoplayInterval="3000">
+            <template #item="cardGallery">
+                <div class="card-item">
+                    <div class="card-item-content">
+                        <div class="p-mb-3">
+                            <img :src="'/' + getImageName(cardGallery.data.name) + '.png'" :alt="cardGallery.data.name" class="card-image" />
+                        </div>
+                        <div>
+                            <h3 class="p-mb-1">{{cardGallery.data.name}}</h3>
+                            <h4 class="p-mt-0 p-mb-1">Power: {{cardGallery.data.power}}</h4>
+                            <h4 class="p-mt-0 p-mb-1">Amount in deck: {{cardGallery.data.amount}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </template>
+          </Carousel>
+        </div>
       </div>
     </div>
   </div>
@@ -78,7 +93,7 @@ export default {
   setup() {
     const router = useRouter();
     const { isLoggedIn, currentUser, login, loginAsGuest} = UserHandler();
-console.log("isLoggedIn: ", isLoggedIn.value);
+    console.log("isLoggedIn: ", isLoggedIn.value);
     if (isLoggedIn.value) {
       router.push('/lobby')
     }
@@ -91,6 +106,62 @@ console.log("isLoggedIn: ", isLoggedIn.value);
       } else {
         state.incorrect = true
       } 
+    }
+    const cardGallery = [
+      {
+        power: 1,
+        name: "Mutated worm",
+        amount: 8,
+      },
+      {
+        power: 2,
+        name: "Irate rat",
+        amount: 8,
+      },
+      {
+        power: 3,
+        name: "Orange Menace",
+        amount: 8,
+      },
+      {
+        power: 4,
+        name: "Sleepy Joe",
+        amount: 10,
+      },
+      {
+        power: 5,
+        name: "Angry teacher",
+        amount: 10,
+      },
+      {
+        power: 6,
+        name: "Screaming toddler",
+        amount: 8,
+      },
+      {
+        power: 7,
+        name: "Space nerd",
+        amount: 8,
+      },
+      {
+        power: 8,
+        name: "Anonymous hacker",
+        amount: 4,
+      },
+      {
+        power: 9,
+        name: "Radiated Zombie",
+        amount: 4,
+      },
+      {
+        power: 10,
+        name: "Super Galaxy Face Melter",
+        amount: 2,
+      },
+    ]
+
+    function getImageName(name) {
+      return name.replaceAll(" ", "_").toLowerCase();
     }
 
     function performLoginAsGuest() {
@@ -105,7 +176,9 @@ console.log("isLoggedIn: ", isLoggedIn.value);
       isLoggedIn,
       currentUser,
       performLogin,
-      performLoginAsGuest
+      performLoginAsGuest,
+      getImageName,
+      cardGallery
     };
   },
 };
@@ -115,6 +188,20 @@ console.log("isLoggedIn: ", isLoggedIn.value);
 .btn-group {
   display: flex;
   flex-direction: column;
+}
+
+.card-item-content{
+  border: 1px solid #3b1704;
+  border-radius: 3px;
+  margin: .3rem;
+  text-align: center;
+  padding: 2rem 0;
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  letter-spacing: 1px;
+}
+
+.card-image{
+  width: 60%;
 }
 
 .aniCard {

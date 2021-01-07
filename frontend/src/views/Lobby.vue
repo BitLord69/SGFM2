@@ -120,6 +120,7 @@ export default {
     }
 
     function joinExistingGame() {
+      console.log("selected game: ", joinGameState.activeIndex );
       joinGame(
         currentUser.value.username,
         gameList.value[joinGameState.activeIndex].roomNo

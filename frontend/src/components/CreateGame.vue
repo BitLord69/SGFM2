@@ -7,6 +7,7 @@
     placeholder="Select a league"
     style="width: 100%"
     showClear="true"
+    :filter="true"
   />
   <h3 class="p-text-center"><em>Or</em></h3>
   <h4 class="p-mt-0">

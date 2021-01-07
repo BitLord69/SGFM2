@@ -38,12 +38,11 @@
         </div>
       </template>
     </DataTable>
-    <div class="manage-btn p-mt-3">
+    <div class="manage-btn p-mt-3" v-if="!props.showDeleteIcon">
       <router-link style="text-decoration: none" to="/friends">
         <Button
           label="Handle friends"
           class="p-d-block p-mx-auto p-button-raised friends-btn"
-          v-if="!props.showDeleteIcon"
         />
       </router-link>
     </div>

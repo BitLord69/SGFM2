@@ -6,7 +6,7 @@
     <div class="Side">
       <Suspense>
         <template #default>
-          <div class="side">
+          <div class="p-p-4">
             <FriendList showDeleteIcon />
           </div>
         </template>
@@ -43,10 +43,13 @@ export default {
 .Side {
   grid-area: Side;
   align-self: center;
+  text-align: center;
+  background-color: #e2c3a6;
+  border-radius: 10px;
+  border: 2px solid #3b1704;
 }
 
 .side {
-  background-color: #e2c3a6;
 }
 .Area-2 {
   grid-area: Area-2;

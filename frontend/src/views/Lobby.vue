@@ -10,24 +10,6 @@
           </div>
         </div>
       </div>
-      <div class="p-col-6 p-offset-5 p-d-flex p-jc-center">
-      <div class="container">
-        <h3>Game Rules</h3>
-          <p class="p-mt-0">
-            <ul>
-              <li>Both players draw from one deck of cards. Each card has a name and power. Power determines both attack and health points.</li>
-              <li>One turn consists of each player playing one card. Starting player changes each turn.</li>
-              <li>
-                The winner of the turn is decided by the card with the highest current power. The winning card's power decreases
-                by the losing card's current power and returns to the player's hand. The losing card is discarded and the player gets a new card.
-              </li>
-              <li>In the case of a tie, both cards are discarded and both players draw new cards.</li>
-              <li>Points are awarded from the current power of the losing card.</li>
-              <li>The game is over when one player reach the agreed upon amount of points to win.</li>
-            </ul>
-          </p>
-      </div>
-    </div>
     </div>
     <div class="modals">
       <Dialog

@@ -40,6 +40,25 @@ export default {
 
 $topMargin: 80px;
 
+//Scrollbar styling start
+* {
+  scrollbar-width: thin;
+  scrollbar-color:#3b1704 #b99778;
+}
+
+::-webkit-scrollbar {
+  width: 0.25rem;
+}
+
+::-webkit-scrollbar-track{
+  background: #3b1704;
+}
+
+::-webkit-scrollbar-thumb{
+  background: #b99778;
+}
+// Scrollbar styling end
+
 body{
   background-image: url("/bg.png");
   background-size: cover;

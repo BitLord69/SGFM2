@@ -1,7 +1,7 @@
 const Neo4j = require("../modules/neo4j");
 
 class User {
-  async getAll() {
+  async getAll(username) {
     const res = await Neo4j.query(
       `MATCH (u:User)
                                     WITH u
@@ -9,7 +9,7 @@ class User {
                                     RETURN u`,
       {}
     );
-    return res.map; //(o => ({ ...o.p.properties }))
+    return res.map(o => ({ ...o.u.properties }))
   }
 
   async login(email, password) {

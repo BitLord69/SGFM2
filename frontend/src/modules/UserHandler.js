@@ -2,17 +2,30 @@ import { ref } from "vue";
 import { extFetch } from "./extFetch";
 
 const currentUser = ref(null);
+const users = ref(null);
 const isLoggedIn = ref(false);
 const isLoggedInAsGuest = ref(false);
 const error = ref(null);
 
 export default function UserHandler() {
+
+  async function getAllUsers() {
+    try {
+      users.value = await extFetch("/api/user/", "GET");
+      console.log("users.val:", users.value);
+    } catch (e) {
+      error.value = e;
+      console.log("i getAllUsers CATCH, error.value", error.value);
+      return ;
+    }
+  }
+
   async function logout() {
     try {
       await extFetch("/api/auth/logout/", "POST");
     } catch (e) {
-      error.value = e
-    }    
+      error.value = e;
+    }
     console.log("logout Userhandler", error.value);
     currentUser.value = null;
     isLoggedIn.value = false;
@@ -23,54 +36,68 @@ export default function UserHandler() {
     let result;
 
     try {
-      result = await extFetch("/api/auth/login/", "POST", {"email" : email, "password" : password});
-      
+      result = await extFetch("/api/auth/login/", "POST", {
+        email: email,
+        password: password,
+      });
+
       isLoggedIn.value = true;
       currentUser.value = result;
     } catch (e) {
-      error.value = e
-      return 
+      error.value = e;
+      return;
     }
-  }
+  };
 
   function loginAsGuest() {
     isLoggedInAsGuest.value = true;
-    currentUser.value = {username: "guest" + Date.now()};
+    currentUser.value = { username: "guest" + Date.now() };
   }
 
   async function createUser(form) {
     try {
       const result = await extFetch("/api/user/", "POST", form);
-      
+
       console.log(result);
     } catch (e) {
       error.value = e;
-      return 
+      return;
     }
-  
-    await login(form.email, form.password)
+
+    await login(form.email, form.password);
   }
-  
+
   async function startApp() {
     let result;
 
     try {
-      result = await extFetch("/api/auth/whoami/"); 
+      result = await extFetch("/api/auth/whoami/");
       console.log("who am i: ", result);
       if (result.error) {
         isLoggedIn.value = false;
         error.value = result.error;
-        return
+        return;
       }
       isLoggedIn.value = true;
       currentUser.value = result;
     } catch (e) {
-      error.value = e
+      error.value = e;
       isLoggedIn.value = false;
-      return 
+      return;
     }
   }
 
-
-  return { currentUser, isLoggedIn, isLoggedInAsGuest, error, logout, login, loginAsGuest, createUser, startApp };
+  return {
+    currentUser,
+    users,
+    getAllUsers,
+    isLoggedIn,
+    isLoggedInAsGuest,
+    error,
+    logout,
+    login,
+    loginAsGuest,
+    createUser,
+    startApp,
+  };
 }

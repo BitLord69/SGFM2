@@ -1,7 +1,16 @@
 <template>
   <div class="friend-container">
-    <div class="Area-1">
-      AREA1
+    <div class="area-1">
+      <Suspense>
+        <template #default>
+          <div class="p-p-4">
+            <UserList />
+          </div>
+        </template>
+        <template #fallback>
+          <div>Loading users...</div>
+        </template>
+      </Suspense>
     </div>
     <div class="Side">
       <Suspense>
@@ -21,8 +30,13 @@
 
 <script>
 import FriendList from "../components/FriendList.vue";
+import UserList from '../components/UserList.vue';
+
 export default {
-  components: { FriendList },
+  components: { FriendList, UserList },
+
+  setup() {
+  }
 };
 </script>
 
@@ -40,6 +54,11 @@ export default {
 .Area-1 {
   grid-area: Area-1;
 }
+
+.area-1 {
+  background-color: #e2c3a6;
+}
+
 .Side {
   grid-area: Side;
   align-self: center;

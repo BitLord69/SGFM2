@@ -19,14 +19,12 @@ export default function SocketHandler() {
     forceNew: true,
     query: {
       token: uuid()
-  }
-      // "force new connection": true,
+    }
     });
   }
 
   client.on("connect", function () {
     isConnected.value = true;
-    console.log("Connected to server")
   });
 
   // Keep if we're going to have a in-game chat function later in sprint 2
@@ -34,36 +32,27 @@ export default function SocketHandler() {
     console.log("data i message: ", data);
   });
 
-  
-
   client.on("GAME_UPDATE", (incomingGameState) => {
-    console.log("GAME_UPDATE received", JSON.parse(incomingGameState));
     gameState.value = JSON.parse(incomingGameState);
   });
 
   client.on("OPPONENT_DISCONNECTED", () => {
     opponentDisconnected.value = true;
-    console.log("OPPONENT_DISCONNECTED received!!!!!!!!!!!!!!!!");
   });
 
   client.on("LIST_GAMES", (data) => {
-    console.log("LIST_GAMES", JSON.parse(data));
     gameList.value = JSON.parse(data);
   })
 
   client.on("connect_error", (e) => {
-    console.log("i connect_error:", e);
     error.value = e;
   });
 
   client.on("disconnect", (reason) => {
-    console.log("disconnected from the server, reason:", reason);
     if (reason === 'transport close') {
       client.close()
-      console.log("");
     }
     isConnected.value = false;
-    // client = null;
   });
 
   // Keep if we're going to have a in-game chat function later in sprint 2
@@ -72,7 +61,6 @@ export default function SocketHandler() {
   }
 
   function createGame(name, createGameState) {
-    console.log("creategameState:", createGameState);
     client.emit("CREATE_GAME", { name, ...createGameState });
   }
 
@@ -82,7 +70,6 @@ export default function SocketHandler() {
 
   // send the played card as an index in a string format
   function playCard(cardId) {
-    console.log("playCard: ", cardId, " gs: ", gameState.value);
     client.emit("PLAYED_CARD", cardId);
   }
 

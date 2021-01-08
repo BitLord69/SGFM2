@@ -217,12 +217,10 @@ export default {
     top: 0vh;
     -webkit-transform: rotate(0deg);
   }
-  //45%{rotate: 320deg;}
   50%{
     top:66vh;
     -webkit-transform: rotate(360deg);
   }
-  //55%{rotate: 420deg;}
   100%{
     top:0vh;
     -webkit-transform: rotate(720deg);

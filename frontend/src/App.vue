@@ -5,27 +5,30 @@
     </div>
     <Suspense>
       <template #default>
-        <CheckLoggedIn />
+        <div>
+          <!-- <CheckLoggedIn /> -->
+          <div class="gameWindow" id="gameWindow">
+            <router-view :key="$route.path" />
+          </div>
+        </div>
       </template>
       <template #fallback>
         <div>Loading...</div>
       </template>
     </Suspense>
-    <div class="gameWindow" id="gameWindow">
-      <router-view :key="$route.path" />
-    </div>
+    
   </div>
 </template>
 
 <script>
 import { useRoute } from "vue-router";
 import { watchEffect, ref } from "vue";
-import CheckLoggedIn from "@/components/CheckLoggedIn"
+//import CheckLoggedIn from "@/components/CheckLoggedIn"
 import UserHandler from "@/modules/UserHandler.js"
 
 export default {
   name: "App",
-  components: {CheckLoggedIn},
+  //components: {CheckLoggedIn},
   setup() {
     const route = useRoute();
     const redrawCounter = ref(0);
@@ -37,8 +40,6 @@ export default {
         redrawCounter.value++;
       }
     })
-
-    //await startApp()
 
     return { redrawCounter, currentUser, isLoggedIn, isLoggedInAsGuest };
   }

@@ -1,17 +1,6 @@
 <template>
 <div :key="componentKey">
   <ScrollPanel style="width: 420px; height: 350px" class="p-scrollpanel-bar-y" >
-    <!-- <Accordion style="width: 400px" v-if="joinGameState.gameList && joinGameState.gameList.length > 0">
-      <AccordionTab
-        v-for="game in joinGameState.gameList"
-        :key="game.roomNo"
-        :header="'Game ' + game.roomNo + ' - ' + game.creator"
-        :activeIndex="joinGameState.activeIndex"
-      >
-        <p class="text-left">Cards on hand: {{ game.cardsOnHand }}</p>
-        <p class="text-left">Points to win: {{ game.pointsToWin }}</p>
-      </AccordionTab>
-    </Accordion> -->
     <div  v-if="joinGameState.gameList && joinGameState.gameList.length > 0">
       <div  :class="'gamelist-item' + ' item-'+index" v-for="(game, index) in joinGameState.gameList" :key="game.roomNo" @click="setActiveIndex(index)">
         <h4 class="p-my-1 p-ml-1">{{game.creator}}'s game</h4>
@@ -65,7 +54,9 @@ export default {
       joinGameState.activeIndex = index;
     }
     
-    getGameList(currentUser.value.username)
+    if(currentUser.value) {
+      getGameList(currentUser.value.username)
+    }
   
     return {
       joinGameState,

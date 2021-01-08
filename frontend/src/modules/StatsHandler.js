@@ -10,7 +10,6 @@ export default function StatsHandler() {
 
     try {
       result = await extFetch("/api/game/leaderboard/"); 
-      console.log("getLeaderboard: ", result);
       if (result.error) {
         statsError.value = result.error;
         return

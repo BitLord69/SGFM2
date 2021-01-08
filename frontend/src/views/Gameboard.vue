@@ -111,7 +111,7 @@
 
       <div class="profile profileYou p-pt-1">
         <div>{{ gameState && gameState?.players[playerId]?.name }}</div>
-        <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
+        <div class="p-mt-1"><img :src="'/avatar/' + (isLoggedIn ? currentUser.avatar : 'avatar') + '.png'" /></div>
         <div class="p-mt-1">
           Points: {{ gameState && gameState?.players[playerId]?.score }}/{{
             gameState?.pointsToWin
@@ -127,6 +127,8 @@ import { reactive, watchEffect, computed } from "vue";
 import SocketHandler from "@/modules/SocketHandler";
 import WaitingForPlayer from "../components/WaitingForPlayer";
 import { useRoute, useRouter } from "vue-router";
+import GameHandler from "@/modules/GameHandler"
+import UserHandler from "@/modules/UserHandler";
 
 export default {
   name: "Gameboard",
@@ -135,6 +137,8 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const playerId = route.params.player;
+    const { inGame } = GameHandler();
+    const { currentUser, isLoggedIn } = UserHandler();
 
     const { gameState, playCard, opponentDisconnected, resetGameState, removeGame } = SocketHandler();
     const state = reactive({
@@ -161,7 +165,6 @@ export default {
 
         if (
           gameState &&
-          //gameState.value.playedCards.length >= 1 &&
           gameState.value.roundWinner != -1
         ) {
           document.getElementsByClassName("hidden").forEach((element) => {
@@ -172,7 +175,6 @@ export default {
             .getElementsByClassName("cardToAnimate")
             .forEach((element) => {
               element.classList.toggle("cardToAnimate");
-              // document.getElementsByClassName('cardsOnHand')[1].appendChild(element);
             });
         }
 
@@ -236,23 +238,11 @@ export default {
       }
 
       let cardToAnimate = document.getElementsByClassName("card-" + index)[0];
-      // let playedCardsCopy = document.getElementsByClassName('cardsOnTable')[0];
-
       cardToAnimate.classList.toggle("cardToAnimate");
       setTimeout(() => {
         playCard(index);
-        //cardToAnimate.classList.toggle("hidden");
-        // gameState.value.players[playerId].cardsOnHand.slice(index, 1);
-        // cardToAnimate.classList.toggle("cardToAnimate");
       }, 1000);
-      // toggleHidden(cardToAnimate);
     }
-
-    // function toggleHidden(cardToAnimate) {
-    //   if (gameState.value.playedCards.length > 0) {
-    //     cardToAnimate.classList.toggle("hidden");
-    //   }
-    // }
 
     function getIndex(card, index) {
       card.index = index;
@@ -282,6 +272,7 @@ export default {
         removeGame();
       }
       resetGameState();
+      inGame.value = false;
       router.push("/lobby");
     }
 
@@ -297,7 +288,9 @@ export default {
       getIndex,
       animateLoserCard,
       opponentDisconnected,
-      returnToLobbyFunc
+      returnToLobbyFunc,
+      isLoggedIn,
+      currentUser
     };
   },
 };

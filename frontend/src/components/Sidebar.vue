@@ -10,7 +10,7 @@
         <div class="p-mt-5" v-if="!isLoggedInAsGuest && stats !== null">
           <Statistics />
         </div>
-        <div class="p-mt-4">
+        <div class="p-mt-4" v-if="!isLoggedInAsGuest">
           <Suspense>
           <template #default>
             <FriendList/>

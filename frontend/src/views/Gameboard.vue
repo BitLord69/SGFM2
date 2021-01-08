@@ -47,18 +47,18 @@
       <template class="p-mx-auto" #footer> </template>
     </Dialog>
 
-    <div class="playerRow p-mt-2">
-      <div class="profile profileOpp p-pt-1" :style="{}">
+    <div class="playerRow">
+      <div class="profile p-pt-1" id="profileOpponent">
         <div>{{ opponent?.name || "waiting..." }}</div>
-        <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
+        <div class="p-mt-1"><img :src="opponentAvatar" /></div>
         <div class="p-mt-1">
-          Points: {{ opponent?.score }}/{{ gameState?.pointsToWin }}
+          Points: {{ opponent?.score || 0 }}/{{ gameState?.pointsToWin }}
         </div>
       </div>
       <div class="cardsOnHand">
         <div
           class="card p-mx-1"
-          v-for="index in 5"
+          v-for="index in opponent?.cardsOnHand.length || 5"
           :key="index"
           :style="{ backgroundImage: `url(${'../card_back.png'})` }"
         ></div>
@@ -109,9 +109,9 @@
         </div>
       </div>
 
-      <div class="profile profileYou p-pt-1">
+      <div class="profile p-pt-1" id="profileYou">
         <div>{{ gameState && gameState?.players[playerId]?.name }}</div>
-        <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
+        <div class="p-mt-1"><img :src="'/avatar/' + currentUser.avatar + '.png'" /></div>
         <div class="p-mt-1">
           Points: {{ gameState && gameState?.players[playerId]?.score }}/{{
             gameState?.pointsToWin
@@ -127,6 +127,8 @@ import { reactive, watchEffect, computed } from "vue";
 import SocketHandler from "@/modules/SocketHandler";
 import WaitingForPlayer from "../components/WaitingForPlayer";
 import { useRoute, useRouter } from "vue-router";
+import GameHandler from "@/modules/GameHandler"
+import UserHandler from "@/modules/UserHandler";
 
 export default {
   name: "Gameboard",
@@ -135,6 +137,8 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const playerId = route.params.player;
+    const { inGame } = GameHandler();
+    const { currentUser, isLoggedIn } = UserHandler();
 
     const { gameState, playCard, opponentDisconnected, resetGameState, removeGame } = SocketHandler();
     const state = reactive({
@@ -149,8 +153,11 @@ export default {
         gameState && gameState.value?.players.length > 1
           ? gameState.value?.players[o]
           : null;
-      console.log("opponent", player || "null");
       return player;
+    });
+
+    const opponentAvatar = computed(() => {
+      return '/avatar/' + (opponent?.value?.name ? opponent.value.avatarId : '0') + '.png'
     });
 
     watchEffect(() => {
@@ -161,7 +168,6 @@ export default {
 
         if (
           gameState &&
-          //gameState.value.playedCards.length >= 1 &&
           gameState.value.roundWinner != -1
         ) {
           document.getElementsByClassName("hidden").forEach((element) => {
@@ -172,7 +178,6 @@ export default {
             .getElementsByClassName("cardToAnimate")
             .forEach((element) => {
               element.classList.toggle("cardToAnimate");
-              // document.getElementsByClassName('cardsOnHand')[1].appendChild(element);
             });
         }
 
@@ -204,7 +209,7 @@ export default {
         }
 
         if (winner == playerId) {
-          target = document.getElementsByClassName("profileYou")[0];
+          target = document.getElementById("profileYou");
           root.style.setProperty('--start',  "-20px");
           
           startY = loserCard.getBoundingClientRect().bottom;
@@ -213,7 +218,7 @@ export default {
           targetY = target.getBoundingClientRect().bottom;
           targetX = target.getBoundingClientRect().right;
         } else {
-          target = document.getElementsByClassName("profileOpp")[0];
+          target = document.getElementById("profileOpponent");
           root.style.setProperty('--start',  "50px");
          
           startY = loserCard.getBoundingClientRect().top;
@@ -236,23 +241,11 @@ export default {
       }
 
       let cardToAnimate = document.getElementsByClassName("card-" + index)[0];
-      // let playedCardsCopy = document.getElementsByClassName('cardsOnTable')[0];
-
       cardToAnimate.classList.toggle("cardToAnimate");
       setTimeout(() => {
         playCard(index);
-        //cardToAnimate.classList.toggle("hidden");
-        // gameState.value.players[playerId].cardsOnHand.slice(index, 1);
-        // cardToAnimate.classList.toggle("cardToAnimate");
       }, 1000);
-      // toggleHidden(cardToAnimate);
     }
-
-    // function toggleHidden(cardToAnimate) {
-    //   if (gameState.value.playedCards.length > 0) {
-    //     cardToAnimate.classList.toggle("hidden");
-    //   }
-    // }
 
     function getIndex(card, index) {
       card.index = index;
@@ -282,6 +275,7 @@ export default {
         removeGame();
       }
       resetGameState();
+      inGame.value = false;
       router.push("/lobby");
     }
 
@@ -297,7 +291,10 @@ export default {
       getIndex,
       animateLoserCard,
       opponentDisconnected,
-      returnToLobbyFunc
+      returnToLobbyFunc,
+      isLoggedIn,
+      currentUser,
+      opponentAvatar
     };
   },
 };
@@ -314,8 +311,6 @@ export default {
   font-size: 40px;
   color: red;
   text-align: center;
-  // padding:0 20px;
-  // margin:10px 0;
   background-color: rgba($color: #e2c3a6, $alpha: 0.8);
   border: 2px solid #3b1704;
   border-radius: 10px;
@@ -340,10 +335,12 @@ export default {
 }
 
 .gameboard {
+  width: 70%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
+
 .playerRow {
   display: flex;
   width: 100%;
@@ -362,6 +359,7 @@ export default {
   width: 20%;
   display: flex;
   flex-direction: column;
+  align-self: center;
   text-align: center;
   background-color: #e2c3a6;
   color: #3b1704;
@@ -374,14 +372,12 @@ export default {
 .profile img {
   width: 50%;
   height: 100%;
+  border: 2px solid #2c3e50;
+  border-radius: 50%;
 }
 
-.profileOpp {
-  margin-bottom: 8.5%;
-}
-
-.profileYou {
-  margin-top: 8.5%;
+#profileYou img {
+  border: 2px solid green;
 }
 
 .cardsOnHand {

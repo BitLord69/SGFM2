@@ -1,16 +1,10 @@
 <template>
   <div class="p-grid p-jc-center main" :key="redrawCounter">
-    <div class="gameTitle p-my-3">
+    <div class="gameTitle p-d-flex p-ai-center">
+      <router-link to="/" style="text-decoration:none; color: #e69244; cursor:pointer;">
         <h1>Super Galaxy Face Melter</h1>
+      </router-link>
     </div>
-    <Suspense>
-      <template #default>
-        <CheckLoggedIn />
-      </template>
-      <template #fallback>
-        <div>Loading...</div>
-      </template>
-    </Suspense>
     <div class="gameWindow" id="gameWindow">
       <router-view :key="$route.path" />
     </div>
@@ -20,12 +14,10 @@
 <script>
 import { useRoute } from "vue-router";
 import { watchEffect, ref } from "vue";
-import CheckLoggedIn from "@/components/CheckLoggedIn"
 import UserHandler from "@/modules/UserHandler.js"
 
 export default {
   name: "App",
-  components: {CheckLoggedIn},
   setup() {
     const route = useRoute();
     const redrawCounter = ref(0);
@@ -38,8 +30,6 @@ export default {
       }
     })
 
-    //await startApp()
-
     return { redrawCounter, currentUser, isLoggedIn, isLoggedInAsGuest };
   }
 }
@@ -48,7 +38,7 @@ export default {
 <style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz&family=MedievalSharp&family=Press+Start+2P&display=swap");
 
-$topMargin: 50px;
+$topMargin: 80px;
 
 body{
   background-image: url("/bg.png");
@@ -69,6 +59,9 @@ body{
 
 .gameWindow {
   width: 100vw;
+  min-width: 1024px;
+  max-width: 1500px;
+  min-height: 768px;
   height: calc(100vh - #{$topMargin});
   position: relative;
   justify-content: center;

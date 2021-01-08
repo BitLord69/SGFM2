@@ -77,7 +77,6 @@ import { reactive } from "vue";
 import CreateGame from "@/components/CreateGame";
 import JoinGame from "@/components/JoinGame";
 import Sidebar from "@/components/Sidebar";
-// import CreateGameState from "@/components/CreateGame";
 
 import UserHandler from "@/modules/UserHandler";
 import SocketHandler from "@/modules/SocketHandler";
@@ -89,7 +88,7 @@ export default {
   components: { CreateGame, JoinGame, Sidebar },
   setup() {
     const { createGame, joinGame, gameList, error } = SocketHandler();
-    const { CreateGameState } = GameHandler();
+    const { CreateGameState, inGame } = GameHandler();
     const { joinGameState } = JoinGame.setup();
     const { logout, currentUser } = UserHandler();
     const router = useRouter();
@@ -110,21 +109,21 @@ export default {
     }
 
     function createNewGame() {
-      console.log("createGameState i createnewgame", CreateGameState);
-      let vadsomhelst = CreateGameState;
+      let selectedLeague = CreateGameState;
       if (CreateGameState.selectedLeague) {
-        vadsomhelst = { ...CreateGameState.selectedLeague };
-        console.log("vadsomhelst i createnewgame:", vadsomhelst);
+        selectedLeague = { ...CreateGameState.selectedLeague };
       }
-      createGame(currentUser.value.username, vadsomhelst);
+      createGame(currentUser.value.username, currentUser.value.avatar, selectedLeague);
+      inGame.value = true;
     }
 
     function joinExistingGame() {
-      console.log("selected game: ", joinGameState.activeIndex );
       joinGame(
         currentUser.value.username,
+        currentUser.value.avatar, 
         gameList.value[joinGameState.activeIndex].roomNo
       );
+      inGame.value = true;
     }
 
     async function performlogout() {

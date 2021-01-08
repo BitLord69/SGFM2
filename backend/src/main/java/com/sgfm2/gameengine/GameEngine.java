@@ -46,7 +46,6 @@ public class GameEngine  {
 
   public void startGame() {
     dealCards();
-    System.out.println("i startGame");
     server.sendGameUpdateToRoom(gameState, roomNo);
   }
 

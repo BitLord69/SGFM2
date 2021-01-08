@@ -29,10 +29,10 @@
         </div>
       </div>
     </div>
-    <div class="p-col-6 p-offset-5 p-d-flex p-jc-center">
+    <div class="p-col-4 p-offset-7 p-d-flex p-jc-center">
       <div class="container">
         <h3>How to play</h3>
-          <p class="p-mt-0">
+          <p class="p-mt-0 p-pr-2">
             <ul>
               <li>Both players draw from one deck of cards. Each card has a name and power. Power determines both attack and health points.</li>
               <li>One turn consists of each player playing one card. Starting player changes each turn.</li>
@@ -244,7 +244,7 @@ export default {
 }
 
 ul {
-  line-height: 1.1;
+  line-height: 1.3;
 }
 
 /* a:link,

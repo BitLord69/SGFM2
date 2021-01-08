@@ -2,6 +2,7 @@ package com.sgfm2.messages;
 
 public class CreateGameMessage {
     private String name;
+    private int avatarId;
     private String league;
     private int pointsToWin;
     private int cardsOnHand;
@@ -9,8 +10,9 @@ public class CreateGameMessage {
     public CreateGameMessage() {
     }
 
-    public CreateGameMessage(String name, int pointsToWin, int cardsOnHand, String league) {
+    public CreateGameMessage(String name, int avatarId, int pointsToWin, int cardsOnHand, String league) {
         this.name = name;
+        this.avatarId = avatarId;
         this.league = league;
         this.pointsToWin = pointsToWin;
         this.cardsOnHand = cardsOnHand;
@@ -52,5 +54,8 @@ public class CreateGameMessage {
     public String toString() {
         return "Message{" + "name=" + name + '}';
     }
-    
+
+    public int getAvatarId() {
+        return avatarId;
+    }
 }

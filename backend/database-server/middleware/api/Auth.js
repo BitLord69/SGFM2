@@ -10,9 +10,8 @@ router.post("/login", async(req, res) => {
 
   const { email, password } = req.body;
   const result = await user.login(email, password);
-
   if (result === null) {
-   return res.json({ error: 'Incorrect username or password!' })
+    return res.json({ error: 'Incorrect username or password!' });
   }
 
   // Log in by adding user to the session

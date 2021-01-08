@@ -8,6 +8,7 @@
     style="width: 100%"
     showClear
     filter
+    scrollHeight="150px"
     @change="setGameSettings"
   />
   <h3 class="p-text-center"><em>Or</em></h3>

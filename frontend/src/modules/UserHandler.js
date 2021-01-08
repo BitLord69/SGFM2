@@ -5,6 +5,7 @@ const currentUser = ref(null);
 const isLoggedIn = ref(false);
 const isLoggedInAsGuest = ref(false);
 const userError = ref(null);
+const loginError = ref(null);
 
 export default function UserHandler() {
   async function logout() {
@@ -23,18 +24,25 @@ export default function UserHandler() {
 
     try {
       result = await extFetch("/api/auth/login/", "POST", {"email" : email, "password" : password});
-      
+      console.log('result.error after login', result.error);
+      if (result.error) {
+        loginError.value = result.error;
+        isLoggedIn.value = false;
+        return 
+      }
+
       isLoggedIn.value = true;
       currentUser.value = result;
     } catch (e) {
-      userError.value = e
+      loginError.value = e
+      isLoggedIn.value = false;
       return 
     }
   }
 
   function loginAsGuest() {
     isLoggedInAsGuest.value = true;
-    currentUser.value = {username: "guest" + Date.now()};
+    currentUser.value = { username: "guest" + Date.now(), avatar: 0 };
   }
 
   async function createUser(form) {
@@ -67,5 +75,5 @@ export default function UserHandler() {
   }
 
 
-  return { currentUser, isLoggedIn, isLoggedInAsGuest, userError, logout, login, loginAsGuest, createUser, startApp };
+  return { currentUser, isLoggedIn, isLoggedInAsGuest, userError, loginError, logout, login, loginAsGuest, createUser, startApp };
 }

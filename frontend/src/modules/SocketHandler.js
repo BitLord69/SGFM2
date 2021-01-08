@@ -60,12 +60,12 @@ export default function SocketHandler() {
     client.emit("SEND", message);
   }
 
-  function createGame(name, createGameState) {
-    client.emit("CREATE_GAME", { name, ...createGameState });
+  function createGame(name, avatarId, createGameState) {
+    client.emit("CREATE_GAME", { name, avatarId, ...createGameState });
   }
 
-  function joinGame(name, roomNo) {
-    client.emit("JOIN_GAME", { name, roomNo });
+  function joinGame(name, avatarId, roomNo) {
+    client.emit("JOIN_GAME", { name, avatarId, roomNo });
   }
 
   // send the played card as an index in a string format

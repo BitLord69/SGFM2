@@ -23,14 +23,13 @@
           <label class="input" for="password">Password</label>
         </span>
       </div>
-      <div class="p-text-center p-invalid" v-if="state.incorrect">
-        <p>Incorrect email or password!</p>
+      <div class="p-text-center p-invalid p-mb-3">
+        <div>{{ loginError  || "&nbsp;" }}</div>
       </div>
-      <div class="btn-group">
-        <Button class="p-ripple p-mb-4" @click="performLogin" label="Login" />
+      <div>
+        <Button class="p-ripple p-mb-2" @click="performLogin" label="Login" />
       </div>
     </div>
-    <div v-else>WELCOME {{currentUser}}!</div>
   </div>
 </template>
 
@@ -43,46 +42,35 @@ const form = reactive({
   email: null,
   password: null,
 });
-const state = reactive({
-  incorrect: false,
-})
 
 export default {
   setup() {
     const router = useRouter();
-    const { isLoggedIn, currentUser, login} = UserHandler();
-console.log("isLoggedIn: ", isLoggedIn.value);
+    const { isLoggedIn, currentUser, login, userError, loginError } = UserHandler();
+
     if (isLoggedIn.value) {
       router.push('/lobby')
     }
 
     async function performLogin() {
       await login(form.email, form.password)
-
-      if (isLoggedIn.value) {
-        router.push('/lobby')
-      } else {
-        state.incorrect = true
-      }
+      if (isLoggedIn.value) router.push('/lobby')
     }
 
     return {
       form,
-      state,
       login,
       isLoggedIn,
       currentUser,
-      performLogin
+      performLogin,
+      userError, 
+      loginError
     };
   },
 };
 </script>
 
 <style scoped>
-.btn-group {
-  display: flex;
-  flex-direction: column;
-}
 
 button {
   align-self: center;
@@ -112,15 +100,4 @@ button {
   font-size: 120%;
   font-family: "Yanone Kaffeesatz", sans-serif;
 }
-
-/* a:link,
-a:visited,
-a:active {
-  bottom: 10em;
-  position: absolute;
-  justify-content: center;
-  display: flex;
-  color: inherit;
-  text-decoration: none;
-} */
 </style>

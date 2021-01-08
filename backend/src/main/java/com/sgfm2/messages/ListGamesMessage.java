@@ -10,22 +10,24 @@ public class ListGamesMessage {
   private int pointsToWin;
   private int cardsOnHand;
   private int playersInRoom;
+  private String league;
   private transient ArrayList<String> tokens = new ArrayList<>();
   private transient ArrayList<SocketIOClient> clients = new ArrayList<>();
 
   public ListGamesMessage() {
   }
 
-  public ListGamesMessage(String roomNo, int playersInRoom, int pointsToWin, int cardsOnHand, String creator) {
+  public ListGamesMessage(String roomNo, int playersInRoom, int pointsToWin, int cardsOnHand, String creator, String league) {
     this.roomNo = roomNo;
     this.creator = creator;
     this.pointsToWin = pointsToWin;
     this.cardsOnHand = cardsOnHand;
     this.playersInRoom = playersInRoom;
+    this.league = league;
   }
 
   public ListGamesMessage(String roomNo, int playersInRoom, CreateGameMessage data) {
-    this(roomNo, playersInRoom, data.getPointsToWin(), data.getCardsOnHand(), data.getName());
+    this(roomNo, playersInRoom, data.getPointsToWin(), data.getCardsOnHand(), data.getName(), data.getLeague());
   }
 
   public String getCreator() {

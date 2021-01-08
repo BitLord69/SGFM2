@@ -109,19 +109,18 @@ export default {
     }
 
     function createNewGame() {
-      let vadsomhelst = CreateGameState;
+      let selectedLeague = CreateGameState;
       if (CreateGameState.selectedLeague) {
-        vadsomhelst = { ...CreateGameState.selectedLeague };
-        console.log("vadsomhelst i createnewgame:", vadsomhelst);
+        selectedLeague = { ...CreateGameState.selectedLeague };
       }
-      createGame(currentUser.value.username, vadsomhelst);
+      createGame(currentUser.value.username, currentUser.value.avatar, selectedLeague);
       inGame.value = true;
     }
 
     function joinExistingGame() {
-      console.log("selected game: ", joinGameState.activeIndex );
       joinGame(
         currentUser.value.username,
+        currentUser.value.avatar, 
         gameList.value[joinGameState.activeIndex].roomNo
       );
       inGame.value = true;

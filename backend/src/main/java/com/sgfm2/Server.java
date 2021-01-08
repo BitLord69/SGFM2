@@ -66,7 +66,7 @@ public class Server {
 
       // TODO: 2020-12-14 Do we need a new thread here????
       GameEngine gameEngine = new GameEngine(localThis, data.getCardsOnHand(),data.getPointsToWin(), room, data.getLeague());
-      gameEngine.setPlayer(new Player(data.getName()));
+      gameEngine.setPlayer(new Player(data.getName(), data.getAvatarId()));
       games.put(room, gameEngine);
 
       ListGamesMessage lgm = new ListGamesMessage(room, 1, data);
@@ -89,7 +89,7 @@ public class Server {
       lgm.addToken(getToken(client));
 
       GameEngine gameEngine = games.get(data.getRoomNo());
-      gameEngine.setPlayer(new Player(data.getName()));
+      gameEngine.setPlayer(new Player(data.getName(), data.getAvatarId()));
 
       gameEngine.startGame();
 

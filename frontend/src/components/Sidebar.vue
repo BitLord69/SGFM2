@@ -1,7 +1,7 @@
 <template>
 <teleport to="body">
   <div class="sidebar" v-if="currentUser !== null">
-    <img class="profile-sb-close" id="profile-img" @click="toggleNav" :src="'/avatar/' + (isLoggedIn ? currentUser.avatar : 'avatar') + '.png'" alt="" />
+    <img class="profile-sb-close" id="profile-img" @click="toggleNav" :src="'/avatar/' + currentUser.avatar + '.png'" alt="" />
     <div class="sidebar-hidden" id="sidebar">
       <div class="sidebar-content">
         <div class="username">

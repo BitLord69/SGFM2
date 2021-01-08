@@ -337,6 +337,7 @@ export default {
 .gameboard {
   width: 70%;
   display: flex;
+  max-width: 1200px;
   flex-direction: column;
   justify-content: space-between;
 }
@@ -345,7 +346,6 @@ export default {
   display: flex;
   width: 100%;
   height: 32%;
-  justify-content: space-between;
 }
 
 .table {
@@ -357,6 +357,7 @@ export default {
 
 .profile {
   width: 20%;
+  max-width: 150px;
   display: flex;
   flex-direction: column;
   align-self: center;

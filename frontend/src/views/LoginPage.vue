@@ -1,5 +1,5 @@
 <template>
-  <div class="login-form-container p-d-flex p-my-auto p-jc-center">
+  <div class="login-form-container p-d-flex p-jc-center">
     <div class="p-fluid p-mt-3" v-if="!isLoggedIn">
       <div class="input p-field p-my-4">
         <span class="p-float-label">
@@ -101,8 +101,9 @@ button {
 }
 
 .login-form-container {
-  height: 53%;
-  width: 40%;
+  margin-top: 13em;
+  height: 15em;
+  width: 20em;
   background-image: linear-gradient(#b99778, #e2c3a6);
   color: #3b1704;
   border: 0.2em solid #3b1704;

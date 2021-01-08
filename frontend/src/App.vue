@@ -60,7 +60,7 @@ body{
 .gameWindow {
   width: 100vw;
   min-width: 1024px;
-  max-width: 1500px;
+  // max-width: 1500px;
   min-height: 768px;
   height: calc(100vh - #{$topMargin});
   position: relative;

@@ -34,7 +34,7 @@
           </template>
         </Suspense>
         <template class="p-mx-auto" #footer>
-          <router-link to="/gameboard/0">
+          <router-link style="text-decoration: none" to="/gameboard/0">
             <Button
               label="Create"
               class="p-d-block p-mx-auto p-button-raised btn-dialog"
@@ -59,7 +59,7 @@
         </template>
         <JoinGame />
         <template class="p-mx-auto" #footer>
-          <router-link to="/gameboard/1">
+          <router-link style="text-decoration: none" to="/gameboard/1">
             <Button
               label="Join"
               class="p-d-block p-mx-auto p-button-raised btn-dialog"

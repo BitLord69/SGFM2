@@ -2,6 +2,7 @@ import { ref } from "vue";
 import { extFetch } from "./extFetch";
 
 const friends = ref(null);
+const nonFriends = ref(null);
 const friendError = ref(null);
 
 export default function FriendHandler() {
@@ -9,6 +10,16 @@ export default function FriendHandler() {
   async function getFriends() {
     try {
       friends.value = await extFetch("/api/user/friends/", "GET");
+      console.log("friends.val:", friends.value);
+    } catch (e) {
+      friendError.value = e;
+      return;
+    }
+  }
+
+  async function getNonFriends() {
+    try {
+      nonFriends.value = await extFetch("/api/user/nonfriends/", "GET");
       console.log("friends.val:", friends.value);
     } catch (e) {
       friendError.value = e;
@@ -42,8 +53,10 @@ export default function FriendHandler() {
 
     return {
       friends,
+      nonFriends,
       friendError,
       getFriends,
+      getNonFriends,
       deleteFriend,
       createFriendRequest,
       acceptFriendRequest,

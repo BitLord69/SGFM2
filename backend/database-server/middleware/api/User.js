@@ -33,6 +33,13 @@ router.get("/friends/", async (req, res) => {
   return res.json(await user.getFriends(req.session.user.username));
 });
 
+router.get("/nonfriends/", async (req, res) => {
+  if (!req.session.user) {
+    return res.json({ error: "Not logged in!" });
+  }
+  return res.json(await user.getNonFriends(req.session.user.username));
+});
+
 router.get("/friends/requests/", async (req, res) => {
   if (!req.session.user) {
     return res.json({ error: "Not logged in!" });

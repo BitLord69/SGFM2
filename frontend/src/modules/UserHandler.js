@@ -2,23 +2,11 @@ import { ref } from "vue";
 import { extFetch } from "./extFetch";
 
 const currentUser = ref(null);
-const users = ref(null);
 const isLoggedIn = ref(false);
 const isLoggedInAsGuest = ref(false);
 const error = ref(null);
 
 export default function UserHandler() {
-
-  async function getAllUsers() {
-    try {
-      users.value = await extFetch("/api/user/", "GET");
-      console.log("users.val:", users.value);
-    } catch (e) {
-      error.value = e;
-      console.log("i getAllUsers CATCH, error.value", error.value);
-      return ;
-    }
-  }
 
   async function logout() {
     try {
@@ -89,8 +77,6 @@ export default function UserHandler() {
 
   return {
     currentUser,
-    users,
-    getAllUsers,
     isLoggedIn,
     isLoggedInAsGuest,
     error,

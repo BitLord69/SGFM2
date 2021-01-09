@@ -150,4 +150,13 @@ Button:hover{
   bottom: 9.6%;
   font-size: 1em;
 }
+
+.avatar-image {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #2c3e50;
+  border-radius: 50px;
+  margin: 0;
+  /* z-index: 100; */
+}
 </style>

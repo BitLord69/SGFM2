@@ -1,7 +1,7 @@
 const Neo4j = require("../modules/neo4j");
 
 class User {
-  async getAll(username) {
+  async getAll() {
     const res = await Neo4j.query(
       `MATCH (u:User)
                                     WITH u
@@ -46,6 +46,14 @@ class User {
             delete o.password;
             return o;
           });
+  }
+
+  async getNonFriends(username) {
+    const res = await Neo4j.query(
+      `MATCH (nf:User) WHERE NOT (nf)-[:FRIENDS]-(:User {username: $username}) AND nf.username<>$username RETURN nf`,
+      { username }
+    );
+    return res.map(o => ({ ...o.nf.properties }))
   }
 
   async getFriendRequests(username) {

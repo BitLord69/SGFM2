@@ -131,12 +131,5 @@ export default {
   text-transform: initial;
 }
 
-.avatar-image {
-  width: 40px;
-  height: 40px;
-  border: 2px solid #2c3e50;
-  border-radius: 50px;
-  margin: 0;
-  /* z-index: 100; */
-}
+
 </style>

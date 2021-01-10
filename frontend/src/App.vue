@@ -47,7 +47,7 @@ $topMargin: 80px;
 }
 
 ::-webkit-scrollbar {
-  width: 0.25rem;
+  width: 0.5rem;
 }
 
 ::-webkit-scrollbar-track{
@@ -79,7 +79,6 @@ body{
 .gameWindow {
   width: 100vw;
   min-width: 1024px;
-  // max-width: 1500px;
   min-height: 768px;
   height: calc(100vh - #{$topMargin});
   position: relative;

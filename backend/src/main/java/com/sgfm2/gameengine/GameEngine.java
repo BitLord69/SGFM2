@@ -85,8 +85,6 @@ public class GameEngine  {
       } else if( winner == gameState.getCurrentPlayer() ) {
         handleWinnerCardForSecondPlayer(winner, card2, card1);
       }
-
-      //Deal new card to LOSER, if TIE both players receive a new card.
     }
   }
 
@@ -175,6 +173,7 @@ public class GameEngine  {
         dealNewCards(winner);
         gameState.changeStartPlayer();
         gameState.clearPlayedCards();
+        gameState.setRoundWinner(-1);
       }
 
       server.sendGameUpdateToRoom(gameState, roomNo);

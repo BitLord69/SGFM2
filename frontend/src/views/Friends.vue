@@ -1,6 +1,6 @@
 <template>
   <div class="friend-container">
-    <div class="area-1">
+    <div class="area-1 p-mb-2">
       <Suspense>
         <template #default>
           <div class="p-p-4">
@@ -12,7 +12,7 @@
         </template>
       </Suspense>
     </div>
-    <div class="Side">
+    <div class="area-2 p-mb-2">
       <Suspense>
         <template #default>
           <div class="p-p-4">
@@ -24,16 +24,41 @@
         </template>
       </Suspense>
     </div>
-    <div class="Area-2">AREA2</div>
+    <div class="area-3 p-mb-5">
+      <Suspense>
+        <template #default>
+          <div class="p-p-4">
+            <OutgoingFriendRequestList />
+          </div>
+        </template>
+        <template #fallback>
+          <div>Loading outgoing friend requests...</div>
+        </template>
+      </Suspense>
+    </div>
+    <div class="area-4 p-mb-5">
+      <Suspense>
+        <template #default>
+          <div class="p-p-4">
+            <IncomingFriendRequestList />
+          </div>
+        </template>
+        <template #fallback>
+          <div>Loading outgoing friend requests...</div>
+        </template>
+      </Suspense>
+    </div>
   </div>
 </template>
 
 <script>
-import FriendList from "../components/FriendList.vue";
-import UserList from '../components/UserList.vue';
+import FriendList from "../components/FriendList";
+import UserList from '../components/UserList';
+import OutgoingFriendRequestList from '@/components/OutgoingFriendRequestList';
+import IncomingFriendRequestList from '@/components/IncomingFriendRequestList';
 
 export default {
-  components: { FriendList, UserList },
+  components: { FriendList, UserList, OutgoingFriendRequestList, IncomingFriendRequestList },
 
   setup() {
   }
@@ -44,23 +69,30 @@ export default {
 .friend-container {
   display: grid;
   width: 85%;
-  grid-template-columns: 3fr 1fr;
+  grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 0px 0px;
+  gap: 0px 6px;
   grid-template-areas:
-    "Area-1 Side"
-    "Area-2 Side";
+    "area-1 area-2"
+    "area-3 area-4";
 }
-.Area-1 {
-  grid-area: Area-1;
-}
-
 .area-1 {
-  background-color: #e2c3a6;
+  grid-area: area-1;
 }
 
-.Side {
-  grid-area: Side;
+.area-1, .area-3, .area-4 {
+  background-color: #e2c3a6;
+  border-radius: 10px;
+  border: 2px solid #3b1704;
+}
+
+h2 {
+  color:#3b1704;
+  font-family: "Yanone Kaffeesatz", sans-serif;
+}
+
+.area-2 {
+  grid-area: area-2;
   align-self: center;
   text-align: center;
   background-color: #e2c3a6;
@@ -68,9 +100,11 @@ export default {
   border: 2px solid #3b1704;
 }
 
-.side {
+.area-3 {
+  grid-area: area-3;
 }
-.Area-2 {
-  grid-area: Area-2;
+
+.area-4 {
+  grid-area: area-4;
 }
 </style>

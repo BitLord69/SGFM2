@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="p-fluid p-grid p-jc-center">
-      <h2>All users</h2>
+      <h2>My received friend requests</h2>
       <div class="p-col-12">
         <span class="p-input-icon-left p-fluid">
         <i class="pi pi-search" />
@@ -36,16 +36,16 @@ import FriendHandler from "@/modules/FriendHandler";
 export default {
 
   async setup() {
-    const { nonFriends, getNonFriends, createFriendRequest } = FriendHandler();
+    const { inFriendReq, getIncomingFriendRequest, createFriendRequest } = FriendHandler();
     const userList = reactive({
       search: "",
       requestSent: ""
     });
 
-    await getNonFriends();
+    await getIncomingFriendRequest();
 
     function filteredUsers() {
-      return nonFriends.value.filter(user => user.username.toLowerCase().includes(userList.search.toLowerCase()))
+      return inFriendReq.value.filter(user => user.username.toLowerCase().includes(userList.search.toLowerCase()))
     } 
 
     function sendFriendRequest(username) {
@@ -55,7 +55,6 @@ export default {
     }
 
     return {
-      nonFriends,
       filteredUsers,
       userList,
       sendFriendRequest

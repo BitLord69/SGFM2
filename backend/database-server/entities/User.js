@@ -56,9 +56,24 @@ class User {
     return res.map(o => ({ ...o.nf.properties }))
   }
 
-  async getFriendRequests(username) {
+  async getIncomingFriendRequests(username) {
     const res = await Neo4j.query(
       `MATCH (u: User {username: $username})<-[f:FRIENDS {pendingRequest:true}]-(friend:User) RETURN friend`,
+      { username }
+    );
+    return res === undefined
+      ? null
+      : res
+          .map((o) => ({ ...o.friend.properties }))
+          .map((o) => {
+            delete o.password;
+            return o;
+          });
+  }
+
+  async getOutgoingFriendRequests(username) {
+    const res = await Neo4j.query(
+      `MATCH (friend:User)<-[f:FRIENDS {pendingRequest:true}]-(u: User {username: $username}) RETURN friend`,
       { username }
     );
     return res === undefined

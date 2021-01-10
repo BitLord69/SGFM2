@@ -44,7 +44,14 @@ router.get("/friends/requests/", async (req, res) => {
   if (!req.session.user) {
     return res.json({ error: "Not logged in!" });
   }
-  return res.json(await user.getFriendRequests(req.session.user.username));
+  return res.json(await user.getIncomingFriendRequests(req.session.user.username));
+});
+
+router.get("/nonfriends/requests/", async (req, res) => {
+  if (!req.session.user) {
+    return res.json({ error: "Not logged in!" });
+  }
+  return res.json(await user.getOutgoingFriendRequests(req.session.user.username));
 });
 
 // router.post("/friends/", async (req, res) => {

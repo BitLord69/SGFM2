@@ -16,7 +16,7 @@ class Game {
                           losses: o.u.games.filter(g => !g.properties.winner).length
                           }))
 
-    return temp.sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses))
+    return temp.sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses)).slice(0, 9);
   }
 
   async saveGame(body) {

@@ -1,5 +1,8 @@
 <template>
   <div class="gameboard">
+    <!-- Particles used to animating exploding cards when there is a tie -->
+    <div v-for="i in 300" :key="i" class="particle particle-hidden"></div>
+
     <teleport to="#gameWindow">
       <div class="messageCont">
         <div
@@ -65,11 +68,9 @@
       </div>
     </div>
 
-    <div class="table" data-dis-container>
-      <div class="cardsOnTable p-py-2" v-if="gameState?.gameWinner == -1">
+    <div class="table">
+      <div class="cardsOnTable p-py-2" v-if="gameState && gameState?.gameWinner == -1">
         <div
-          data-dis-type="self-contained"
-          data-dis-particle-type="ExplodingParticle"
           class="card"
           v-for="(card, index) in gameState?.playedCards"
           :id="'card-' + index"
@@ -96,7 +97,7 @@
     <div class="playerRow p-mb-2">
       <div class="cardsOnHand">
         <div
-          :class="'card' + ' p-mx-1 ' + ' card-' + index"
+          :class="'card' + ' p-mx-1 ' + ' card-' + index + ((gameState && playerId != gameState.currentPlayer) ? '' : ' cardHoverable')"
           v-for="(card, index) in gameState?.players[playerId]?.cardsOnHand"
           :key="getIndex(card, index)"
           :style="{
@@ -143,7 +144,6 @@ export default {
     const { gameState, playCard, opponentDisconnected, resetGameState, removeGame } = SocketHandler();
     const state = reactive({
       connectedPlayers: 1,
-      isDisabled: false,
       cardsOnHandSize: 5,
     });
 
@@ -166,47 +166,83 @@ export default {
           state.connectedPlayers = 2;
         }
 
-        if (
-          gameState &&
-          gameState.value.roundWinner != -1
-        ) {
+        if (gameState.value.roundWinner != -1) {
           document.getElementsByClassName("hidden").forEach((element) => {
             element.classList.remove("hidden");
           });
 
-          document
-            .getElementsByClassName("cardToAnimate")
-            .forEach((element) => {
+          document.getElementsByClassName("cardToAnimate").forEach((element) => {
               element.classList.toggle("cardToAnimate");
-            });
+            });        
+        } else {
+          document.getElementsByClassName("particle").forEach((element) => {
+            if (!element.classList.contains("particle-hidden")) element.classList.toggle("particle-hidden");
+          }); 
         }
 
-        if (gameState.value.playedCards.length == 2 && gameState.value.roundWinner != 2) {
-          animateLoserCard();
+        if (gameState.value.playedCards.length == 2) {
+          if (gameState.value.roundWinner != 2) {
+            animateLoserCard();
+          } else if (gameState.value.roundWinner == 2) {
+            animateTie();
+          }
         }
 
-        if(gameState.value.gameWinner == playerId){
-          console.log("in watchEffect - gameWinner === playerId");
+        // if (playerId != gameState.value.currentPlayer) {
+        //     document.getElementsByClassName("cardHoverable").forEach((element) => {
+        //       element.setAttribute("disabled");
+        //     });           
+        //   console.log("Inte min tur än.....");
+        // } else {
+
+        // }
+
+        if (playerId == gameState.value.gameWinner) {
+          startParticleAnimation();
+          setTimeout(() => {
+            document.getElementsByClassName("particle").forEach((element) => {
+              element.className += " particle-hidden";
+            }); 
+          }, 4000);
         }
       }
     });
 
+    function startParticleAnimation() {
+      setTimeout(() =>{
+        document.getElementsByClassName("particle").forEach((element) => {
+          element.classList.remove("particle-hidden");
+        });
+      }, 300);
+    }
+
+    function animateTie() {
+      setTimeout(() =>{
+        document.getElementById("card-0").className += " tie";
+        document.getElementById("card-1").className += " tie";
+        
+        startParticleAnimation();
+      }, 300);
+    }
+
     function animateLoserCard() {
-      let target;
-      let winner = gameState.value.roundWinner;
-      let loserCard;
-      let root = document.documentElement;
-      let targetY;
-      let targetX;
       let startY;
       let startX;
+      let target;
+      let targetY;
+      let targetX;
+      let loserCard;
+      let root = document.documentElement;
+      let winner = gameState.value.roundWinner;
 
       setTimeout(() =>{
-        if ( winner == gameState.value?.startPlayer ) {
+        if (winner == gameState.value?.startPlayer) {
           loserCard = document.getElementById("card-1");
         } else {
           loserCard = document.getElementById("card-0");
         }
+
+        if (!loserCard) return;
 
         if (winner == playerId) {
           target = document.getElementById("profileYou");
@@ -260,18 +296,9 @@ export default {
       return card;
     }
 
-    function switchIsDisabled() {
-      if (
-        gameState.value?.players[playerId].cardsOnHand.length <
-        state.cardsOnHandSize
-      ) {
-        state.isDisabled = !state.isDisabled;
-      }
-    }
-
     function returnToLobbyFunc(remove){
       opponentDisconnected.value = false;
-      if(remove){
+      if (remove) {
         removeGame();
       }
       resetGameState();
@@ -283,7 +310,6 @@ export default {
       state,
       getImageName,
       moveCard,
-      switchIsDisabled,
       gameState,
       animateCard,
       playerId,
@@ -300,6 +326,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+
+$particle-size: 8px;
 
 :root{
   --target-x: 0px;
@@ -338,6 +366,7 @@ export default {
   width: 70%;
   display: flex;
   max-width: 1200px;
+  position: relative;
   flex-direction: column;
   justify-content: space-between;
 }
@@ -426,7 +455,7 @@ export default {
   }
 }
 
-.hidden {
+.hidden, .particle-hidden {
   display: none;
 }
 
@@ -444,6 +473,12 @@ export default {
   text-align: center;
   font-size: 90%;
   font-family: "Yanone Kaffeesatz", sans-serif;
+}
+
+.cardHoverable:hover{
+  box-shadow: 0px 0px 15px 2px #eee;
+  z-index: 10;
+  transform: scale(1.05);
 }
 
 .messageCont {
@@ -472,6 +507,7 @@ export default {
 .CSS-animation {
   animation: bounceOutDown 1.5s forwards;
 }
+
 @keyframes bounceOutDown {
   50% {
     opacity: 1; transform: translate3d(0, 0, 0); z-index: 15;
@@ -490,4 +526,34 @@ export default {
     transform: translate3d(var(--target-x), var(--target-y), 0);
   }
 }
+
+.tie {
+  animation: fade 5s;
+}
+
+.particle {
+  z-index: 99;
+  position: absolute;
+  width: $particle-size; 
+  height: $particle-size;
+  animation: shoot 4s ease-out;
+  animation-name: shoot, fade;
+
+  @for $i from 0 to 300 {
+    $t: (1 + .01 * random(100)) * 1.5s;
+
+    &:nth-child(#{$i + 1}) {
+      transform: translate(random(80) * 1vw, random(80) * 1vh);
+      background: hsl(random(360), 100%, 50%);
+      animation-duration: $t;
+      animation-delay: -.01 * random(100) * $t;
+    }
+  }
+}
+
+@keyframes shoot {
+  0% { transform: translate(35vw, 50vh); }
+}
+
+@keyframes fade { to { opacity: 0 } }
 </style>

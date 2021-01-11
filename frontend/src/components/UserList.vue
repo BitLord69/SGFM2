@@ -77,10 +77,24 @@ export default {
       }
     )
 
-    await getFriends();
-    await getNonFriends();
-    await getOutgoingFriendRequest();
-    await getIncomingFriendRequest();
+    await getInformation();
+    
+    async function getInformation() {
+      switch(props.title) {
+        case "All Users":
+          await getNonFriends();
+          break;
+        case "My Friends":
+          await getFriends();
+          break;
+        case "My Sent Friend Requests":
+          await getOutgoingFriendRequest();
+          break;
+        case "My Received Friend Requests":
+          await getIncomingFriendRequest();
+          break;
+      }
+    } 
 
     function filteredUsers() {
       switch(props.title) {

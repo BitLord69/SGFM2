@@ -24,7 +24,6 @@ export default function UserHandler() {
 
     try {
       result = await extFetch("/api/auth/login/", "POST", {"email" : email, "password" : password});
-      console.log('result.error after login', result.error);
       if (result.error) {
         loginError.value = result.error;
         isLoggedIn.value = false;

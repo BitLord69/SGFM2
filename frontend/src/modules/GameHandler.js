@@ -10,6 +10,12 @@ const CreateGameState = reactive({
 });
 let inGame = ref(false);
 
+const joinGameState = reactive({
+  activeIndex: -1,
+  selectedGame: null,
+  gameList: null
+});
+
 export default function GameHandler() {
   async function getGames() {
     try {
@@ -20,5 +26,5 @@ export default function GameHandler() {
     }  
   }
 
-  return { getGames, gameError, stats, CreateGameState, inGame }
+  return { getGames, gameError, stats, CreateGameState, inGame, joinGameState }
 }

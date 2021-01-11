@@ -93,7 +93,6 @@ export default {
   setup() {
     const router = useRouter();
     const { isLoggedIn, currentUser, login, loginAsGuest} = UserHandler();
-    console.log("isLoggedIn: ", isLoggedIn.value);
     if (isLoggedIn.value) {
       router.push('/lobby')
     }

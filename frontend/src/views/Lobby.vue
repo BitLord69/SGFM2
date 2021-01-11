@@ -57,12 +57,21 @@
             <i class="pi pi-times-circle p-col-1 p-mt-2" @click="setVisibleJoin" style="cursor: pointer"></i>
           </div>
         </template>
-        <JoinGame />
+        <Suspense>
+          <template #default>
+            <JoinGame />
+          </template>
+          <template #fallback>
+            Loading available games...
+          </template>
+        </Suspense>
+          
         <template class="p-mx-auto" #footer>
           <router-link style="text-decoration: none" to="/gameboard/1">
             <Button
               label="Join"
               class="p-d-block p-mx-auto p-button-raised btn-dialog"
+              :disabled="joinGameState.activeIndex == -1"
               @click="joinExistingGame"
             />
           </router-link>
@@ -77,7 +86,6 @@ import { reactive } from "vue";
 import CreateGame from "@/components/CreateGame";
 import JoinGame from "@/components/JoinGame";
 import Sidebar from "@/components/Sidebar";
-
 import UserHandler from "@/modules/UserHandler";
 import SocketHandler from "@/modules/SocketHandler";
 import GameHandler from "@/modules/GameHandler";
@@ -88,8 +96,7 @@ export default {
   components: { CreateGame, JoinGame, Sidebar },
   setup() {
     const { createGame, joinGame, gameList, error } = SocketHandler();
-    const { CreateGameState, inGame } = GameHandler();
-    const { joinGameState } = JoinGame.setup();
+    const { CreateGameState, inGame, joinGameState } = GameHandler();
     const { logout, currentUser } = UserHandler();
     const router = useRouter();
 
@@ -139,6 +146,7 @@ export default {
       error,
       performlogout,
       joinExistingGame,
+      joinGameState
     };
   },
 };

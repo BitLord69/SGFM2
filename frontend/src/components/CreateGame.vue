@@ -6,8 +6,10 @@
     optionLabel="league"
     placeholder="Select a league"
     style="width: 100%"
-    showClear="true"
-    :filter="true"
+    showClear
+    filter
+    scrollHeight="150px"
+    @change="setGameSettings"
   />
   <h3 class="p-text-center"><em>Or</em></h3>
   <h4 class="p-mt-0">
@@ -30,13 +32,23 @@ export default {
   async setup() {
     const { getLeagues, leagueError, leagues } = LeagueHandler();
     const { CreateGameState } = GameHandler();
-
     await getLeagues();
+
+    function setGameSettings(event){
+      if(event.value == null){
+        CreateGameState.pointsToWin = 15;
+        CreateGameState.cardsOnHand = 5;
+      } else {
+        CreateGameState.pointsToWin = event.value.pointsToWin;
+        CreateGameState.cardsOnHand = event.value.cardsOnHand;
+      }
+    }
 
     return {
       CreateGameState,
       leagueError,
       leagues,
+      setGameSettings
     };
   },
 };

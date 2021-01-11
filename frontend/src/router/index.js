@@ -5,6 +5,8 @@ import Gameboard from "@/views/Gameboard";
 import RegisterPage from "@/views/RegisterPage";
 import LoginPage from "@/views/LoginPage";
 import Friends from "@/views/Friends";
+import UserHandler from "@/modules/UserHandler";
+import GameHandler from "@/modules/GameHandler";
 
 const routes = [
   {
@@ -43,5 +45,23 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+router.beforeEach(async (to, from, next) => {
+  const { startApp, isLoggedIn, isLoggedInAsGuest } = UserHandler();
+  await startApp();
+  
+  if (!isLoggedIn.value && !isLoggedInAsGuest.value) {
+    if (to.name === "Login" || to.name === "Home" || to.name === "Register") next();
+    else next({ name: 'Home' })
+  }
+  else {
+    const { inGame } = GameHandler();
+    if (to.name == "Gameboard") {
+      if(!inGame.value){
+        next({name: "Lobby"})
+      } else next();
+    } else next();
+  }
+})
 
 export default router;

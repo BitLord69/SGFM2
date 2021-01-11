@@ -1,5 +1,8 @@
 <template>
   <div class="gameboard">
+    <!-- Particles used to animating exploding cards when there is a tie -->
+    <div v-for="i in 300" :key="i" class="particle particle-hidden"></div>
+
     <teleport to="#gameWindow">
       <div class="messageCont">
         <div
@@ -47,29 +50,27 @@
       <template class="p-mx-auto" #footer> </template>
     </Dialog>
 
-    <div class="playerRow p-mt-2">
-      <div class="profile profileOpp p-pt-1" :style="{}">
+    <div class="playerRow">
+      <div class="profile p-pt-1" id="profileOpponent">
         <div>{{ opponent?.name || "waiting..." }}</div>
-        <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
+        <div class="p-mt-1"><img :src="opponentAvatar" /></div>
         <div class="p-mt-1">
-          Points: {{ opponent?.score }}/{{ gameState?.pointsToWin }}
+          Points: {{ opponent?.score || 0 }}/{{ gameState?.pointsToWin }}
         </div>
       </div>
       <div class="cardsOnHand">
         <div
           class="card p-mx-1"
-          v-for="index in 5"
+          v-for="index in opponent?.cardsOnHand.length || 5"
           :key="index"
           :style="{ backgroundImage: `url(${'../card_back.png'})` }"
         ></div>
       </div>
     </div>
 
-    <div class="table" data-dis-container>
-      <div class="cardsOnTable p-py-2" v-if="gameState?.gameWinner == -1">
+    <div class="table">
+      <div class="cardsOnTable p-py-2" v-if="gameState && gameState?.gameWinner == -1">
         <div
-          data-dis-type="self-contained"
-          data-dis-particle-type="ExplodingParticle"
           class="card"
           v-for="(card, index) in gameState?.playedCards"
           :id="'card-' + index"
@@ -96,7 +97,7 @@
     <div class="playerRow p-mb-2">
       <div class="cardsOnHand">
         <div
-          :class="'card' + ' p-mx-1 ' + ' card-' + index"
+          :class="'card' + ' p-mx-1 ' + ' card-' + index + ((gameState && playerId != gameState.currentPlayer) ? '' : ' cardHoverable')"
           v-for="(card, index) in gameState?.players[playerId]?.cardsOnHand"
           :key="getIndex(card, index)"
           :style="{
@@ -109,9 +110,9 @@
         </div>
       </div>
 
-      <div class="profile profileYou p-pt-1">
+      <div class="profile p-pt-1" id="profileYou">
         <div>{{ gameState && gameState?.players[playerId]?.name }}</div>
-        <div class="p-mt-1"><img :src="'../avatar.jpg'" /></div>
+        <div class="p-mt-1"><img :src="'/avatar/' + currentUser.avatar + '.png'" /></div>
         <div class="p-mt-1">
           Points: {{ gameState && gameState?.players[playerId]?.score }}/{{
             gameState?.pointsToWin
@@ -127,6 +128,8 @@ import { reactive, watchEffect, computed } from "vue";
 import SocketHandler from "@/modules/SocketHandler";
 import WaitingForPlayer from "../components/WaitingForPlayer";
 import { useRoute, useRouter } from "vue-router";
+import GameHandler from "@/modules/GameHandler"
+import UserHandler from "@/modules/UserHandler";
 
 export default {
   name: "Gameboard",
@@ -135,11 +138,12 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const playerId = route.params.player;
+    const { inGame } = GameHandler();
+    const { currentUser, isLoggedIn } = UserHandler();
 
     const { gameState, playCard, opponentDisconnected, resetGameState, removeGame } = SocketHandler();
     const state = reactive({
       connectedPlayers: 1,
-      isDisabled: false,
       cardsOnHandSize: 5,
     });
 
@@ -149,8 +153,11 @@ export default {
         gameState && gameState.value?.players.length > 1
           ? gameState.value?.players[o]
           : null;
-      console.log("opponent", player || "null");
       return player;
+    });
+
+    const opponentAvatar = computed(() => {
+      return '/avatar/' + (opponent?.value?.name ? opponent.value.avatarId : '0') + '.png'
     });
 
     watchEffect(() => {
@@ -159,52 +166,86 @@ export default {
           state.connectedPlayers = 2;
         }
 
-        if (
-          gameState &&
-          //gameState.value.playedCards.length >= 1 &&
-          gameState.value.roundWinner != -1
-        ) {
+        if (gameState.value.roundWinner != -1) {
           document.getElementsByClassName("hidden").forEach((element) => {
             element.classList.remove("hidden");
           });
 
-          document
-            .getElementsByClassName("cardToAnimate")
-            .forEach((element) => {
+          document.getElementsByClassName("cardToAnimate").forEach((element) => {
               element.classList.toggle("cardToAnimate");
-              // document.getElementsByClassName('cardsOnHand')[1].appendChild(element);
-            });
+            });        
+        } else {
+          document.getElementsByClassName("particle").forEach((element) => {
+            if (!element.classList.contains("particle-hidden")) element.classList.toggle("particle-hidden");
+          }); 
         }
 
-        if (gameState.value.playedCards.length == 2 && gameState.value.roundWinner != 2) {
-          animateLoserCard();
+        if (gameState.value.playedCards.length == 2) {
+          if (gameState.value.roundWinner != 2) {
+            animateLoserCard();
+          } else if (gameState.value.roundWinner == 2) {
+            animateTie();
+          }
         }
 
-        if(gameState.value.gameWinner == playerId){
-          console.log("in watchEffect - gameWinner === playerId");
+        // if (playerId != gameState.value.currentPlayer) {
+        //     document.getElementsByClassName("cardHoverable").forEach((element) => {
+        //       element.setAttribute("disabled");
+        //     });           
+        //   console.log("Inte min tur än.....");
+        // } else {
+
+        // }
+
+        if (playerId == gameState.value.gameWinner) {
+          startParticleAnimation();
+          setTimeout(() => {
+            document.getElementsByClassName("particle").forEach((element) => {
+              element.className += " particle-hidden";
+            }); 
+          }, 4000);
         }
       }
     });
 
+    function startParticleAnimation() {
+      setTimeout(() =>{
+        document.getElementsByClassName("particle").forEach((element) => {
+          element.classList.remove("particle-hidden");
+        });
+      }, 300);
+    }
+
+    function animateTie() {
+      setTimeout(() =>{
+        document.getElementById("card-0").className += " tie";
+        document.getElementById("card-1").className += " tie";
+        
+        startParticleAnimation();
+      }, 300);
+    }
+
     function animateLoserCard() {
-      let target;
-      let winner = gameState.value.roundWinner;
-      let loserCard;
-      let root = document.documentElement;
-      let targetY;
-      let targetX;
       let startY;
       let startX;
+      let target;
+      let targetY;
+      let targetX;
+      let loserCard;
+      let root = document.documentElement;
+      let winner = gameState.value.roundWinner;
 
       setTimeout(() =>{
-        if ( winner == gameState.value?.startPlayer ) {
+        if (winner == gameState.value?.startPlayer) {
           loserCard = document.getElementById("card-1");
         } else {
           loserCard = document.getElementById("card-0");
         }
 
+        if (!loserCard) return;
+
         if (winner == playerId) {
-          target = document.getElementsByClassName("profileYou")[0];
+          target = document.getElementById("profileYou");
           root.style.setProperty('--start',  "-20px");
           
           startY = loserCard.getBoundingClientRect().bottom;
@@ -213,7 +254,7 @@ export default {
           targetY = target.getBoundingClientRect().bottom;
           targetX = target.getBoundingClientRect().right;
         } else {
-          target = document.getElementsByClassName("profileOpp")[0];
+          target = document.getElementById("profileOpponent");
           root.style.setProperty('--start',  "50px");
          
           startY = loserCard.getBoundingClientRect().top;
@@ -236,23 +277,11 @@ export default {
       }
 
       let cardToAnimate = document.getElementsByClassName("card-" + index)[0];
-      // let playedCardsCopy = document.getElementsByClassName('cardsOnTable')[0];
-
       cardToAnimate.classList.toggle("cardToAnimate");
       setTimeout(() => {
         playCard(index);
-        //cardToAnimate.classList.toggle("hidden");
-        // gameState.value.players[playerId].cardsOnHand.slice(index, 1);
-        // cardToAnimate.classList.toggle("cardToAnimate");
       }, 1000);
-      // toggleHidden(cardToAnimate);
     }
-
-    // function toggleHidden(cardToAnimate) {
-    //   if (gameState.value.playedCards.length > 0) {
-    //     cardToAnimate.classList.toggle("hidden");
-    //   }
-    // }
 
     function getIndex(card, index) {
       card.index = index;
@@ -267,21 +296,13 @@ export default {
       return card;
     }
 
-    function switchIsDisabled() {
-      if (
-        gameState.value?.players[playerId].cardsOnHand.length <
-        state.cardsOnHandSize
-      ) {
-        state.isDisabled = !state.isDisabled;
-      }
-    }
-
     function returnToLobbyFunc(remove){
       opponentDisconnected.value = false;
-      if(remove){
+      if (remove) {
         removeGame();
       }
       resetGameState();
+      inGame.value = false;
       router.push("/lobby");
     }
 
@@ -289,7 +310,6 @@ export default {
       state,
       getImageName,
       moveCard,
-      switchIsDisabled,
       gameState,
       animateCard,
       playerId,
@@ -297,12 +317,17 @@ export default {
       getIndex,
       animateLoserCard,
       opponentDisconnected,
-      returnToLobbyFunc
+      returnToLobbyFunc,
+      isLoggedIn,
+      currentUser,
+      opponentAvatar
     };
   },
 };
 </script>
 <style lang="scss" scoped>
+
+$particle-size: 8px;
 
 :root{
   --target-x: 0px;
@@ -314,8 +339,6 @@ export default {
   font-size: 40px;
   color: red;
   text-align: center;
-  // padding:0 20px;
-  // margin:10px 0;
   background-color: rgba($color: #e2c3a6, $alpha: 0.8);
   border: 2px solid #3b1704;
   border-radius: 10px;
@@ -340,15 +363,18 @@ export default {
 }
 
 .gameboard {
+  width: 70%;
   display: flex;
+  max-width: 1200px;
+  position: relative;
   flex-direction: column;
   justify-content: space-between;
 }
+
 .playerRow {
   display: flex;
   width: 100%;
   height: 32%;
-  justify-content: space-between;
 }
 
 .table {
@@ -360,8 +386,10 @@ export default {
 
 .profile {
   width: 20%;
+  max-width: 150px;
   display: flex;
   flex-direction: column;
+  align-self: center;
   text-align: center;
   background-color: #e2c3a6;
   color: #3b1704;
@@ -374,14 +402,12 @@ export default {
 .profile img {
   width: 50%;
   height: 100%;
+  border: 2px solid #2c3e50;
+  border-radius: 50%;
 }
 
-.profileOpp {
-  margin-bottom: 8.5%;
-}
-
-.profileYou {
-  margin-top: 8.5%;
+#profileYou img {
+  border: 2px solid green;
 }
 
 .cardsOnHand {
@@ -429,7 +455,7 @@ export default {
   }
 }
 
-.hidden {
+.hidden, .particle-hidden {
   display: none;
 }
 
@@ -447,6 +473,12 @@ export default {
   text-align: center;
   font-size: 90%;
   font-family: "Yanone Kaffeesatz", sans-serif;
+}
+
+.cardHoverable:hover{
+  box-shadow: 0px 0px 15px 2px #eee;
+  z-index: 10;
+  transform: scale(1.05);
 }
 
 .messageCont {
@@ -475,6 +507,7 @@ export default {
 .CSS-animation {
   animation: bounceOutDown 1.5s forwards;
 }
+
 @keyframes bounceOutDown {
   50% {
     opacity: 1; transform: translate3d(0, 0, 0); z-index: 15;
@@ -493,4 +526,34 @@ export default {
     transform: translate3d(var(--target-x), var(--target-y), 0);
   }
 }
+
+.tie {
+  animation: fade 5s;
+}
+
+.particle {
+  z-index: 99;
+  position: absolute;
+  width: $particle-size; 
+  height: $particle-size;
+  animation: shoot 4s ease-out;
+  animation-name: shoot, fade;
+
+  @for $i from 0 to 300 {
+    $t: (1 + .01 * random(100)) * 1.5s;
+
+    &:nth-child(#{$i + 1}) {
+      transform: translate(random(80) * 1vw, random(80) * 1vh);
+      background: hsl(random(360), 100%, 50%);
+      animation-duration: $t;
+      animation-delay: -.01 * random(100) * $t;
+    }
+  }
+}
+
+@keyframes shoot {
+  0% { transform: translate(35vw, 50vh); }
+}
+
+@keyframes fade { to { opacity: 0 } }
 </style>

@@ -1,58 +1,107 @@
 <template>
 <div :key="componentKey">
-  <ScrollPanel style="width: 420px; height: 350px" class="p-scrollpanel-bar-y" >
-    <!-- <Accordion style="width: 400px" v-if="joinGameState.gameList && joinGameState.gameList.length > 0">
-      <AccordionTab
-        v-for="game in joinGameState.gameList"
-        :key="game.roomNo"
-        :header="'Game ' + game.roomNo + ' - ' + game.creator"
-        :activeIndex="joinGameState.activeIndex"
-      >
-        <p class="text-left">Cards on hand: {{ game.cardsOnHand }}</p>
-        <p class="text-left">Points to win: {{ game.pointsToWin }}</p>
-      </AccordionTab>
-    </Accordion> -->
-    <div  v-if="joinGameState.gameList && joinGameState.gameList.length > 0">
-      <div  :class="'gamelist-item' + ' item-'+index" v-for="(game, index) in joinGameState.gameList" :key="game.roomNo" @click="setActiveIndex(index)">
-        <h4 class="p-my-1 p-ml-1">{{game.creator}}'s game</h4>
+  <Dropdown
+    v-model="selectedLeague"
+    :options="leagueFilter"
+    optionLabel="league"
+    placeholder="Filter by league"
+    style="width: 100%"
+    showClear
+    scrollHeight="200px"
+  >
+    <template #value="slotProps">
+      <div class="league-item league-item-value" v-if="slotProps.value">
+        <div class="p-d-flex p-jc-between"><span>{{slotProps.value.league}}</span>
+          <span>Games: {{gameList && gameList.reduce((acc, cur) => {
+            if(cur.league === slotProps.value.league){
+              acc += 1;
+            }
+            return acc
+          }, 0)}}</span>
+        </div>
+      </div>
+      <div class="p-d-flex p-jc-between" v-else>
+          <span>{{slotProps.placeholder}}</span><span>Available games: {{gameList && gameList.length}}</span>
+      </div>  
+    </template>
+    <template #option="slotProps">
+      <div class="league-item">
+        <div class="p-d-flex p-jc-between"><span>{{slotProps.option.league}}</span>
+          <span>Games: {{gameList && gameList.reduce((acc, cur) => {
+            if(cur.league === slotProps.option.league){
+              acc += 1;
+            }
+            return acc
+          }, 0)}}</span>
+        </div>
+      </div>
+    </template>
+  </Dropdown>
+
+  <ScrollPanel style="width: 420px; height: 350px" class="p-scrollpanel-bar-y p-mt-2" >
+    <div  v-if="joinGameState && filterGames.length > 0">
+      <div :class="'gamelist-item' + ' item-'+index" v-for="(game, index) in filterGames" :key="game.roomNo" @click="setActiveIndex(index)">
+        <div class="p-d-flex p-jc-between">
+          <h4 class="p-my-1 p-ml-1">{{game.creator}}'s game</h4>
+          <h4 class="p-my-1 p-mr-1">League: {{ game?.league || "None" }}</h4>
+        </div>
         <h5 class="p-d-flex p-jc-evenly"><span>&#8226; Cards on hand: {{game.cardsOnHand}}</span> <span>&#8226; Points to win: {{game.pointsToWin}}</span></h5>
       </div>
     </div>
     <div v-else>
-      No current games to join, please hang tight....
+      No current games to join, please hang tight...
     </div>
   </ScrollPanel>
 </div>
 </template>
 
 <script>
-import { reactive, watchEffect, ref } from "vue";
+import { watchEffect, ref, computed } from "vue";
 import SocketHandler from "@/modules/SocketHandler";
 import UserHandler from "@/modules/UserHandler";
-
-const joinGameState = reactive({
-  activeIndex: 0,
-  selectedGame: null,
-  gameList: null
-});
+import LeagueHandler from "@/modules/LeagueHandler";
+import GameHandler from "@/modules/GameHandler";
 
 export default {
   name: "JoinGame",
-  setup() {
+  async setup() {
     const { currentUser } = UserHandler();
     const { gameList, getGameList } = SocketHandler();
-
+    const { leagues, getLeagues } = LeagueHandler();
+    const { joinGameState } = GameHandler();
     const componentKey = ref(0);
-    
+    const selectedLeague = ref(null);
+
+    if(currentUser.value) {
+      getGameList(currentUser.value.username)
+    }
+
     watchEffect(
-       () => {
-        if(gameList.value !== null){
+      () => {
+        if(gameList && gameList.value !== null){
           componentKey.value += 1;
           joinGameState.gameList = gameList.value
         }
       }
     )
 
+
+    await getLeagues();
+
+    const leagueFilter = computed(() => {
+      return leagues.value
+    })    
+
+    const filterGames = computed( () => {
+      if(selectedLeague.value !== null && joinGameState.gameList !== null){
+        return joinGameState.gameList.filter( games => {
+          return games.league === selectedLeague.value.league
+        })
+      } else {
+        return joinGameState.gameList;
+      }
+    })
+    
     function setActiveIndex(index){
       let previouslySelected = document.getElementsByClassName("gamelist-selected");
       if(previouslySelected.length > 0){
@@ -65,12 +114,16 @@ export default {
       joinGameState.activeIndex = index;
     }
     
-    getGameList(currentUser.value.username)
-  
+    
+    
     return {
       joinGameState,
       componentKey,
       setActiveIndex,
+      leagueFilter,
+      selectedLeague,
+      filterGames,
+      gameList
     };
   },
 };

@@ -1,12 +1,19 @@
 import { extFetch } from "./extFetch";
 import { reactive, ref } from "vue";
 
-const error = ref(null);
+const gameError = ref(null);
 const stats = ref(null);
 const CreateGameState = reactive({
   cardsOnHand: 5,
   pointsToWin: 15,
   selectedLeague: null
+});
+let inGame = ref(false);
+
+const joinGameState = reactive({
+  activeIndex: -1,
+  selectedGame: null,
+  gameList: null
 });
 
 export default function GameHandler() {
@@ -14,10 +21,10 @@ export default function GameHandler() {
     try {
       stats.value = await extFetch("/api/game/", "GET");
     } catch (e) {
-      error.value = e;
+      gameError.value = e;
       return
     }  
   }
 
-  return { getGames, error, stats, CreateGameState }
+  return { getGames, gameError, stats, CreateGameState, inGame, joinGameState }
 }

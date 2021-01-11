@@ -4,7 +4,8 @@ import { extFetch } from "./extFetch";
 const currentUser = ref(null);
 const isLoggedIn = ref(false);
 const isLoggedInAsGuest = ref(false);
-const error = ref(null);
+const userError = ref(null);
+const loginError = ref(null);
 
 export default function UserHandler() {
 
@@ -12,9 +13,8 @@ export default function UserHandler() {
     try {
       await extFetch("/api/auth/logout/", "POST");
     } catch (e) {
-      error.value = e;
-    }
-    console.log("logout Userhandler", error.value);
+      userError.value = e
+    }    
     currentUser.value = null;
     isLoggedIn.value = false;
     isLoggedInAsGuest.value = false;
@@ -24,66 +24,56 @@ export default function UserHandler() {
     let result;
 
     try {
-      result = await extFetch("/api/auth/login/", "POST", {
-        email: email,
-        password: password,
-      });
+      result = await extFetch("/api/auth/login/", "POST", {"email" : email, "password" : password});
+      if (result.error) {
+        loginError.value = result.error;
+        isLoggedIn.value = false;
+        return 
+      }
 
       isLoggedIn.value = true;
       currentUser.value = result;
     } catch (e) {
-      error.value = e;
-      return;
+      loginError.value = e
+      isLoggedIn.value = false;
+      return 
     }
   };
 
   function loginAsGuest() {
     isLoggedInAsGuest.value = true;
-    currentUser.value = { username: "guest" + Date.now() };
+    currentUser.value = { username: "guest" + Date.now(), avatar: 0 };
   }
 
   async function createUser(form) {
     try {
-      const result = await extFetch("/api/user/", "POST", form);
-
-      console.log(result);
+      await extFetch("/api/user/", "POST", form);
     } catch (e) {
-      error.value = e;
-      return;
+      userError.value = e;
+      return 
     }
-
-    await login(form.email, form.password);
+    await login(form.email, form.password)
   }
 
   async function startApp() {
     let result;
 
     try {
-      result = await extFetch("/api/auth/whoami/");
-      console.log("who am i: ", result);
+      result = await extFetch("/api/auth/whoami/"); 
       if (result.error) {
         isLoggedIn.value = false;
-        error.value = result.error;
-        return;
+        userError.value = result.error;
+        return
       }
       isLoggedIn.value = true;
       currentUser.value = result;
     } catch (e) {
-      error.value = e;
+      userError.value = e
       isLoggedIn.value = false;
       return;
     }
   }
 
-  return {
-    currentUser,
-    isLoggedIn,
-    isLoggedInAsGuest,
-    error,
-    logout,
-    login,
-    loginAsGuest,
-    createUser,
-    startApp,
-  };
+
+  return { currentUser, isLoggedIn, isLoggedInAsGuest, userError, loginError, logout, login, loginAsGuest, createUser, startApp };
 }

@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { reactive, ref, watchEffect } from "vue";
+import { reactive } from "vue";
 import FriendHandler from "@/modules/FriendHandler";
 
 export default {
@@ -67,15 +67,6 @@ export default {
       search: "",
       processed: ""
     });
-    const componentKey = ref(0);
-
-    watchEffect(
-       () => {
-        if(userList.requestSent !== ""){
-          componentKey.value += 1;
-        }
-      }
-    )
 
     await getInformation();
     
@@ -110,7 +101,6 @@ export default {
     } 
 
     function sendFriendRequest(username) {
-      //componentKey.value += 1
       userList.processed += username;
       createFriendRequest(username);
     }
@@ -143,7 +133,6 @@ export default {
       userList,
       sendFriendRequest,
       deleteFriendRequest,
-      componentKey,
       acceptFriendRequest,
       denyFriendRequest
     }

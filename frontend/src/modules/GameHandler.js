@@ -17,9 +17,9 @@ const joinGameState = reactive({
 });
 
 export default function GameHandler() {
-  async function getGames() {
+  async function getGames(league) {
     try {
-      stats.value = await extFetch("/api/game/", "GET");
+      stats.value = await extFetch("/api/game/" + league);
     } catch (e) {
       gameError.value = e;
       return

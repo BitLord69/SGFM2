@@ -1,14 +1,29 @@
 const Neo4j = require('../modules/neo4j')
 
 class Game {
-  async getAll(username){
-    const res = (await Neo4j.query(`MATCH (u:User{username: $username})-[p:PLAYED_GAME]->(g:Game)
-                                    RETURN p, g`, {username: username}))
+  async getAll(username, league) {
+    let query = 'MATCH (u:User{username: $username})-[p:PLAYED_GAME]->(g:Game)';
+    
+    if (league !== "undefined") {
+      if (league === "No league") {
+        query += " WHERE NOT (g)-[:IN_LEAGUE]->()"
+      } else {
+        query += "-[:IN_LEAGUE]-(l:League {league:$league})";
+      }
+    }
+
+    const res = (await Neo4j.query(query + `RETURN p, g`, { username, league }))
     return res.map(o => ({...o.g.properties, ...o.p.properties}))
   }
 
-  async getLeaderboard(){
-    const res = (await Neo4j.query(`MATCH (u:User)-[p:PLAYED_GAME]->(:Game) RETURN u{.*,games:collect(p)}`,{}))
+  async getLeaderboard(league) {
+    let query = 'MATCH (u:User)-[p:PLAYED_GAME]->(:Game)';
+
+    if (league !== "undefined") {
+      query += "-[:IN_LEAGUE]-(l:League {league:$league})";
+    }
+
+    const res = (await Neo4j.query(query + " RETURN u{.*,games:collect(p)}", { league }))
     const temp = res.map(o => (
                           {avatar: o.u.avatar,
                           username: o.u.username,
@@ -20,7 +35,6 @@ class Game {
   }
 
   async saveGame(body) {
-    console.log("game BODY:", body);
     let queryString = `MATCH (u1: User{ username: $name1 }), (u2: User{ username: $name2 })
     CREATE (u1)-[pg1: PLAYED_GAME{ points: $points1, winner: $winner1, isStartPlayer: true }]->(g:Game{date: timestamp(), status: 'Finished', pointsToWin: $pointsToWin})
     MERGE (u2)-[pg2: PLAYED_GAME{ points: $points2, winner: $winner2, isStartPlayer: false }]->(g)`;

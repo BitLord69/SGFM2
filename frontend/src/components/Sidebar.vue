@@ -8,7 +8,14 @@
           {{currentUser.username}}
         </div>
         <div class="p-mt-5" v-if="!isLoggedInAsGuest && stats !== null">
-          <Statistics />
+          <Suspense>
+          <template #default>
+            <Statistics />
+          </template>
+          <template #fallback>
+            <div>Loading stats...</div>
+          </template>
+        </Suspense>
         </div>
         <div class="p-mt-4" v-if="!isLoggedInAsGuest">
           <Suspense>
@@ -48,14 +55,6 @@ export default {
       router.push("/")
     }
     
-    return {
-      toggleNav,
-      currentUser,
-      isLoggedIn,
-      logMeOut,
-      stats,
-      isLoggedInAsGuest
-    };
 
     async function toggleNav() {
       toggle = !toggle;
@@ -69,6 +68,15 @@ export default {
       profileImg.classList.toggle('profile-sb-open');
       profileImg.classList.toggle('profile-sb-close');
     }
+    
+    return {
+      toggleNav,
+      currentUser,
+      isLoggedIn,
+      logMeOut,
+      stats,
+      isLoggedInAsGuest
+    };
   },
 };
 </script>
@@ -155,7 +163,7 @@ $imageRight: 18px;
   text-transform: uppercase;
   &:hover{
     cursor: pointer;
-    background-color: darken($color: #e2c3a6, $amount: 30%);
+    background-color: darken($color: #e2c3a6, $amount: 10%);
   }
 }
 

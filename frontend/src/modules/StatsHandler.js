@@ -5,11 +5,11 @@ const statsError = ref(null);
 const leaderboard = ref(null);
 
 export default function StatsHandler() {
-  async function getLeaderboard() {
+  async function getLeaderboard(league) {
     let result;
 
     try {
-      result = await extFetch("/api/game/leaderboard/"); 
+      result = await extFetch("/api/game/leaderboard/" + league);
       if (result.error) {
         statsError.value = result.error;
         return

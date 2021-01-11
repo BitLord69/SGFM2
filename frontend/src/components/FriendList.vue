@@ -41,7 +41,7 @@
     <div class="manage-btn p-mt-3" v-if="!props.showDeleteIcon">
       <router-link style="text-decoration: none" to="/friends">
         <Button
-          label="Handle friends"
+          label="Manage friends"
           class="p-d-block p-mx-auto p-button-raised friends-btn"
         />
       </router-link>

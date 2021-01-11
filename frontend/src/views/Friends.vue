@@ -1,10 +1,10 @@
 <template>
-  <div class="friend-container">
-    <div class="area-1 p-mb-2">
+  <div class="friend-container p-mb-5">
+    <div class="area-1">
       <Suspense>
         <template #default>
           <div class="p-p-4">
-            <UserList />
+            <UserList title="All Users"/>
           </div>
         </template>
         <template #fallback>
@@ -12,11 +12,11 @@
         </template>
       </Suspense>
     </div>
-    <div class="area-2 p-mb-2">
+    <div class="area-2">
       <Suspense>
         <template #default>
           <div class="p-p-4">
-            <FriendList showDeleteIcon />
+            <UserList title="My Friends" />
           </div>
         </template>
         <template #fallback>
@@ -24,11 +24,11 @@
         </template>
       </Suspense>
     </div>
-    <div class="area-3 p-mb-5">
+    <div class="area-3">
       <Suspense>
         <template #default>
           <div class="p-p-4">
-            <OutgoingFriendRequestList />
+            <UserList title="My Sent Friend Requests" />
           </div>
         </template>
         <template #fallback>
@@ -36,11 +36,11 @@
         </template>
       </Suspense>
     </div>
-    <div class="area-4 p-mb-5">
+    <div class="area-4">
       <Suspense>
         <template #default>
           <div class="p-p-4">
-            <IncomingFriendRequestList />
+            <UserList title="My Received Friend Requests" />
           </div>
         </template>
         <template #fallback>
@@ -52,13 +52,13 @@
 </template>
 
 <script>
-import FriendList from "../components/FriendList";
+//import YourFriends from "../components/YourFriends";
+//import OutgoingFriendRequestList from '@/components/OutgoingFriendRequestList';
+//import IncomingFriendRequestList from '@/components/IncomingFriendRequestList';
 import UserList from '../components/UserList';
-import OutgoingFriendRequestList from '@/components/OutgoingFriendRequestList';
-import IncomingFriendRequestList from '@/components/IncomingFriendRequestList';
 
 export default {
-  components: { FriendList, UserList, OutgoingFriendRequestList, IncomingFriendRequestList },
+  components: { UserList },
 
   setup() {
   }
@@ -69,9 +69,11 @@ export default {
 .friend-container {
   display: grid;
   width: 85%;
+  color:#3b1704;
+  font-family: "Yanone Kaffeesatz", sans-serif;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 0px 6px;
+  gap: 6em 6em;
   grid-template-areas:
     "area-1 area-2"
     "area-3 area-4";
@@ -80,24 +82,22 @@ export default {
   grid-area: area-1;
 }
 
-.area-1, .area-3, .area-4 {
+.area-1, .area-2, .area-3, .area-4 {
   background-color: #e2c3a6;
   border-radius: 10px;
   border: 2px solid #3b1704;
 }
 
-h2 {
-  color:#3b1704;
-  font-family: "Yanone Kaffeesatz", sans-serif;
+.greenText {
+  color: #20a132;
+}
+
+.redText {
+  color: #8e0707;
 }
 
 .area-2 {
   grid-area: area-2;
-  align-self: center;
-  text-align: center;
-  background-color: #e2c3a6;
-  border-radius: 10px;
-  border: 2px solid #3b1704;
 }
 
 .area-3 {

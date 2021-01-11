@@ -10,7 +10,7 @@
       </div>
     </div>
     
-    <ScrollPanel style="width: 100%; height: 100%" class="p-scrollpanel-bar-y" >
+    <ScrollPanel style="width: 100%; height: 13.7em" class="p-scrollpanel-bar-y" >
       <div class="userlist-item p-grid p-m-1" v-for="user in filteredUsers()" :key="user.username">
         <div class="p-col-1 p-jc-end p-py-1 p-d-flex">
           <img
@@ -19,9 +19,10 @@
                 class="avatar-image"
               />
         </div>
-        <span class="p-my-auto p-col-10 p-py-0">{{user.username}}</span>
-        <div class="p-my-auto p-col-1 p-py-0">
-          <i class="pi pi-user-plus pointer" style="fontSize: 1.2rem" @click="sendFriendRequest(user.username)" v-if="!userList.requestSent.includes(user.username)"></i>
+        <span class="p-my-auto p-col-9 p-py-0">{{user.username}}</span>
+        <div class="p-my-auto p-col-2 p-py-0 p-text-center">
+          <i class="pi pi-check-circle pointer greenText" style="fontSize: 1.2rem" @click="acceptFriendRequest(user.username)" v-if="!userList.processed.includes(user.username)"></i>
+          <i class="pi pi-times-circle pointer p-pl-3 redText" style="fontSize: 1.2rem" @click="denyFriendRequest(user.username)" v-if="!userList.processed.includes(user.username)"></i>
           <i class="pi pi-check-circle" style="fontSize: 1.2rem" v-else></i>
         </div>
       </div>
@@ -36,10 +37,10 @@ import FriendHandler from "@/modules/FriendHandler";
 export default {
 
   async setup() {
-    const { inFriendReq, getIncomingFriendRequest, createFriendRequest } = FriendHandler();
+    const { inFriendReq, getIncomingFriendRequest, createFriendRequest, deleteFriend } = FriendHandler();
     const userList = reactive({
       search: "",
-      requestSent: ""
+      processed: ""
     });
 
     await getIncomingFriendRequest();
@@ -48,16 +49,21 @@ export default {
       return inFriendReq.value.filter(user => user.username.toLowerCase().includes(userList.search.toLowerCase()))
     } 
 
-    function sendFriendRequest(username) {
-      console.log("Request Sent!");
-      userList.requestSent += username;
+    function acceptFriendRequest(username) {
+      userList.processed += username;
       createFriendRequest(username);
+    }
+
+    function denyFriendRequest(username) {
+      userList.processed += username;
+      deleteFriend(username);
     }
 
     return {
       filteredUsers,
       userList,
-      sendFriendRequest
+      acceptFriendRequest,
+      denyFriendRequest
     }
   }
 };

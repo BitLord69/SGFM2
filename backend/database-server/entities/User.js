@@ -3,10 +3,7 @@ const Neo4j = require("../modules/neo4j");
 class User {
   async getAll() {
     const res = await Neo4j.query(
-      `MATCH (u:User)
-                                    WITH u
-                                    ORDER BY u.name
-                                    RETURN u`,
+      `MATCH (u:User) WITH u ORDER BY u.username RETURN u`,
       {}
     );
     return res.map(o => ({ ...o.u.properties }))
@@ -34,7 +31,7 @@ class User {
 
   async getFriends(username) {
     const res = await Neo4j.query(
-      `MATCH (u: User {username: $username})-[f:FRIENDS]-(friend:User) WHERE COALESCE(f.pendingRequest, false) <> true RETURN friend`,
+      `MATCH (u: User {username: $username})-[f:FRIENDS]-(friend:User) WHERE COALESCE(f.pendingRequest, false) <> true RETURN friend ORDER BY friend.username`,
       { username }
     );
 
@@ -50,7 +47,7 @@ class User {
 
   async getNonFriends(username) {
     const res = await Neo4j.query(
-      `MATCH (nf:User) WHERE NOT (nf)-[:FRIENDS]-(:User {username: $username}) AND nf.username<>$username RETURN nf`,
+      `MATCH (nf:User) WHERE NOT (nf)-[:FRIENDS]-(:User {username: $username}) AND nf.username<>$username RETURN nf ORDER BY nf.username`,
       { username }
     );
     return res.map(o => ({ ...o.nf.properties }))
@@ -58,7 +55,7 @@ class User {
 
   async getIncomingFriendRequests(username) {
     const res = await Neo4j.query(
-      `MATCH (u: User {username: $username})<-[f:FRIENDS {pendingRequest:true}]-(friend:User) RETURN friend`,
+      `MATCH (u: User {username: $username})<-[f:FRIENDS {pendingRequest:true}]-(friend:User) RETURN friend ORDER BY friend.username`,
       { username }
     );
     return res === undefined
@@ -73,7 +70,7 @@ class User {
 
   async getOutgoingFriendRequests(username) {
     const res = await Neo4j.query(
-      `MATCH (friend:User)<-[f:FRIENDS {pendingRequest:true}]-(u: User {username: $username}) RETURN friend`,
+      `MATCH (friend:User)<-[f:FRIENDS {pendingRequest:true}]-(u: User {username: $username}) RETURN friend ORDER BY friend.username`,
       { username }
     );
     return res === undefined

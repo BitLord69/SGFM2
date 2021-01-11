@@ -13,7 +13,7 @@
         <div class="p-mt-4">
           <Suspense>
           <template #default>
-            <UserList title="My Friends" fromSideBar />
+            <FriendsComponent title="My Friends" fromSideBar />
           </template>
           <template #fallback>
             <div>Loading friends...</div>
@@ -33,10 +33,10 @@ import UserHandler from "../modules/UserHandler";
 import {useRouter} from "vue-router"
 import Statistics from './Statistics.vue';
 import GameHandler from "../modules/GameHandler";
-import UserList from './UserList.vue';
+import FriendsComponent from './FriendsComponent.vue';
 
 export default {
-  components: { Statistics, UserList },
+  components: { Statistics, FriendsComponent },
   name: "Sidebar",
   setup() {
     const router = useRouter();

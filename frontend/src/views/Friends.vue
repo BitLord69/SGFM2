@@ -4,7 +4,7 @@
       <Suspense>
         <template #default>
           <div class="p-p-4">
-            <UserList title="All Users"/>
+            <FriendsComponent title="All Users"/>
           </div>
         </template>
         <template #fallback>
@@ -16,7 +16,7 @@
       <Suspense>
         <template #default>
           <div class="p-p-4">
-            <UserList title="My Friends" />
+            <FriendsComponent title="My Friends" />
           </div>
         </template>
         <template #fallback>
@@ -28,7 +28,7 @@
       <Suspense>
         <template #default>
           <div class="p-p-4">
-            <UserList title="My Sent Friend Requests" />
+            <FriendsComponent title="My Sent Friend Requests" />
           </div>
         </template>
         <template #fallback>
@@ -40,7 +40,7 @@
       <Suspense>
         <template #default>
           <div class="p-p-4">
-            <UserList title="My Received Friend Requests" />
+            <FriendsComponent title="My Received Friend Requests" />
           </div>
         </template>
         <template #fallback>
@@ -52,13 +52,11 @@
 </template>
 
 <script>
-//import YourFriends from "../components/YourFriends";
-//import OutgoingFriendRequestList from '@/components/OutgoingFriendRequestList';
-//import IncomingFriendRequestList from '@/components/IncomingFriendRequestList';
-import UserList from '../components/UserList';
+
+import FriendsComponent from '../components/FriendsComponent';
 
 export default {
-  components: { UserList },
+  components: { FriendsComponent },
 
   setup() {
   }

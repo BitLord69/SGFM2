@@ -55,17 +55,9 @@ export default function FriendHandler() {
     }
   }
 
-  async function createFriendRequest(friendToInvite) {
+  async function createOrAcceptFriendRequest(friendToInvite) {
     try {
       await extFetch("/api/user/friends", "POST", {friendname: friendToInvite})
-    } catch (error) {
-      friendError.value = error
-    }
-  }
-
-  async function acceptFriendRequest(invitationToAccept) {
-    try {
-      await extFetch("/api/user/friends/request", "POST", {friendname: invitationToAccept})
     } catch (error) {
       friendError.value = error
     }
@@ -82,7 +74,6 @@ export default function FriendHandler() {
       getIncomingFriendRequest,
       getOutgoingFriendRequest,
       deleteFriend,
-      createFriendRequest,
-      acceptFriendRequest,
+      createOrAcceptFriendRequest
     };
 }

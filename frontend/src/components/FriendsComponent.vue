@@ -29,11 +29,11 @@
         <span class="p-my-auto p-col-9 p-py-0" v-if="fromSideBar" :class="{ sidebarFriends: fromSideBar }">{{user.username}}</span>
         <span class="p-my-auto p-col-8 p-xl-10 p-py-0" v-if="!fromSideBar">{{user.username}}</span>
         <div class="p-my-auto p-col-2 p-xl-1 p-py-0">
-          <i class="pi pi-user-plus pointer greenText" style="fontSize: 1.2rem" @click="sendFriendRequest(user.username)" v-if="!userList.processed.includes(user.username) && title == 'All Users'"></i>
-          <i class="pi pi-trash pointer redText" style="fontSize: 1.2rem" @click="confirmDeleteFriend(user.username)" v-if="!userList.processed.includes(user.username) && title == 'My Friends' && !fromSideBar"></i>
-          <i class="pi pi-times-circle pointer redText" style="fontSize: 1.2rem" @click="deleteFriendRequest(user.username)" v-if="!userList.processed.includes(user.username) && title == 'My Sent Friend Requests'"></i>
-          <i class="pi pi-check-circle pointer greenText" style="fontSize: 1.2rem" @click="acceptFriendRequest(user.username)" v-if="!userList.processed.includes(user.username) && title == 'My Received Friend Requests'"></i>
-          <i class="pi pi-times-circle pointer p-pl-3 redText" style="fontSize: 1.2rem" @click="denyFriendRequest(user.username)" v-if="!userList.processed.includes(user.username) && title == 'My Received Friend Requests'"></i>
+          <i class="pi pi-user-plus pointer greenText" style="fontSize: 1.2rem" @click="sendOrAcceptFriendRequest(user.username)" v-if="!userList.processed.includes(user.username) && title == 'All Users'"></i>
+          <i class="pi pi-trash pointer redText" style="fontSize: 1.2rem" @click="deleteFriendOrFriendRequest(user.username)" v-if="!userList.processed.includes(user.username) && title == 'My Friends' && !fromSideBar"></i>
+          <i class="pi pi-times-circle pointer redText" style="fontSize: 1.2rem" @click="deleteFriendOrFriendRequest(user.username)" v-if="!userList.processed.includes(user.username) && title == 'My Sent Friend Requests'"></i>
+          <i class="pi pi-check-circle pointer greenText" style="fontSize: 1.2rem" @click="sendOrAcceptFriendRequest(user.username)" v-if="!userList.processed.includes(user.username) && title == 'My Received Friend Requests'"></i>
+          <i class="pi pi-times-circle pointer p-pl-3 redText" style="fontSize: 1.2rem" @click="deleteFriendOrFriendRequest(user.username)" v-if="!userList.processed.includes(user.username) && title == 'My Received Friend Requests'"></i>
           <i class="pi pi-check-circle" style="fontSize: 1.2rem" v-if="userList.processed.includes(user.username)"></i>
         </div>
       </div>
@@ -53,7 +53,7 @@ export default {
     const { 
       nonFriends, 
       getNonFriends, 
-      createFriendRequest, 
+      createOrAcceptFriendRequest, 
       friends, 
       getFriends, 
       deleteFriend, 
@@ -100,41 +100,23 @@ export default {
       }
     } 
 
-    function sendFriendRequest(username) {
+    function sendOrAcceptFriendRequest(username) {
       userList.processed += username;
-      createFriendRequest(username);
+      createOrAcceptFriendRequest(username);
     }
 
-    function confirmDeleteFriend(username) {
-      userList.processed += username;
-      deleteFriend(username);
-    }
-
-    function deleteFriendRequest(username) {
-      userList.processed += username;
-      deleteFriend(username);
-    }
-
-    function acceptFriendRequest(username) {
-      userList.processed += username;
-      createFriendRequest(username);
-    }
-
-    function denyFriendRequest(username) {
+    function deleteFriendOrFriendRequest(username) {
       userList.processed += username;
       deleteFriend(username);
     }
 
     return {
       friends,
-      confirmDeleteFriend,
+      deleteFriendOrFriendRequest,
       nonFriends,
       filteredUsers,
       userList,
-      sendFriendRequest,
-      deleteFriendRequest,
-      acceptFriendRequest,
-      denyFriendRequest
+      sendOrAcceptFriendRequest
     }
   }
 };

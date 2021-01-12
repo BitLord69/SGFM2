@@ -10,7 +10,7 @@
   </div>
 </template>
 <script>
-import GameHandler from "../modules/GameHandler";
+import GameHandler from "@/modules/GameHandler";
 
 export default {
 
@@ -18,11 +18,11 @@ export default {
 
   const { getLatestGame, latestGame } = GameHandler();
   await getLatestGame();
-  console.log("latestGame:", );
+  console.log("latestGame:", latestGame.value);
 
   return {
-    latestGame,
-  }
+      latestGame,
+    }
   }
 };
 </script>

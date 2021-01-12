@@ -1,18 +1,30 @@
 <template>
-  <Dropdown
-    v-model="selectedLeague"
-    :options="leagues"
-    optionLabel="league"
-    placeholder="Select a league"
-    style="width: 100%"
-    showClear
-    scrollHeight="220px"
-    @change="filterStats"
-    v-if="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length)" 
-    class="p-mb-2"/>
-  <div v-else>{{props.leagueToDisplay}}</div>
-  <Chart type="pie" :data="chartData" v-if="stats && stats.length"/>
-  <div v-else>No stats available!</div>
+  <div :class="'p-d-flex p-flex-column ' + (props.bottomBorder ? 'bordered' : '')">
+    <div>
+      <div v-if="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length)" >
+        <Dropdown
+          v-model="selectedLeague"
+          :options="leagues"
+          optionLabel="league"
+          placeholder="Select a league"
+          style="width: 100%"
+          showClear
+          scrollHeight="220px"
+          @change="filterStats"
+          class="p-mb-2"/>
+      </div>
+      <div v-else class="p-pt-2">{{props.leagueToDisplay}}</div>
+    </div>
+
+    <div class="p-my-auto p-js-center">
+      <div v-if="stats && stats.length">
+        <Chart class="p-mb-2" type="pie" :data="chartData" />
+      </div>
+      <div v-else>
+        No stats available!
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -21,41 +33,65 @@ import GameHandler from "@/modules/GameHandler"
 import LeagueHandler from "@/modules/LeagueHandler"
 
 export default {
-  props: { leagueToDisplay: String },
+  props: { 
+    leagueToDisplay: String,
+    bottomBorder: { type: Boolean, default: (false) },
+  },
 
   async setup(props) {
+    const stats = ref(null);
     const selectedLeague = ref(null);
-    const { stats, getGames } = GameHandler();
+    const { getGamesPrivately } = GameHandler();
     const { leagues, getLeagues } = LeagueHandler();
 
-    let numberOfLosses;
-    let numberOfWins;
     const chartData = ref(null);
 
     watchEffect(() => {
-      numberOfLosses = stats.value.filter(losses => losses.winner !== true);
-      numberOfWins = stats.value.filter(wins => wins.winner === true);
+      if (!stats.value) return;
+
+      let numberOfLosses = 0;
+      let numberOfWins = 0;
+      let numberOfTies = 0;
+
+      stats.value.forEach(game => {
+        if (game.winner == 2) {
+          numberOfTies++;
+          return
+        }
+        if (isWinner(game)) {
+          numberOfWins++;
+        } else {
+          numberOfLosses++;
+        }
+      });
+
       chartData.value = {
-      labels: ["Wins", "Losses"],
-      datasets: [
-        {
-          data: [numberOfWins.length, numberOfLosses.length],
-          backgroundColor: ["#00917c", "#c70039"],
-          hoverBackgroundColor: ["#00917c", "#c70039"],
-        },
-      ],
+        labels: ["Wins " + numberOfWins, "Losses " + numberOfLosses, "Ties " + numberOfTies],
+        datasets: [
+          {
+            data: [numberOfWins, numberOfLosses, numberOfTies],
+            backgroundColor: ["#00917c", "#c70039", "grey"],
+            hoverBackgroundColor: ["#00917c", "#c70039", "grey"],
+          },
+        ],
       }
     })
     
-    await getLeagues();
-    leagues.value.unshift( {league:"No league"});
+    function isWinner(game) {
+      return (game.isStartPlayer && game.winner == 0) || (!game.isStartPlayer && game.winner == 1);
+    }
+
     if(props && props.leagueToDisplay) {
-      await getGames(props.leagueToDisplay);
-      console.log("in props check stats.value", stats.value, props.leagueToDisplay);
+      const league = (props.leagueToDisplay === "Total") ? undefined : props.leagueToDisplay;
+      stats.value = await getGamesPrivately(league);
+    } else {
+      await getLeagues();
+      stats.value = await getGamesPrivately();
+      leagues.value.unshift( {league:"No league"});
     }
 
     async function filterStats() {
-      await getGames(selectedLeague?.value?.league);
+      stats.value = await getGamesPrivately(selectedLeague?.value?.league);
     }
 
     return {
@@ -70,7 +106,15 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+  .wrapper {
+    min-height: 180px;
+  }
+
+  .bordered {
+    border-bottom: 1px solid darken(#e2c3a6, 5%);
+  }
+
   .p-dropdown {
     border-color: black !important;
     background-color: #e2c3a6 !important;
@@ -89,6 +133,7 @@ export default {
   }
 
   .p-dropdown-panel {
+    background-color: #e2c3a6 !important;
     border: 1px solid darken(#e2c3a6, 10%) !important;
   }
 

@@ -8,6 +8,7 @@ import Friends from "@/views/Friends";
 import UserHandler from "@/modules/UserHandler";
 import GameHandler from "@/modules/GameHandler";
 import FullStatistics from "@/views/FullStatistics";
+import FullLeaderboard from "@/views/FullLeaderboard";
 
 const routes = [
   {
@@ -44,7 +45,12 @@ const routes = [
     path: "/stats",
     name: "FullStatistics",
     component: FullStatistics,
-  }
+  },
+    {
+    path: "/leaderboard",
+    name: "FullLeaderboard",
+    component: FullLeaderboard,
+  },
 ];
 
 const router = createRouter({

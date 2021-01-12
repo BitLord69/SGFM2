@@ -7,17 +7,17 @@
         <div class="username">
           {{currentUser.username}}
         </div>
-        <div class="p-mt-5" v-if="!isLoggedInAsGuest && stats !== null">
+        <div class="p-mt-2" v-if="!isLoggedInAsGuest && stats !== null">
           <Suspense>
           <template #default>
-            <Statistics />
+            <Statistics bottomBorder />
           </template>
           <template #fallback>
             <div>Loading stats...</div>
           </template>
         </Suspense>
         </div>
-        <div class="p-mt-4" v-if="!isLoggedInAsGuest">
+        <div class="p-mt-2" v-if="!isLoggedInAsGuest">
           <Suspense>
           <template #default>
             <FriendsComponent title="My Friends" fromSideBar />
@@ -28,8 +28,8 @@
           </Suspense>
         </div>
       </div>
-      <router-link style="text-decoration: none;" to="/stats" class="sb-logout">Statistics</router-link>
-      <router-link style="text-decoration: none;" to="/friends" class="sb-logout">Manage Friends</router-link>
+      <router-link v-if="isLoggedIn" style="text-decoration: none;" to="/stats" class="sb-logout">Statistics</router-link>
+      <router-link v-if="isLoggedIn" style="text-decoration: none;" to="/friends" class="sb-logout">Manage Friends</router-link>
       <div class="sb-logout" @click="logMeOut">Logout</div>
     </div>
   </div>

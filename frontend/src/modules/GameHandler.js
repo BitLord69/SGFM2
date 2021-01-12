@@ -10,8 +10,9 @@ const CreateGameState = reactive({
   pointsToWin: 15,
   selectedLeague: null,
 });
-const leaderboard = ref(null);
+
 let inGame = ref(false);
+const leaderboard = ref(null);
 
 const joinGameState = reactive({
   activeIndex: -1,
@@ -31,11 +32,23 @@ export default function GameHandler() {
 
   async function getLatestGame() {
     try {
-      latestGame.value = await extFetch("/api/game/latestgame", "GET");
+      console.log("Hej i getLatestGame!!");
+      latestGame.value = await extFetch("/api/game/latestgame/");
     } catch (e) {
       gameError.value = e;
-      return;
     }
+  }
+ 
+  async function getGamesPrivately(league) {
+    let res;
+    try {
+      res = await extFetch("/api/game/" + league);
+    } catch (e) {
+      gameError.value = e;
+      return
+    }
+
+    return res;
   }
 
   async function getLeaderboard(league) {
@@ -54,17 +67,16 @@ export default function GameHandler() {
     }
   }
 
-//   return { getGames, gameError, stats, CreateGameState, inGame, joinGameState, leaderboard, getLeaderboard }
-// }
   return {
-    getGames,
-    gameError,
     stats,
-    CreateGameState,
     inGame,
-    joinGameState,
-    getLeaderboard,
+    gameError,
     latestGame,
+    joinGameState,
+    CreateGameState,
+    getGames,
+    getLeaderboard,
+    getGamesPrivately,
     getLatestGame,
-  };
+  }
 }

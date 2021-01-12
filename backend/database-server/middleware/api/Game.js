@@ -5,6 +5,7 @@ router.get('/:league', async (req, res) => {
   if (!req.session.user) {
     return res.json({ error: 'Not logged in!' });
   }  
+
   return res.json(await game.getAll(req.session.user.username, req.params.league));
 })
 
@@ -12,12 +13,17 @@ router.get('/leaderboard/:league', async (req, res) => {
   return res.json(await game.getLeaderboard(req.params.league));
 })
 
-router.get('/latestgame', async (req, res) => { 
+router.get('/latestgame/', async (req, res) => { 
+console.log("hupp i router.get - user/latestgame");
+
+    if (!req.session.user) {
+    return res.json({ error: 'Not logged in!' });
+  }  
+
   return res.json(await game.getLatestGame(req.session.user.username));
 })
 
 router.post('/', async (req, res) => {
-  console.log("game.save, body: ", req.body);
   return res.json(await game.saveGame(req.body));
 })
 

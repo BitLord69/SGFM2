@@ -1,13 +1,15 @@
 <template>
-  <Suspense>
+  <div class="p-grid" v-if="isLoaded">
+    <Suspense>
       <template #default>
         <Leaderboard class="leaderboard"/>
       </template>
       <template #fallback>
-        <div>Loading stats...</div>
+        <div class="p-mx-auto">
+          <ProgressBar mode="indeterminate" />
+        </div>
       </template>
   </Suspense>
-  <div class="p-grid">
     <img class="aniCard" src="/sleepy_joe.png" />
     <div class="first-container p-col-6 p-offset-3 p-d-flex p-jc-center">
       <div class="container p-d-flex p-jc-center">
@@ -74,7 +76,7 @@
 </template>
 
 <script>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import UserHandler from "@/modules/UserHandler.js"
 import Leaderboard from '../components/Leaderboard.vue';
@@ -83,14 +85,12 @@ const form = reactive({
   email: null,
   password: null,
 });
-const state = reactive({
-  incorrect: false,
-});
 
 export default {
   components: { Leaderboard },
 
   setup() {
+    const isLoaded = ref(false);
     const router = useRouter();
     const { isLoggedIn, currentUser, login, loginAsGuest} = UserHandler();
     if (isLoggedIn.value) {
@@ -102,8 +102,6 @@ export default {
 
       if (isLoggedIn.value) {
         router.push('/lobby')
-      } else {
-        state.incorrect = true
       } 
     }
     const cardGallery = [
@@ -168,10 +166,12 @@ export default {
       router.push('/lobby')
     }
 
+    isLoaded.value = true;
+
     return {
       form,
-      state,
       login,
+      isLoaded,
       isLoggedIn,
       currentUser,
       performLogin,
@@ -211,6 +211,7 @@ export default {
   animation: cardAnimation 6s infinite;
   animation-direction: alternate-reverse;
 }
+
 @keyframes cardAnimation{
   0%{
     top: 0vh;
@@ -245,17 +246,6 @@ export default {
 ul {
   line-height: 1.3;
 }
-
-/* a:link,
-a:visited,
-a:active {
-  bottom: 10em;
-  position: absolute;
-  justify-content: center;
-  display: flex;
-  color: inherit;
-  text-decoration: none;
-} */
 
 .register{
   position: absolute;

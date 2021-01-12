@@ -1,14 +1,14 @@
 <template>
   <div class="page p-text-center p-d-flex p-flex-column" v-if="isLoaded">
     <div>
-      <h2>My stats</h2>
+      <h2>Leaderboard</h2>
     </div>
     <div class="p-my-auto p-mx-0 p-px-0">
       <Suspense>
         <template #default>
           <div class="p-grid p-col-12 p-jc-center p-nogutter">
             <div class="p-col-10 p-lg-5 p-xl-3 stat-container p-my-2 p-mx-2" v-for="(l, index) in leagues" :key="index">
-              <Statistics :leagueToDisplay="l.league" />
+              <Leaderboard :leagueToDisplay="l.league" />
             </div>
           </div>
         </template>
@@ -23,13 +23,13 @@
 </template>
 
 <script>
-import Statistics from "@/components/Statistics"
+import Leaderboard from "@/components/Leaderboard"
 import LeagueHandler from "@/modules/LeagueHandler"
 import { onMounted, ref } from 'vue';
 
 export default {
-  name: "FullStatistics",
-  components: { Statistics },
+  name: "FullLeaderboard",
+  components: { Leaderboard },
   setup(){
     const isLoaded = ref(false);
     const { leagues, getLeagues } = LeagueHandler();

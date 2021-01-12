@@ -9,9 +9,13 @@
           class="waitOppo"
           v-if="
             gameState &&
+            gameState?.gameWinner != 2 &&
             gameState?.currentPlayer != playerId &&
-            gameState?.gameWinner === -1">
+            gameState?.gameWinner == -1
+          "
+        >
           Waiting for opponent to finish their turn...
+          {{ gameState.gameWinner }} {{ gameState.currentPlayer }}
           <WaitingForPlayer />
         </div>
       </div>
@@ -24,12 +28,14 @@
       :closable="false"
       :visible="opponentDisconnected"
     >
-      <template #header>
-        Communication error
-      </template>
+      <template #header> Communication error </template>
       Your opponent has disconnected!
       <template #footer>
-        <Button class="p-ripple" @click="returnToLobbyFunc(true)" label="Return to Lobby" />
+        <Button
+          class="p-ripple"
+          @click="returnToLobbyFunc(true)"
+          label="Return to Lobby"
+        />
       </template>
     </Dialog>
 
@@ -44,7 +50,6 @@
         <h3 v-if="state.connectedPlayers < 2">
           Waiting for opponent to connect...
         </h3>
-        <h3 v-else>Waiting for opponent to finish their turn...</h3>
       </template>
       <WaitingForPlayer />
       <template class="p-mx-auto" #footer> </template>
@@ -69,7 +74,10 @@
     </div>
 
     <div class="table">
-      <div class="cardsOnTable p-py-2" v-if="gameState && gameState?.gameWinner == -1">
+      <div
+        class="cardsOnTable p-py-2"
+        v-if="gameState && gameState?.gameWinner == -1"
+      >
         <div
           class="card"
           v-for="(card, index) in gameState?.playedCards"
@@ -84,12 +92,21 @@
         </div>
       </div>
 
-      <div class="gameOver p-px-5 p-my-3" v-else>
+      <div class="gameOver p-px-5 p-my-3" v-if="gameState.gameWinner !== -1">
         <h4>GAME OVER</h4>
         <div v-if="playerId == gameState.gameWinner">You won!</div>
-        <div v-else>You lost!</div>
+        <div
+          v-if="playerId != gameState.gameWinner && gameState.gameWinner != 2"
+        >
+          You lost!
+        </div>
+        <div v-if="gameState.gameWinner == 2">Game is a tie!</div>
         <div class="p-my-5">
-          <Button class="p-ripple" @click="returnToLobbyFunc(false)" label="Return to Lobby" />
+          <Button
+            class="p-ripple"
+            @click="returnToLobbyFunc(false)"
+            label="Return to Lobby"
+          />
         </div>
       </div>
     </div>
@@ -97,9 +114,15 @@
     <div class="playerRow p-mb-2">
       <div class="cardsOnHand">
         <div
-          :class="'card' + ' p-mx-1 ' + ' card-' + index + ((gameState && playerId != gameState.currentPlayer) ? '' : ' cardHoverable')"
+          :class="
+            'card p-mx-1 card-' +
+            index +
+            (gameState && playerId != gameState.currentPlayer
+              ? ''
+              : ' cardHoverable')
+          "
           v-for="(card, index) in gameState?.players[playerId]?.cardsOnHand"
-          :key="getIndex(card, index)"
+          :key="index"
           :style="{
             backgroundImage: `url(${'../' + getImageName(card.name) + '.png'})`,
           }"
@@ -112,7 +135,9 @@
 
       <div class="profile p-pt-1" id="profileYou">
         <div>{{ gameState && gameState?.players[playerId]?.name }}</div>
-        <div class="p-mt-1"><img :src="'/avatar/' + currentUser.avatar + '.png'" /></div>
+        <div class="p-mt-1">
+          <img :src="'/avatar/' + currentUser.avatar + '.png'" />
+        </div>
         <div class="p-mt-1">
           Points: {{ gameState && gameState?.players[playerId]?.score }}/{{
             gameState?.pointsToWin
@@ -124,11 +149,11 @@
 </template>
 
 <script>
-import { reactive, watchEffect, computed } from "vue";
+import { ref, reactive, watchEffect, computed } from "vue";
 import SocketHandler from "@/modules/SocketHandler";
 import WaitingForPlayer from "../components/WaitingForPlayer";
 import { useRoute, useRouter } from "vue-router";
-import GameHandler from "@/modules/GameHandler"
+import GameHandler from "@/modules/GameHandler";
 import UserHandler from "@/modules/UserHandler";
 
 export default {
@@ -140,8 +165,15 @@ export default {
     const playerId = route.params.player;
     const { inGame } = GameHandler();
     const { currentUser, isLoggedIn } = UserHandler();
+    const gameIsRunning = ref(false);
 
-    const { gameState, playCard, opponentDisconnected, resetGameState, removeGame } = SocketHandler();
+    const {
+      gameState,
+      playCard,
+      opponentDisconnected,
+      resetGameState,
+      removeGame,
+    } = SocketHandler();
     const state = reactive({
       connectedPlayers: 1,
       cardsOnHandSize: 5,
@@ -157,8 +189,16 @@ export default {
     });
 
     const opponentAvatar = computed(() => {
-      return '/avatar/' + (opponent?.value?.name ? opponent.value.avatarId : '0') + '.png'
+      return (
+        "/avatar/" +
+        (opponent?.value?.name ? opponent.value.avatarId : "0") +
+        ".png"
+      );
     });
+
+    if (state.connectedPlayers == 2) {
+      gameIsRunning.value = true;
+    }
 
     watchEffect(() => {
       if (gameState.value !== null) {
@@ -171,13 +211,16 @@ export default {
             element.classList.remove("hidden");
           });
 
-          document.getElementsByClassName("cardToAnimate").forEach((element) => {
+          document
+            .getElementsByClassName("cardToAnimate")
+            .forEach((element) => {
               element.classList.toggle("cardToAnimate");
-            });        
+            });
         } else {
           document.getElementsByClassName("particle").forEach((element) => {
-            if (!element.classList.contains("particle-hidden")) element.classList.toggle("particle-hidden");
-          }); 
+            if (!element.classList.contains("particle-hidden"))
+              element.classList.toggle("particle-hidden");
+          });
         }
 
         if (gameState.value.playedCards.length == 2) {
@@ -191,7 +234,7 @@ export default {
         // if (playerId != gameState.value.currentPlayer) {
         //     document.getElementsByClassName("cardHoverable").forEach((element) => {
         //       element.setAttribute("disabled");
-        //     });           
+        //     });
         //   console.log("Inte min tur än.....");
         // } else {
 
@@ -202,14 +245,19 @@ export default {
           setTimeout(() => {
             document.getElementsByClassName("particle").forEach((element) => {
               element.className += " particle-hidden";
-            }); 
+            });
           }, 4000);
         }
       }
+
+      // if (gameState.value == null && gameIsRunning.value) {
+      //   gameIsRunning.value = false;
+
+      // }
     });
 
     function startParticleAnimation() {
-      setTimeout(() =>{
+      setTimeout(() => {
         document.getElementsByClassName("particle").forEach((element) => {
           element.classList.remove("particle-hidden");
         });
@@ -217,10 +265,10 @@ export default {
     }
 
     function animateTie() {
-      setTimeout(() =>{
+      setTimeout(() => {
         document.getElementById("card-0").className += " tie";
         document.getElementById("card-1").className += " tie";
-        
+
         startParticleAnimation();
       }, 300);
     }
@@ -235,7 +283,7 @@ export default {
       let root = document.documentElement;
       let winner = gameState.value.roundWinner;
 
-      setTimeout(() =>{
+      setTimeout(() => {
         if (winner == gameState.value?.startPlayer) {
           loserCard = document.getElementById("card-1");
         } else {
@@ -246,8 +294,8 @@ export default {
 
         if (winner == playerId) {
           target = document.getElementById("profileYou");
-          root.style.setProperty('--start',  "-20px");
-          
+          root.style.setProperty("--start", "-20px");
+
           startY = loserCard.getBoundingClientRect().bottom;
           startX = loserCard.getBoundingClientRect().right;
 
@@ -255,18 +303,18 @@ export default {
           targetX = target.getBoundingClientRect().right;
         } else {
           target = document.getElementById("profileOpponent");
-          root.style.setProperty('--start',  "50px");
-         
+          root.style.setProperty("--start", "50px");
+
           startY = loserCard.getBoundingClientRect().top;
           startX = loserCard.getBoundingClientRect().left;
 
           targetY = target.getBoundingClientRect().top;
           targetX = target.getBoundingClientRect().left;
         }
-        
-        root.style.setProperty('--target-y',  (targetY - startY) + "px");
-        root.style.setProperty('--target-x', (targetX - startX) + "px");
-        
+
+        root.style.setProperty("--target-y", targetY - startY + "px");
+        root.style.setProperty("--target-x", targetX - startX + "px");
+
         loserCard.classList.add("CSS-animation");
       }, 300);
     }
@@ -296,7 +344,8 @@ export default {
       return card;
     }
 
-    function returnToLobbyFunc(remove){
+    function returnToLobbyFunc(remove) {
+      console.log("i returnToLobbyFunc");
       opponentDisconnected.value = false;
       if (remove) {
         removeGame();
@@ -320,16 +369,15 @@ export default {
       returnToLobbyFunc,
       isLoggedIn,
       currentUser,
-      opponentAvatar
+      opponentAvatar,
     };
   },
 };
 </script>
 <style lang="scss" scoped>
-
 $particle-size: 8px;
 
-:root{
+:root {
   --target-x: 0px;
   --target-y: 0px;
   --start: 0px;
@@ -353,7 +401,7 @@ $particle-size: 8px;
     font-family: "Press Start 2P", cursive;
   }
 
-  Button {
+  button {
     background-color: darken(#e2c3a6, 10%);
     border: 0.2em solid #3b1704;
     box-shadow: 0.2em 0.2em black;
@@ -437,13 +485,13 @@ $particle-size: 8px;
   animation: playCard 1s ease 1;
 }
 
-@keyframes playCard{
+@keyframes playCard {
   0% {
     top: 0;
-    opacity: 1
+    opacity: 1;
   }
   50% {
-     top: -14vh; 
+    top: -14vh;
   }
   99% {
     top: -28vh;
@@ -455,7 +503,8 @@ $particle-size: 8px;
   }
 }
 
-.hidden, .particle-hidden {
+.hidden,
+.particle-hidden {
   display: none;
 }
 
@@ -475,7 +524,7 @@ $particle-size: 8px;
   font-family: "Yanone Kaffeesatz", sans-serif;
 }
 
-.cardHoverable:hover{
+.cardHoverable:hover {
   box-shadow: 0px 0px 15px 2px #eee;
   z-index: 10;
   transform: scale(1.05);
@@ -510,7 +559,9 @@ $particle-size: 8px;
 
 @keyframes bounceOutDown {
   50% {
-    opacity: 1; transform: translate3d(0, 0, 0); z-index: 15;
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    z-index: 15;
   }
 
   60% {
@@ -534,26 +585,32 @@ $particle-size: 8px;
 .particle {
   z-index: 99;
   position: absolute;
-  width: $particle-size; 
+  width: $particle-size;
   height: $particle-size;
   animation: shoot 4s ease-out;
   animation-name: shoot, fade;
 
   @for $i from 0 to 300 {
-    $t: (1 + .01 * random(100)) * 1.5s;
+    $t: (1 + 0.01 * random(100)) * 1.5s;
 
     &:nth-child(#{$i + 1}) {
       transform: translate(random(80) * 1vw, random(80) * 1vh);
       background: hsl(random(360), 100%, 50%);
       animation-duration: $t;
-      animation-delay: -.01 * random(100) * $t;
+      animation-delay: -0.01 * random(100) * $t;
     }
   }
 }
 
 @keyframes shoot {
-  0% { transform: translate(35vw, 50vh); }
+  0% {
+    transform: translate(35vw, 50vh);
+  }
 }
 
-@keyframes fade { to { opacity: 0 } }
+@keyframes fade {
+  to {
+    opacity: 0;
+  }
+}
 </style>

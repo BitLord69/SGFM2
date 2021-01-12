@@ -121,7 +121,7 @@ public class GameEngine  {
   public boolean isGameOver() {
     boolean playerOneScore = gameState.getPlayer(GameState.PLAYER_ONE).getScore() >= gameState.getPointsToWin();
     boolean playerTwoScore = gameState.getPlayer(GameState.PLAYER_TWO).getScore() >= gameState.getPointsToWin();
-    if (playerOneScore || playerTwoScore || deck.isEmpty()) {
+    if (playerOneScore || playerTwoScore || deck.getRemainingCardCount() < 2) {
       gameState.setGameWinner(gameState.getPlayer(GameState.PLAYER_ONE).getScore() == gameState.getPlayer(GameState.PLAYER_TWO).getScore()
               ? TIE : gameState.getPlayer(GameState.PLAYER_ONE).getScore() > gameState.getPlayer(GameState.PLAYER_TWO).getScore()
               ? GameState.PLAYER_ONE : GameState.PLAYER_TWO);
@@ -174,15 +174,19 @@ public class GameEngine  {
         gameState.changeStartPlayer();
         gameState.clearPlayedCards();
         gameState.setRoundWinner(-1);
-      }
-
-      server.sendGameUpdateToRoom(gameState, roomNo);
-
-      if(isGameOver()) {
+        server.sendGameUpdateToRoom(gameState, roomNo);
+      } else {
         // If it's not a guest game, save it in the database
         if (!gameState.getPlayer(0).getName().startsWith("guest")) {
           saveGameInDatabase();
         }
+        server.sendGameUpdateToRoom(gameState, roomNo);
+        try {
+          Thread.sleep(3000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+
         server.removeGame(roomNo);
       }
     } else {

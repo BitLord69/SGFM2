@@ -50,9 +50,9 @@ class Game {
                                       name1: body.players[0].name,
                                       name2: body.players[1].name,
                                       points1: body.players[0].score,
-                                      winner1: body.gameWinner == '0',
+                                      winner1: body.gameWinner,
                                       points2: body.players[1].score,
-                                      winner2: body.gameWinner == '1',
+                                      winner2: body.gameWinner,
                                       pointsToWin: body.pointsToWin,
                                       league: body.league
                                     }));

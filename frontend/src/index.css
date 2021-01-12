@@ -5,3 +5,7 @@
   color: #e69244;
   overflow: hidden;
 }
+
+.pointer{
+  cursor: pointer;
+}

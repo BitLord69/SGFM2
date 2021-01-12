@@ -1,13 +1,22 @@
 <template>
-  <div class="friend-container">
-    <div class="Area-1">
-      AREA1
-    </div>
-    <div class="Side">
+  <div class="friend-container p-mb-5">
+    <div class="area-1">
       <Suspense>
         <template #default>
           <div class="p-p-4">
-            <FriendList showDeleteIcon />
+            <FriendsComponent title="All Users"/>
+          </div>
+        </template>
+        <template #fallback>
+          <div>Loading users...</div>
+        </template>
+      </Suspense>
+    </div>
+    <div class="area-2">
+      <Suspense>
+        <template #default>
+          <div class="p-p-4">
+            <FriendsComponent title="My Friends" />
           </div>
         </template>
         <template #fallback>
@@ -15,14 +24,42 @@
         </template>
       </Suspense>
     </div>
-    <div class="Area-2">AREA2</div>
+    <div class="area-3">
+      <Suspense>
+        <template #default>
+          <div class="p-p-4">
+            <FriendsComponent title="My Sent Friend Requests" />
+          </div>
+        </template>
+        <template #fallback>
+          <div>Loading outgoing friend requests...</div>
+        </template>
+      </Suspense>
+    </div>
+    <div class="area-4">
+      <Suspense>
+        <template #default>
+          <div class="p-p-4">
+            <FriendsComponent title="My Received Friend Requests" />
+          </div>
+        </template>
+        <template #fallback>
+          <div>Loading outgoing friend requests...</div>
+        </template>
+      </Suspense>
+    </div>
   </div>
 </template>
 
 <script>
-import FriendList from "../components/FriendList.vue";
+
+import FriendsComponent from '../components/FriendsComponent';
+
 export default {
-  components: { FriendList },
+  components: { FriendsComponent },
+
+  setup() {
+  }
 };
 </script>
 
@@ -30,28 +67,42 @@ export default {
 .friend-container {
   display: grid;
   width: 85%;
-  grid-template-columns: 3fr 1fr;
+  color:#3b1704;
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
-  gap: 0px 0px;
+  gap: 6em 6em;
   grid-template-areas:
-    "Area-1 Side"
-    "Area-2 Side";
+    "area-1 area-2"
+    "area-3 area-4";
 }
-.Area-1 {
-  grid-area: Area-1;
+.area-1 {
+  grid-area: area-1;
 }
-.Side {
-  grid-area: Side;
-  align-self: center;
-  text-align: center;
+
+.area-1, .area-2, .area-3, .area-4 {
   background-color: #e2c3a6;
   border-radius: 10px;
   border: 2px solid #3b1704;
 }
 
-.side {
+.greenText {
+  color: #20a132;
 }
-.Area-2 {
-  grid-area: Area-2;
+
+.redText {
+  color: #8e0707;
+}
+
+.area-2 {
+  grid-area: area-2;
+}
+
+.area-3 {
+  grid-area: area-3;
+}
+
+.area-4 {
+  grid-area: area-4;
 }
 </style>

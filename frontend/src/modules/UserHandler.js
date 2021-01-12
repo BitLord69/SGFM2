@@ -8,6 +8,7 @@ const userError = ref(null);
 const loginError = ref(null);
 
 export default function UserHandler() {
+
   async function logout() {
     try {
       await extFetch("/api/auth/logout/", "POST");
@@ -37,7 +38,7 @@ export default function UserHandler() {
       isLoggedIn.value = false;
       return 
     }
-  }
+  };
 
   function loginAsGuest() {
     isLoggedInAsGuest.value = true;
@@ -53,7 +54,7 @@ export default function UserHandler() {
     }
     await login(form.email, form.password)
   }
-  
+
   async function startApp() {
     let result;
 
@@ -69,7 +70,7 @@ export default function UserHandler() {
     } catch (e) {
       userError.value = e
       isLoggedIn.value = false;
-      return 
+      return;
     }
   }
 

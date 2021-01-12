@@ -8,12 +8,14 @@
         <div
           class="waitOppo"
           v-if="
-            gameState && gameState?.gameWinner != 2 &&
-              (gameState?.currentPlayer != playerId &&
-              gameState?.gameWinner == -1)"
+            gameState &&
+            gameState?.gameWinner != 2 &&
+            gameState?.currentPlayer != playerId &&
+            gameState?.gameWinner == -1
+          "
         >
           Waiting for opponent to finish their turn...
-          {{gameState.gameWinner}} {{gameState.currentPlayer}}
+          {{ gameState.gameWinner }} {{ gameState.currentPlayer }}
           <WaitingForPlayer />
         </div>
       </div>
@@ -26,9 +28,7 @@
       :closable="false"
       :visible="opponentDisconnected"
     >
-      <template #header>
-        Communication error
-      </template>
+      <template #header> Communication error </template>
       Your opponent has disconnected!
       <template #footer>
         <Button
@@ -95,7 +95,9 @@
       <div class="gameOver p-px-5 p-my-3" v-if="gameState.gameWinner !== -1">
         <h4>GAME OVER</h4>
         <div v-if="playerId == gameState.gameWinner">You won!</div>
-        <div v-if="playerId != gameState.gameWinner && gameState.gameWinner != 2">
+        <div
+          v-if="playerId != gameState.gameWinner && gameState.gameWinner != 2"
+        >
           You lost!
         </div>
         <div v-if="gameState.gameWinner == 2">Game is a tie!</div>
@@ -113,13 +115,11 @@
       <div class="cardsOnHand">
         <div
           :class="
-            'card' +
-              ' p-mx-1 ' +
-              ' card-' +
-              index +
-              (gameState && playerId != gameState.currentPlayer
-                ? ''
-                : ' cardHoverable')
+            'card p-mx-1 card-' +
+            index +
+            (gameState && playerId != gameState.currentPlayer
+              ? ''
+              : ' cardHoverable')
           "
           v-for="(card, index) in gameState?.players[playerId]?.cardsOnHand"
           :key="index"
@@ -252,11 +252,9 @@ export default {
 
       // if (gameState.value == null && gameIsRunning.value) {
       //   gameIsRunning.value = false;
-        
+
       // }
     });
-
-    
 
     function startParticleAnimation() {
       setTimeout(() => {

@@ -29,8 +29,7 @@ export default function FriendHandler() {
 
   async function getIncomingFriendRequest() {
     try {
-      inFriendReq.value = await extFetch("/api/user/friends/requests/", "GET");
-      console.log("friends.val:", inFriendReq.value);
+      inFriendReq.value = await extFetch("/api/user/friends/requests/");
     } catch (e) {
       friendError.value = e;
       return;
@@ -39,8 +38,7 @@ export default function FriendHandler() {
 
   async function getOutgoingFriendRequest() {
     try {
-      outFriendReq.value = await extFetch("/api/user/nonfriends/requests/", "GET");
-      console.log("friends.val:", outFriendReq.value);
+      outFriendReq.value = await extFetch("/api/user/nonfriends/requests/");
     } catch (e) {
       friendError.value = e;
       return;

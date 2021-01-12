@@ -3,10 +3,12 @@ import { reactive, ref } from "vue";
 
 const gameError = ref(null);
 const stats = ref(null);
+const latestGame = ref(null);
+
 const CreateGameState = reactive({
   cardsOnHand: 5,
   pointsToWin: 15,
-  selectedLeague: null
+  selectedLeague: null,
 });
 const leaderboard = ref(null);
 let inGame = ref(false);
@@ -14,7 +16,7 @@ let inGame = ref(false);
 const joinGameState = reactive({
   activeIndex: -1,
   selectedGame: null,
-  gameList: null
+  gameList: null,
 });
 
 export default function GameHandler() {
@@ -23,8 +25,17 @@ export default function GameHandler() {
       stats.value = await extFetch("/api/game/" + league);
     } catch (e) {
       gameError.value = e;
-      return
-    }  
+      return;
+    }
+  }
+
+  async function getLatestGame() {
+    try {
+      latestGame.value = await extFetch("/api/game/latestgame", "GET");
+    } catch (e) {
+      gameError.value = e;
+      return;
+    }
   }
 
   async function getLeaderboard(league) {
@@ -43,5 +54,17 @@ export default function GameHandler() {
     }
   }
 
-  return { getGames, gameError, stats, CreateGameState, inGame, joinGameState, leaderboard, getLeaderboard }
+//   return { getGames, gameError, stats, CreateGameState, inGame, joinGameState, leaderboard, getLeaderboard }
+// }
+  return {
+    getGames,
+    gameError,
+    stats,
+    CreateGameState,
+    inGame,
+    joinGameState,
+    getLeaderboard,
+    latestGame,
+    getLatestGame,
+  };
 }

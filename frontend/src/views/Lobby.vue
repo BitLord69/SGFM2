@@ -1,4 +1,20 @@
 <template>
+ <Suspense>
+      <template #default>
+        <Leaderboard class="leaderboard"/>
+      </template>
+      <template #fallback>
+        <div>Loading stats...</div>
+      </template>
+  </Suspense>
+  <Suspense>
+      <template #default>
+        <LatestGame class="latestGame"/>
+      </template>
+      <template #fallback>
+        <div>Loading your latest game...</div>
+      </template>
+  </Suspense>
     <div class="p-grid" style="width: 100%">
       <div class="first-container p-col-6 p-offset-3 p-d-flex p-jc-center">
         <div class="container p-d-flex p-jc-center">
@@ -86,6 +102,8 @@ import { reactive } from "vue";
 import CreateGame from "@/components/CreateGame";
 import JoinGame from "@/components/JoinGame";
 import Sidebar from "@/components/Sidebar";
+import Leaderboard from '@/components/Leaderboard';
+import LatestGame from '../components/LatestGame.vue';
 import UserHandler from "@/modules/UserHandler";
 import SocketHandler from "@/modules/SocketHandler";
 import GameHandler from "@/modules/GameHandler";
@@ -93,7 +111,7 @@ import { useRouter } from "vue-router";
 
 export default {
   name: "Lobby",
-  components: { CreateGame, JoinGame, Sidebar },
+  components: { CreateGame, JoinGame, Sidebar, Leaderboard, LatestGame },
   setup() {
     const { createGame, joinGame, gameList, error } = SocketHandler();
     const { CreateGameState, inGame, joinGameState } = GameHandler();
@@ -210,5 +228,17 @@ export default {
 
 .rightCardButtonLobbyText{
   left: 38%;
+}
+
+.leaderboard {
+  position: absolute;
+  top: 2vh;
+  left: 1vw;
+}
+
+.latestGame {
+  position: absolute;
+  top: 40vh;
+  left: 1vw;
 }
 </style>

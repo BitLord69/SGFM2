@@ -12,6 +12,10 @@ router.get('/leaderboard/:league', async (req, res) => {
   return res.json(await game.getLeaderboard(req.params.league));
 })
 
+router.get('/latestgame', async (req, res) => { 
+  return res.json(await game.getLatestGame(req.session.user.username));
+})
+
 router.post('/', async (req, res) => {
   console.log("game.save, body: ", req.body);
   return res.json(await game.saveGame(req.body));

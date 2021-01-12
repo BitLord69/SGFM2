@@ -58,6 +58,14 @@ class Game {
                                     }));
     return res;
   }
+
+  async getLatestGame(username) {
+   const res = (await Neo4j.query(`MATCH (u:User{username: $username})-[game:PLAYED_GAME]-(g:Game)-[:PLAYED_GAME]-(opponent:User) 
+                                  RETURN game.winner AS winner, opponent.username AS opponent ORDER BY g.date DESC LIMIT 1`, {username: username}
+   ));
+
+   return res;
+  }
 }
 
 module.exports = new Game()

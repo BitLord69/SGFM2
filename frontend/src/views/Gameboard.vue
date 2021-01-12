@@ -15,7 +15,6 @@
           "
         >
           Waiting for opponent to finish their turn...
-          {{ gameState.gameWinner }} {{ gameState.currentPlayer }}
           <WaitingForPlayer />
         </div>
       </div>

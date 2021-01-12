@@ -121,12 +121,10 @@ public class GameEngine  {
   public boolean isGameOver() {
     boolean playerOneScore = gameState.getPlayer(GameState.PLAYER_ONE).getScore() >= gameState.getPointsToWin();
     boolean playerTwoScore = gameState.getPlayer(GameState.PLAYER_TWO).getScore() >= gameState.getPointsToWin();
-    if (playerOneScore || playerTwoScore || deck.isEmpty()) {
+    if (playerOneScore || playerTwoScore || deck.getRemainingCardCount() < 2) {
       gameState.setGameWinner(gameState.getPlayer(GameState.PLAYER_ONE).getScore() == gameState.getPlayer(GameState.PLAYER_TWO).getScore()
               ? TIE : gameState.getPlayer(GameState.PLAYER_ONE).getScore() > gameState.getPlayer(GameState.PLAYER_TWO).getScore()
               ? GameState.PLAYER_ONE : GameState.PLAYER_TWO);
-      System.out.println("deck is empty " + deck.isEmpty());
-      System.out.println("gameWinner: " + gameState.getGameWinner());
       return true;
     }
     return false;
@@ -183,7 +181,6 @@ public class GameEngine  {
           saveGameInDatabase();
         }
         server.sendGameUpdateToRoom(gameState, roomNo);
-        System.out.println("gameWinner: " + gameState.getGameWinner());
         try {
           Thread.sleep(3000);
         } catch (InterruptedException e) {

@@ -10,8 +10,9 @@
     @change="filterStats"
     v-if="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length)" 
     class="p-mb-2"/>
-
-  <Chart type="pie" :data="chartData" />
+  <div v-else>{{props.leagueToDisplay}}</div>
+  <Chart type="pie" :data="chartData" v-if="stats && stats.length"/>
+  <div v-else>No stats available!</div>
 </template>
 
 <script>
@@ -48,6 +49,10 @@ export default {
     
     await getLeagues();
     leagues.value.unshift( {league:"No league"});
+    if(props && props.leagueToDisplay) {
+      await getGames(props.leagueToDisplay);
+      console.log("in props check stats.value", stats.value, props.leagueToDisplay);
+    }
 
     async function filterStats() {
       await getGames(selectedLeague?.value?.league);
@@ -58,7 +63,8 @@ export default {
       leagues,
       chartData,
       selectedLeague, 
-      filterStats
+      filterStats,
+      stats
     };
   },
 };

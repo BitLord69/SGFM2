@@ -7,6 +7,7 @@ import LoginPage from "@/views/LoginPage";
 import Friends from "@/views/Friends";
 import UserHandler from "@/modules/UserHandler";
 import GameHandler from "@/modules/GameHandler";
+import FullStatistics from "@/views/FullStatistics";
 
 const routes = [
   {
@@ -39,6 +40,11 @@ const routes = [
     name: "Friends",
     component: Friends,
   },
+  {
+    path: "/stats",
+    name: "FullStatistics",
+    component: FullStatistics,
+  }
 ];
 
 const router = createRouter({

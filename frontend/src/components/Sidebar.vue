@@ -28,7 +28,8 @@
           </Suspense>
         </div>
       </div>
-      <router-link style="text-decoration: none; color: #3b1704" to="/friends" class="sb-logout">Manage Friends</router-link>
+      <router-link style="text-decoration: none;" to="/stats" class="sb-logout">Statistics</router-link>
+      <router-link style="text-decoration: none;" to="/friends" class="sb-logout">Manage Friends</router-link>
       <div class="sb-logout" @click="logMeOut">Logout</div>
     </div>
   </div>
@@ -128,7 +129,7 @@ $imageRight: 18px;
     transition: ease-in 400ms;
     display: flex;
     flex-direction: column;
-    height: 90%;
+    height: 85%;
     div{
       // margin: 0;
       padding: 0.2rem;
@@ -162,6 +163,7 @@ $imageRight: 18px;
   font-size: 18px;
   font-weight: 600;
   text-transform: uppercase;
+  color: #3b1704;
   &:hover{
     cursor: pointer;
     background-color: darken($color: #e2c3a6, $amount: 10%);

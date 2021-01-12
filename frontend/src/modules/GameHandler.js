@@ -8,6 +8,7 @@ const CreateGameState = reactive({
   pointsToWin: 15,
   selectedLeague: null
 });
+const leaderboard = ref(null);
 let inGame = ref(false);
 
 const joinGameState = reactive({
@@ -26,5 +27,21 @@ export default function GameHandler() {
     }  
   }
 
-  return { getGames, gameError, stats, CreateGameState, inGame, joinGameState }
+  async function getLeaderboard(league) {
+    let result;
+
+    try {
+      result = await extFetch("/api/game/leaderboard/" + league);
+      if (result.error) {
+        gameError.value = result.error;
+        return
+      }
+      leaderboard.value = result;
+    } catch (e) {
+      gameError.value = e
+      return 
+    }
+  }
+
+  return { getGames, gameError, stats, CreateGameState, inGame, joinGameState, leaderboard, getLeaderboard }
 }

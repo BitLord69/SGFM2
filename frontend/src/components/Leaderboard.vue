@@ -17,19 +17,19 @@
 </template>
 
 <script>
-import StatsHandler from "@/modules/StatsHandler"
+import GameHandler from "@/modules/GameHandler"
 
 export default {
   name: "Leaderboard",
 
   async setup() {
 
-    const {leaderboard, statsError, getLeaderboard} = StatsHandler();
+    const { leaderboard, getLeaderboard } = GameHandler();
 
     await getLeaderboard();
 
     return {
-      leaderboard, statsError
+      leaderboard
     };
   },
 };

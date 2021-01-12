@@ -15,13 +15,13 @@ import java.util.List;
 public class GameEngine  {
 
   private final List<CardSettings> cardSettings = new ArrayList<>() {{
-    add(new CardSettings(1, "Mutated worm", 8));
-    add(new CardSettings(2, "Irate rat", 8));
-    add(new CardSettings(3, "Orange menace", 8));
-    add(new CardSettings(4, "Sleepy Joe", 10));
-    add(new CardSettings(5, "Angry teacher", 10));
-    add(new CardSettings(6, "Screaming toddler", 8));
-    add(new CardSettings(7, "Space nerd", 8));
+//    add(new CardSettings(1, "Mutated worm", 8));
+//    add(new CardSettings(2, "Irate rat", 8));
+//    add(new CardSettings(3, "Orange menace", 8));
+//    add(new CardSettings(4, "Sleepy Joe", 10));
+//    add(new CardSettings(5, "Angry teacher", 10));
+//    add(new CardSettings(6, "Screaming toddler", 8));
+//    add(new CardSettings(7, "Space nerd", 8));
     add(new CardSettings(8, "Anonymous hacker", 4));
     add(new CardSettings(9, "Radiated zombie", 4));
     add(new CardSettings(10, "Super Galaxy Face Melter", 2));
@@ -125,6 +125,8 @@ public class GameEngine  {
       gameState.setGameWinner(gameState.getPlayer(GameState.PLAYER_ONE).getScore() == gameState.getPlayer(GameState.PLAYER_TWO).getScore()
               ? TIE : gameState.getPlayer(GameState.PLAYER_ONE).getScore() > gameState.getPlayer(GameState.PLAYER_TWO).getScore()
               ? GameState.PLAYER_ONE : GameState.PLAYER_TWO);
+      System.out.println("deck is empty " + deck.isEmpty());
+      System.out.println("gameWinner: " + gameState.getGameWinner());
       return true;
     }
     return false;
@@ -174,15 +176,20 @@ public class GameEngine  {
         gameState.changeStartPlayer();
         gameState.clearPlayedCards();
         gameState.setRoundWinner(-1);
-      }
-
-      server.sendGameUpdateToRoom(gameState, roomNo);
-
-      if(isGameOver()) {
+        server.sendGameUpdateToRoom(gameState, roomNo);
+      } else {
         // If it's not a guest game, save it in the database
         if (!gameState.getPlayer(0).getName().startsWith("guest")) {
           saveGameInDatabase();
         }
+        server.sendGameUpdateToRoom(gameState, roomNo);
+        System.out.println("gameWinner: " + gameState.getGameWinner());
+        try {
+          Thread.sleep(3000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+
         server.removeGame(roomNo);
       }
     } else {

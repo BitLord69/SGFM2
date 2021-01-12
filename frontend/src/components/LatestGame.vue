@@ -2,9 +2,10 @@
   <div id="latestGame">
     <div class="p-text-center">Your latest played game</div>
     <div class="leaderboard-content d-flex p-jc-between">
-      <div style="text-align: right">
-        {{latestGame[0].winner}} {{latestGame[0].opponent}}
-      </div>
+      <div class="p-text-center" v-if="latestGame[0].winner == 0">You won against</div>
+      <div class="p-text-center" v-if="latestGame[0].winner == 1">You lost against</div>
+      <div class="p-text-center" v-if="latestGame[0].winner == 2">You tied against</div>
+      <div class="p-text-center">{{latestGame[0].opponent}}</div>
     </div>
   </div>
 </template>

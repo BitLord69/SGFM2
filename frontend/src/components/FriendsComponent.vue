@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="p-fluid p-grid p-jc-center">
-      <h2>{{title}}</h2>
+      <h2 class="p-my-2">{{title}}</h2>
       <div v-if="!fromSideBar" class="p-col-12">
         <span class="p-input-icon-left p-fluid">
           <i class="pi pi-search" />
@@ -10,7 +10,7 @@
       </div>
     </div>
     
-    <ScrollPanel :key="componentKey" style="width: 100%; height: 13.75em" class="p-scrollpanel-bar-y custom" >
+    <ScrollPanel :key="componentKey" style="width: 100%; height: 13.75em" class="p-scrollpanel-bar-y" >
       <div class="userlist-item p-grid p-m-1" v-for="user in filteredUsers()" :key="user.username">
         <div class="p-col-3 p-jc-end p-py-1 p-d-flex" v-if="fromSideBar">
           <img
@@ -127,25 +127,25 @@ export default {
   text-align: left;
 }
 
-  .userlist-item{
-    border: 1px solid #C1A489;
-    color: #3b1704;
-    font-family: "Yanone Kaffeesatz", sans-serif;
-    font-size: 120%;
-  }
-
-  .custom .p-scrollpanel-wrapper {
-    border-right: 7px solid #a28971;
+.userlist-item {
+  border: 1px solid #C1A489;
+  color: #3b1704;
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-size: 120%;
 }
 
-.custom .p-scrollpanel-bar {
+.p-scrollpanel-wrapper {
+  border-right: 7px solid #a28971;
+}
+
+.p-scrollpanel-bar {
     background: #3b1704 !important;
     opacity: 1;
     transition: background-color .3s;
     width: 7px;
 }
 
-.custom .p-scrollpanel-bar:hover {
-    background: lighten($color: #3b1704, $amount: 10) !important;
+.p-scrollpanel-bar:hover {
+    background: lighten($color: #3b1704, $amount: 10%) !important;
 }
 </style>

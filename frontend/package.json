@@ -14,7 +14,7 @@
     "moment": "^2.29.1",
     "primeflex": "^2.0.0",
     "primeicons": "^4.1.0",
-    "primevue": "^3.0.0",
+    "primevue": "^3.1.1",
     "sass": "^1.30.0",
     "sass-loader": "^10.1.0",
     "socket.io-client": "^1.7.4",

@@ -1,7 +1,7 @@
 <template>
   <div class="p-grid p-jc-center main" :key="redrawCounter">
     <div class="gameTitle p-d-flex p-ai-center">
-      <router-link to="/" style="text-decoration:none; color: #e69244; cursor:pointer;">
+      <router-link :to="jumpTo" style="text-decoration:none; color: #e69244; cursor:pointer;">
         <h1>Super Galaxy Face Melter</h1>
       </router-link>
     </div>
@@ -13,7 +13,7 @@
 
 <script>
 import { useRoute } from "vue-router";
-import { watchEffect, ref } from "vue";
+import { watchEffect, ref, computed } from "vue";
 import UserHandler from "@/modules/UserHandler.js"
 
 export default {
@@ -23,6 +23,10 @@ export default {
     const redrawCounter = ref(0);
     const {currentUser, isLoggedIn, isLoggedInAsGuest} = UserHandler()
 
+    const jumpTo = computed(() => {
+      return isLoggedIn || isLoggedInAsGuest ? '/lobby' : '/';
+    });
+
     watchEffect(() => {
       // Without this "hack" the game board will still be visible when coming back to the lobby
       if (route.path === '/lobby') {
@@ -30,7 +34,7 @@ export default {
       }
     })
 
-    return { redrawCounter, currentUser, isLoggedIn, isLoggedInAsGuest };
+    return { redrawCounter, currentUser, isLoggedIn, isLoggedInAsGuest, jumpTo };
   }
 }
 </script>
@@ -87,9 +91,9 @@ body{
   overflow-y: auto;
   overflow-x: hidden;
 }
+
 h1 {
   text-align: left;
-  margin-left: 1.5em;
   word-spacing: -0.5em;
   font-family: "Press Start 2P", cursive;
 }
@@ -102,13 +106,12 @@ Button:hover{
 
 .p-dialog-content,
 .p-dialog-header,
-.p-dialog-footer{
+.p-dialog-footer {
   background-color: #e2c3a6 !important;
 }
 
 .container {
   width: 100%;
-  background-image: linear-gradient(#b99778, #e2c3a6);
   color: #3b1704;
   padding: 10px;
   border: 0.2em solid #3b1704;
@@ -116,6 +119,7 @@ Button:hover{
   border-radius: 1em;
   font-size: 120%;
   font-family: "Yanone Kaffeesatz", sans-serif;
+  background-image: linear-gradient(#b99778, #e2c3a6);
 }
 
 .first-container {
@@ -168,6 +172,14 @@ Button:hover{
   border: 2px solid #2c3e50;
   border-radius: 50px;
   margin: 0;
-  /* z-index: 100; */
+}
+
+.p-progressbar-indeterminate {
+  width: 75vw !important;
+  height: 1.5em !important;
+}
+
+.p-progressbar .p-progressbar-value {
+  background: darken(#e2c3a6, 10%) !important;
 }
 </style>

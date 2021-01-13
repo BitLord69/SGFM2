@@ -97,6 +97,6 @@ export default {
   width: 2em;
   border: 2px solid #3b1704;
   border-radius: 50%;
-  vertical-align: baseline
+  vertical-align: baseline;
 }
 </style>

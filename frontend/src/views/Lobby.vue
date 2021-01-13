@@ -82,9 +82,9 @@
         :visible="state.displayJoin"
       >
         <template #header>
-          <div class="p-grid" style="width: 100%">
+          <div class="p-grid p-d-flex p-ai-between" style="width: 100%">
             <h3 class="p-m-0 p-col-11 p-pb-0">Join game</h3>
-            <i class="pi pi-times-circle p-col-1 p-mt-2" @click="setVisibleJoin" style="cursor: pointer"></i>
+            <i class="pi pi-times-circle p-col-1 p-mt-2 p-text-right p-mr-0" @click="setVisibleJoin" style="cursor: pointer"></i>
           </div>
         </template>
         <Suspense>

@@ -7,10 +7,17 @@
         <div class="username">
           {{currentUser.username}}
         </div>
-        <div class="p-mt-5" v-if="!isLoggedInAsGuest && stats !== null">
-          <Statistics />
+        <div class="p-mt-2" v-if="!isLoggedInAsGuest && stats !== null">
+          <Suspense>
+          <template #default>
+            <Statistics bottomBorder />
+          </template>
+          <template #fallback>
+            <div>Loading stats...</div>
+          </template>
+        </Suspense>
         </div>
-        <div class="p-mt-4" v-if="!isLoggedInAsGuest">
+        <div class="p-mt-2" v-if="!isLoggedInAsGuest">
           <Suspense>
           <template #default>
             <FriendsComponent title="My Friends" fromSideBar />
@@ -21,7 +28,8 @@
           </Suspense>
         </div>
       </div>
-      <router-link style="text-decoration: none; color: #3b1704" to="/friends" class="sb-logout">Manage Friends</router-link>
+      <router-link v-if="isLoggedIn" style="text-decoration: none;" to="/stats" class="sb-logout">Statistics</router-link>
+      <router-link v-if="isLoggedIn" style="text-decoration: none;" to="/friends" class="sb-logout">Manage Friends</router-link>
       <div class="sb-logout" @click="logMeOut">Logout</div>
     </div>
   </div>
@@ -49,14 +57,6 @@ export default {
       router.push("/")
     }
     
-    return {
-      toggleNav,
-      currentUser,
-      isLoggedIn,
-      logMeOut,
-      stats,
-      isLoggedInAsGuest
-    };
 
     async function toggleNav() {
       toggle = !toggle;
@@ -70,6 +70,15 @@ export default {
       profileImg.classList.toggle('profile-sb-open');
       profileImg.classList.toggle('profile-sb-close');
     }
+    
+    return {
+      toggleNav,
+      currentUser,
+      isLoggedIn,
+      logMeOut,
+      stats,
+      isLoggedInAsGuest
+    };
   },
 };
 </script>
@@ -120,7 +129,7 @@ $imageRight: 18px;
     transition: ease-in 400ms;
     display: flex;
     flex-direction: column;
-    height: 90%;
+    height: 85%;
     div{
       // margin: 0;
       padding: 0.2rem;
@@ -154,9 +163,10 @@ $imageRight: 18px;
   font-size: 18px;
   font-weight: 600;
   text-transform: uppercase;
+  color: #3b1704;
   &:hover{
     cursor: pointer;
-    background-color: darken($color: #e2c3a6, $amount: 30%);
+    background-color: darken($color: #e2c3a6, $amount: 10%);
   }
 }
 

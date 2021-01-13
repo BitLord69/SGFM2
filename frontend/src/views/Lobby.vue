@@ -1,20 +1,34 @@
 <template>
- <Suspense>
-      <template #default>
-        <Leaderboard class="leaderboard"/>
-      </template>
-      <template #fallback>
-        <div>Loading leaderboards...</div>
-      </template>
-  </Suspense>
-  <Suspense>
-      <template #default>
-        <LatestGame class="latestGame"/>
-      </template>
-      <template #fallback>
-        <div>Loading your latest game...</div>
-      </template>
-  </Suspense>
+  <div class="leftBox">
+    <div class="p-mb-6">
+      <Suspense>
+        <template #default>
+          <Leaderboard class="leaderboard"/>
+        </template>
+        <template #fallback>
+          <div>Loading stats...</div>
+        </template>
+      </Suspense>
+    </div>
+    <div class="p-mb-6">
+      <Suspense>
+          <template #default>
+            <LatestGame class="latestGame" type="The latest played game"/>
+          </template>
+          <template #fallback>
+            <div>Loading your latest game...</div>
+          </template>
+      </Suspense>
+    </div>
+    <Suspense>
+        <template #default>
+          <LatestGame class="myLatestGame" type="Your latest played game"/>
+        </template>
+        <template #fallback>
+          <div>Loading your latest game...</div>
+        </template>
+    </Suspense>
+  </div>
     <div class="p-grid" style="width: 100%">
       <div class="first-container p-col-6 p-offset-3 p-d-flex p-jc-center">
         <div class="container p-d-flex p-jc-center">
@@ -230,15 +244,27 @@ export default {
   left: 38%;
 }
 
-.leaderboard {
+.leftBox {
   position: absolute;
   top: 2vh;
-  left: 1vw;
+  left: 3vw;
+  display: flex;
+  flex-direction: column;
+}
+
+/* .leaderboard {
+  
 }
 
 .latestGame {
   position: absolute;
-  top: 40vh;
-  left: 1vw;
+  top: 35vh;
+  left: 3vw;
 }
+
+.myLatestGame {
+  position: absolute;
+  top: 55vh;
+  left: 3vw;
+} */
 </style>

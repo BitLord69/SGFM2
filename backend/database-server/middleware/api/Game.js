@@ -18,6 +18,17 @@ router.get('/:league', async (req, res) => {
   return res.json(await game.getAll(req.session.user.username, req.params.league));
 })
 
+router.get('/mylatestgame', async (req, res) => { 
+  if (!req.session.user) {
+    return res.json({ error: 'Not logged in!' });
+  }  
+  return res.json(await game.getMyLatestGame(req.session.user.username));
+})
+
+router.get('/latestgame', async (req, res) => { 
+  return res.json(await game.getLatestGame());
+})
+
 router.get('/leaderboard/:league', async (req, res) => { 
   return res.json(await game.getLeaderboard(req.params.league));
 })

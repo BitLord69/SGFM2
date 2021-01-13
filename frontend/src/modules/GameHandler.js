@@ -66,6 +66,23 @@ export default function GameHandler() {
     }
   }
 
+  async function getLeaderboardPrivately(league) {
+    let result;
+
+    try {
+      result = await extFetch("/api/game/leaderboard/" + league);
+      if (result.error) {
+        gameError.value = result.error;
+        return;
+      }
+      leaderboard.value = result;
+    } catch (e) {
+      gameError.value = e;
+      return;
+    }
+    return result;
+  }
+
   return {
     stats,
     inGame,
@@ -77,5 +94,6 @@ export default function GameHandler() {
     getLeaderboard,
     getGamesPrivately,
     getLatestGame,
-  }
+    getLeaderboardPrivately,
+  };
 }

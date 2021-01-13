@@ -4,7 +4,7 @@
         <Leaderboard class="leaderboard"/>
       </template>
       <template #fallback>
-        <div>Loading stats...</div>
+        <div>Loading leaderboards...</div>
       </template>
   </Suspense>
   <Suspense>

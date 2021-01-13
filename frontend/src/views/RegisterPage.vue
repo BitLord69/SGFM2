@@ -1,7 +1,7 @@
 <template>
   <div class="register-container p-d-flex p-my-auto p-jc-center">
     <div class="p-fluid p-mt-3">
-       <div class="input p-field p-my-4 p-mx-6">
+      <div class="input p-field p-my-4 p-mx-6">
         <span class="p-float-label">
           <InputText
             class="input"
@@ -11,6 +11,11 @@
           />
           <label class="input" for="username">Username</label>
         </span>
+        <div class="p-text-center p-invalid" v-if="check.username">
+          <p class="p-mx-1 p-my-1 p-text-left">
+            Username already exists!
+          </p>
+        </div>
       </div>
       <div class="input p-field p-my-4 p-mx-6">
         <span class="p-float-label">
@@ -22,6 +27,11 @@
           />
           <label class="input" for="email">Email</label>
         </span>
+        <div class="p-text-center p-invalid" v-if="check.email">
+          <p class="p-mx-1 p-my-1 p-text-left">
+            Email already exists!
+          </p>
+        </div>
       </div>
       <div class="input p-field p-mt-5 p-mx-6">
         <span class="p-float-label">
@@ -35,7 +45,10 @@
         </span>
       </div>
       <div class="p-text-center p-invalid" v-if="!checkPassword()">
-        <p class="p-mx-6 p-text-left p-my-0">Password must have atleast 8 characters, consist of uppercase, lowercase and numeric character!</p>
+        <p class="p-mx-6 p-text-left p-my-0">
+          Password must have atleast 8 characters, consist of uppercase,
+          lowercase and numeric character!
+        </p>
       </div>
       <div class="input p-field p-mt-5 p-mx-6">
         <span class="p-float-label">
@@ -55,18 +68,41 @@
       <div class="p-formgroup-inline p-d-flex p-jc-center">
         <p class="p-mt-0">Choose your avatar:</p>
         <div class="p-d-flex p-jc-center">
-          <img class="p-mr-3 avatar" v-bind:class="{ active: form.avatar === 1 }" @click="setAvatar(1)" src="../assets/avatar/1.png"/>
-          <img class="p-mr-3 avatar" v-bind:class="{ active: form.avatar === 2 }" @click="setAvatar(2)" src="../assets/avatar/2.png"/>
-          <img class="p-mr-3 avatar" v-bind:class="{ active: form.avatar === 3 }" @click="setAvatar(3)" src="../assets/avatar/3.png"/>
-          <img class="p-mr-3 avatar" v-bind:class="{ active: form.avatar === 4 }" @click="setAvatar(4)" src="../assets/avatar/4.png"/>
-          <img class="avatar" v-bind:class="{ active: form.avatar === 5 }" @click="setAvatar(5)" src="../assets/avatar/5.png"/>
+          <img
+            class="p-mr-3 avatar"
+            v-bind:class="{ active: form.avatar === 1 }"
+            @click="setAvatar(1)"
+            src="../assets/avatar/1.png"
+          />
+          <img
+            class="p-mr-3 avatar"
+            v-bind:class="{ active: form.avatar === 2 }"
+            @click="setAvatar(2)"
+            src="../assets/avatar/2.png"
+          />
+          <img
+            class="p-mr-3 avatar"
+            v-bind:class="{ active: form.avatar === 3 }"
+            @click="setAvatar(3)"
+            src="../assets/avatar/3.png"
+          />
+          <img
+            class="p-mr-3 avatar"
+            v-bind:class="{ active: form.avatar === 4 }"
+            @click="setAvatar(4)"
+            src="../assets/avatar/4.png"
+          />
+          <img
+            class="avatar"
+            v-bind:class="{ active: form.avatar === 5 }"
+            @click="setAvatar(5)"
+            src="../assets/avatar/5.png"
+          />
         </div>
       </div>
       <div class="p-text-center p-mb-4">
         <p class="p-mb-0">Already have an account?</p>
-        <p class="p-mt-0">
-          Login <router-link to="/">here</router-link>!
-        </p>
+        <p class="p-mt-0">Login <router-link to="/">here</router-link>!</p>
       </div>
       <div class="btn-group">
         <Button class="p-ripple p-mb-4" @click="register" label="Register" />
@@ -76,12 +112,11 @@
 </template>
 
 <script>
-
 import { reactive } from "vue";
-import { useRouter } from "vue-router"
-import UserHandler from "@/modules/UserHandler"
+import { useRouter } from "vue-router";
+import UserHandler from "@/modules/UserHandler";
 
-  const form = reactive({
+const form = reactive({
   username: null,
   email: null,
   password: null,
@@ -90,49 +125,83 @@ import UserHandler from "@/modules/UserHandler"
 
 const state = reactive({
   rePassword: null,
-  users: []
-})
+  users: [],
+});
+
+const check = reactive({
+  username: false,
+  email: false,
+});
 
 export default {
   name: "RegisterPage",
 
   setup() {
-
-    const {createUser, isLoggedIn} = UserHandler();
+    const {
+      getUsername,
+      usernameToCheck,
+      getEmail,
+      emailToCheck,
+      createUser,
+      isLoggedIn,
+    } = UserHandler();
     const router = useRouter();
 
     function setAvatar(choice) {
-      form.avatar = choice
+      form.avatar = choice;
     }
 
     function passwordMatch() {
       console.log(form.password + " - " + state.rePassword);
-      return form.password === state.rePassword
+      return form.password === state.rePassword;
     }
 
     function checkPassword() {
-      let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/
-      return regex.exec(form.password)
+      let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+      return regex.exec(form.password);
+    }
+
+    async function checkUsername() {
+      await getUsername(form.username);
+      if (usernameToCheck.value) {
+        check.username = true;
+        return true;
+      }
+      return false;
+    }
+
+    async function checkEmail() {
+      console.log("in checkEmail, emailToCheck:", emailToCheck.value);
+      await getEmail(form.email);
+      if (emailToCheck.value) {
+        console.log("EMAIL TRUE");
+        check.email = true;
+        return true;
+      }
+      return false;
     }
 
     async function register() {
-      await createUser(form)
-
-      if (isLoggedIn.value) {
-        router.push("/lobby")
+      if (!checkEmail()) {
+        await createUser(form);
+        if (isLoggedIn.value) {
+          router.push("/lobby");
+        }
       }
     }
-   
+
     return {
       form,
       state,
       register,
       setAvatar,
       passwordMatch,
-      checkPassword
+      checkPassword,
+      checkUsername,
+      check,
     };
   },
-}
+};
 </script>
 
 <style scoped>

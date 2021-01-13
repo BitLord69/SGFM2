@@ -6,7 +6,30 @@ class User {
       `MATCH (u:User) WITH u ORDER BY u.username RETURN u`,
       {}
     );
-    return res.map(o => ({ ...o.u.properties }))
+    return res === undefined
+      ? null
+      : res
+          .map((o) => ({ ...o.u.properties }))
+          .map((o) => {
+            delete o.password;
+            return o;
+          });
+  }
+
+  async getUserName(username) {
+    return (await Neo4j.query(
+      `MATCH (u:User {username: $username}) RETURN u.username AS username`,
+      {username}
+    ))[0];
+    // console.log("res:", res);
+    // return res;
+  }
+
+  async getEmail(email) {
+    return (await Neo4j.query(
+      `MATCH (u:User {email: $email}) RETURN u.email AS email`,
+      {email}
+    ))[0];
   }
 
   async login(email, password) {

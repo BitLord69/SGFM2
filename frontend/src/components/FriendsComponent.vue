@@ -10,7 +10,7 @@
       </div>
     </div>
     
-    <ScrollPanel :key="componentKey" style="width: 100%; height: 13.75em" class="p-scrollpanel-bar-y" >
+    <ScrollPanel style="width: 100%; height: 13.75em" class="p-scrollpanel-bar-y" >
       <div class="userlist-item p-grid p-m-1" v-for="user in filteredUsers()" :key="user.username">
         <div class="p-col-3 p-jc-end p-py-1 p-d-flex" v-if="fromSideBar">
           <img

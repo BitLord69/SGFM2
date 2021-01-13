@@ -3,7 +3,7 @@
     :style="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length) ? 'border: 2px solid #3b1704;' : ''" >
     <div class="p-text-center" v-if="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length)">Leaderboard</div>
       <div>
-        <div v-if="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length)" >
+        <div v-if="isLoggedIn && (!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length))" >
           <Dropdown
             v-model="selectedLeague"
             :options="leagues"
@@ -44,6 +44,7 @@
 import { ref } from "vue";
 import GameHandler from "@/modules/GameHandler"
 import LeagueHandler from "@/modules/LeagueHandler"
+import UserHandler from "@/modules/UserHandler"
 
 export default {
   name: "Leaderboard",
@@ -54,6 +55,7 @@ export default {
     let leagues;
     const leaderboard = ref(null);
     const selectedLeague = ref(null);
+    const { isLoggedIn } = UserHandler();
     const { getLeaderboardPrivately } = GameHandler();
     const { getLeaguesPrivately } = LeagueHandler();
 
@@ -63,7 +65,7 @@ export default {
     } else {
       leagues = await getLeaguesPrivately();
       leaderboard.value = await getLeaderboardPrivately();
-      leagues.unshift({league:"No league"});
+      leagues.length && leagues.unshift({league:"No league"});
     }
 
     async function filterLeaderboard(){
@@ -73,6 +75,7 @@ export default {
     return {
       props,
       leagues,
+      isLoggedIn,
       leaderboard,
       selectedLeague,
       filterLeaderboard,

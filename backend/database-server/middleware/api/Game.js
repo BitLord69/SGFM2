@@ -13,6 +13,9 @@ router.get('/leaderboard', async (req, res) => {
 })
 
 router.get('/latestgame', async (req, res) => { 
+  if (!req.session.user) {
+    return res.json({ error: 'Not logged in!' });
+  }  
   return res.json(await game.getLatestGame(req.session.user.username));
 })
 

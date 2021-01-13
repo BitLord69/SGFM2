@@ -9,7 +9,7 @@
   </Suspense>
   <Suspense>
       <template #default>
-        <LatestGame class="latestGame"/>
+        <LatestGame class="latestGame" />
       </template>
       <template #fallback>
         <div>Loading your latest game...</div>

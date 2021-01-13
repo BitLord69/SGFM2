@@ -46,12 +46,10 @@ class Game {
   }
 
   async getLatestGame(username) {
-   const res = (await Neo4j.query(`MATCH (u:User{username: "Vanja"})-[p:PLAYED_GAME]-(g:Game)-[p2:PLAYED_GAME]-(op:User) 
+   return (await Neo4j.query(`MATCH (u:User{username: $username})-[p:PLAYED_GAME]-(g:Game)-[p2:PLAYED_GAME]-(op:User) 
                                   RETURN p.points AS myPoints, p.winner AS winner, op.username AS opponent, op.avatar AS oppAvatar,
                  								  p2.points AS oppPoints, g.date AS time ORDER BY g.date DESC LIMIT 1`, {username: username}
-   ));
-
-   return res;
+   ))[0];
   }
 }
 

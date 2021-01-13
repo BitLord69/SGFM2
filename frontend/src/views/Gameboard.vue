@@ -39,6 +39,23 @@
     </Dialog>
 
     <Dialog
+      id="rematchDenied"
+      :modal="true"
+      :dismissableMask="false"
+      :closable="false"
+      :visible="rematchState.message.length">
+      <template #header>
+        <div class="p-text-center">Opponent left the game!</div>
+      </template>
+        <div class="p-text-center">
+          <h3>{{ rematchState.message }}</h3>
+          <div>
+            Hang on, you will be tranferred to the lobby shortly.
+          </div>
+        </div>
+    </Dialog>
+
+    <Dialog
       id="waitingForConnectionModal"
       :modal="true"
       :dismissableMask="true"
@@ -104,19 +121,15 @@
           <div style="font-size: 1.4rem;" class="p-mb-3">Rematch?</div>
           <Button
             class="p-ripple p-mr-6"
-            @click="requestMatch"
-            label="Yes 5s"
+            @click="requestRematch"
+            label="Yes"
+            :disabled="rematchState.rematchRequested"
           />
           <Button
             class="p-ripple"
             @click="returnToLobbyFunc(false)"
             label="No"
           />
-          <!-- <Button
-            class="p-ripple p-mx-2"
-            @click="returnToLobbyFunc(false)"
-            label="Return to Lobby"
-          />       -->
         </div>
       </div>
     </div>
@@ -159,10 +172,11 @@
 </template>
 
 <script>
-import { ref, reactive, watchEffect, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { reactive, watchEffect, computed } from "vue";
+
 import SocketHandler from "@/modules/SocketHandler";
 import WaitingForPlayer from "../components/WaitingForPlayer";
-import { useRoute, useRouter } from "vue-router";
 import GameHandler from "@/modules/GameHandler";
 import UserHandler from "@/modules/UserHandler";
 
@@ -172,17 +186,19 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const gameIsRunning = ref(false);
     const playerId = route.params.player;
     const { inGame } = GameHandler();
     const { currentUser, isLoggedIn } = UserHandler();
     const {
-      gameState,
+      rematch,
       playCard,
-      opponentDisconnected,
-      resetGameState,
+      gameState,
       removeGame,
-      rematch
+      denyRematch,
+      rematchState,
+      resetGameState,
+      resetMatchState,
+      opponentDisconnected,
     } = SocketHandler();
     const state = reactive({
       connectedPlayers: 1,
@@ -206,9 +222,16 @@ export default {
       );
     });
 
-    if (state.connectedPlayers == 2) {
-      gameIsRunning.value = true;
-    }
+    watchEffect(() => {
+      if (rematchState.rematchDenied) {
+        rematchState.message = "Sorry, your opponent doesn't like you any more and has left the game!";
+        setTimeout(() => { 
+          resetGameState(); 
+          resetMatchState();
+          router.push("/lobby");
+        }, 3500);
+      }
+    });
 
     watchEffect(() => {
       if (gameState.value !== null) {
@@ -252,8 +275,7 @@ export default {
       }
     });
 
-    function requestMatch() {
-      console.log("Calling rematch in gameboard...");
+    function requestRematch() {
       rematch(currentUser.value.username, currentUser.value.avatar);
     }
 
@@ -351,6 +373,7 @@ export default {
       if (remove) {
         removeGame();
       }
+      denyRematch();
       resetGameState();
       inGame.value = false;
       router.push("/lobby");
@@ -371,7 +394,8 @@ export default {
       isLoggedIn,
       currentUser,
       opponentAvatar,
-      requestMatch,
+      requestRematch,
+      rematchState,
     };
   },
 };

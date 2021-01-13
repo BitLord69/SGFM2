@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import SocketIO from 'socket.io-client'
 import { v4 as uuid } from 'uuid';
 
@@ -7,6 +7,11 @@ let gameState = ref(null);
 const isConnected = ref(true);
 const gameList = ref(null);
 const opponentDisconnected = ref(false);
+const rematchState = reactive({
+  message: "",
+  rematchDenied: false,
+  rematchRequested: false,
+});
 
 let client = null;
 export default function SocketHandler() {
@@ -55,16 +60,26 @@ export default function SocketHandler() {
     isConnected.value = false;
   });
 
+  client.on("REMATCH_DENIED", () => {
+    rematchState.rematchDenied = true;
+  });
+
+   client.on("REMATCH_STARTED", () => {
+     resetMatchState();
+  });
+
   // Keep if we're going to have a in-game chat function later in sprint 2
   function sendMessage(message) {
     client.emit("SEND", message);
   }
 
   function createGame(name, avatarId, createGameState) {
+    resetMatchState();
     client.emit("CREATE_GAME", { name, avatarId, ...createGameState });
   }
 
   function joinGame(name, avatarId, roomNo) {
+    resetMatchState();
     client.emit("JOIN_GAME", { name, avatarId, roomNo });
   }
 
@@ -81,27 +96,41 @@ export default function SocketHandler() {
     gameState = ref(null);
   }
 
+  function resetMatchState() {
+    rematchState.message = '';
+    rematchState.rematchDenied = false;
+    rematchState.rematchRequested = false;
+  }
+
   function removeGame(){
     client.emit("REMOVE_GAME");
   }
 
   function rematch(name, avatarId) {
+    rematchState.rematchRequested = true;
     client.emit("REQUEST_REMATCH", { name, avatarId });
   }
 
+  function denyRematch() {
+    client.emit("DENY_REMATCH");
+  }
+
   return {
-    playCard,
-    sendMessage,
-    createGame,
-    joinGame,
-    getGameList,
-    resetGameState,
-    removeGame,
-    rematch,
-    gameList,
     error,
+    gameList,
     gameState,
     isConnected,
+    rematchState,
     opponentDisconnected,
+    rematch,
+    playCard,
+    joinGame,
+    createGame,
+    removeGame,
+    denyRematch,
+    sendMessage,
+    getGameList,
+    resetGameState,
+    resetMatchState,
   }
 }

@@ -39,7 +39,9 @@ public class Server {
     server.addDisconnectListener(client -> {
       System.out.printf("Client %s disconnected.\n",
           TextUtil.pimpString(client.getSessionId().toString(), TextUtil.LEVEL_INFO));
-      List<ListGamesMessage> lgm = roomList.values().
+
+      List<ListGamesMessage> lgm = roomList.
+          values().
           stream().
           filter(r -> r.hasToken(getToken(client))).
           collect(Collectors.toList());
@@ -49,13 +51,15 @@ public class Server {
 
         String room = lgm.get(0).getRoomNo();
         sendEventToRoom("OPPONENT_DISCONNECTED", room, "");
-        System.out.println("room: " + room);
-        if (lgm.get(0).getPlayersInRoom() == 0) {
-          games.remove(room);
-          roomList.remove(room);
-          System.out.printf("No more players in room %s, removing game!\n",
-              TextUtil.pimpString(room, TextUtil.LEVEL_WARNING));
-        }
+//        if (lgm.get(0).getPlayersInRoom() == 0) {
+        games.remove(room);
+        roomList.remove(room);
+//          System.out.printf("No more players in room %s, removing game!\n",
+          System.out.printf("Removing game from room %s!\n",
+            TextUtil.pimpString(room, TextUtil.LEVEL_WARNING));
+//        }
+
+        removeRematchRequest(client);
       }
     });
 
@@ -103,6 +107,10 @@ public class Server {
       String room = getRoomNoFromClientToken(getToken(client));
       if (!room.isEmpty()) {
         GameEngine gameEngine = games.get(room);
+        if (gameEngine == null) {
+          System.out.println("WTF - GAME ENGINE IS NULL!?!?!?!");
+          System.out.println("room: " + room + ", data: " + data);
+        }
         gameEngine.setPlayedCard(Integer.parseInt(data));
       }
     });
@@ -123,27 +131,33 @@ public class Server {
     });
 
     server.addEventListener("REQUEST_REMATCH", RematchMessage.class, (client, data, ackSender) -> {
-      String room = getRoomNoFromClientToken(getToken(client));
-      RematchAcknowledge reReq = rematchRequests.get(room);
-      ListGamesMessage lgm = roomList.get(room);
-      int clientId = lgm.getClientIndex(client);
       GameEngine ge;
+      String room = getRoomNoFromClientToken(getToken(client));
+
+      ListGamesMessage lgm = roomList.get(room);
+      RematchAcknowledge reReq = rematchRequests.get(room);
+
+      int clientId = lgm.getClientIndex(client);
 
       // Have the players already played a re-match? If so, clear the previous game
       if (reReq != null && reReq.isReadyToGo()) {
-        rematchRequests.remove(reReq);
+        removeGame(room);
+        rematchRequests.remove(room);
         reReq = null;
       }
 
       if (reReq == null) {
+        System.out.println("Creating a new rematch request object... clientId: " + clientId);
+
         reReq = new RematchAcknowledge();
         ge = getAndSaveNewGameEngine(localThis, lgm.getGameData(), room);
         reReq.setGameEngine(ge);
+
+        System.out.println("Created a new game engine: " + ge);
+        rematchRequests.put(room, reReq);
       } else {
         ge = reReq.getGameEngine();
       }
-
-      System.out.println("Rematch requested with data " + data + ", clientId: " + clientId);
 
       switch (clientId) {
         case 0:
@@ -153,26 +167,49 @@ public class Server {
         case 1:
           reReq.player2Accept();
           ge.setPlayer(new Player(data.getName(), data.getAvatarId()));
+          System.out.println("Player two accepted, with the game engine " + ge + ", in room: " + room);
+          System.out.println("GameEngine from games: " + games.get(room));
           break;
 
         default:
-          System.out.println("Unknown client!!!!! " + clientId);
+          System.out.println(TextUtil.pimpString("Unknown client!!!!! " + clientId, TextUtil.LEVEL_WARNING));
           return ;
       } // switch
-      rematchRequests.put(room, reReq);
-
-      try {
-        System.out.println("First player: " + ge.getGameState().getPlayer(0));
-        System.out.println("Second player: " + ge.getGameState().getPlayer(1));
-      } catch (Exception e) {
-        System.out.println("Exception!!!!");
-      }
 
       if (reReq.isReadyToGo()) {
         ge.startGame();
         sendGameUpdateToRoom(ge.getGameState(), room);
+        sendEventToRoom("REMATCH_STARTED", room, "");
       }
     });
+
+    server.addEventListener("DENY_REMATCH", null, (client, data, ackSender) -> {
+      removeRematchRequest(client);
+      sendEventToOpponent(client, "REMATCH_DENIED", "");
+    });
+  }
+
+  private void removeRematchRequest(SocketIOClient client) {
+    String room = getRoomNoFromClientToken(getToken(client));
+    rematchRequests.remove(room);
+  }
+
+  private void sendEventToOpponent(SocketIOClient client, String event, String data) {
+    String room = getRoomNoFromClientToken(getToken(client));
+
+    List<ListGamesMessage> listGamesMessages = roomList.values().
+        stream().
+        filter(listGamesMessage -> listGamesMessage.getRoomNo().equals(room)).
+        collect(Collectors.toList());
+    if (listGamesMessages.size() > 0) {
+      listGamesMessages.
+          get(0).
+          getClients().
+          stream().
+          filter(c -> !client.equals(c)).
+          collect(Collectors.toList()).
+          forEach(c -> c.sendEvent(event, data));
+    }
   }
 
   private GameEngine getAndSaveNewGameEngine(Server server, CreateGameMessage data, String room) {
@@ -239,7 +276,7 @@ public class Server {
   }
 
   public void removeGame(String roomNo) {
-    System.out.println("In removeGame: " + roomNo);
+    System.out.println(TextUtil.pimpString("In removeGame: " + roomNo, TextUtil.LEVEL_INFO));
     games.remove(roomNo);
   }
 }

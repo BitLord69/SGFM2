@@ -16,6 +16,15 @@ class Game {
     return res.map(o => ({...o.g.properties, ...o.p.properties}))
   }
 
+  isWinner(props) {
+    return props.winner != 2 && ((props.isStartPlayer && props.winner == 0) || (!props.isStartPlayer && props.winner == 1));
+  }
+
+  isLoser(props) {
+    return props.winner != 2 && ((props.isStartPlayer && props.winner == 1) || (!props.isStartPlayer && props.winner == 0));
+  }
+
+
   async getLeaderboard(league) {
     let query = 'MATCH (u:User)-[p:PLAYED_GAME]->(g:Game)';
 
@@ -27,14 +36,29 @@ class Game {
       }
     }
 
-    const res = (await Neo4j.query(query + " RETURN u{.*,games:collect(p)}", { league }))
-    const temp = res.map(o => (
-                          {avatar: o.u.avatar,
-                          username: o.u.username,
-                          wins: o.u.games.filter(g => g.properties.winner).length,
-                          losses: o.u.games.filter(g => !g.properties.winner).length
-                          }))
-
+    const res = (await Neo4j.query(query + " RETURN u{.*, games:collect(p)}", { league }))
+    const temp = res.map(o => ({
+                                avatar: o.u.avatar,
+                                username: o.u.username,
+                                wins: o.u.games.reduce((acc, curr) => {
+                                  if (this.isWinner(curr.properties)) {
+                                    acc += 1;
+                                  }
+                                  return acc;
+                                }, 0),
+                                losses: o.u.games.reduce((acc, curr) => {
+                                  if (this.isLoser(curr.properties)) {
+                                    acc += 1;
+                                  }
+                                  return acc;
+                                }, 0),
+                                ties: o.u.games.reduce((acc, curr) => {
+                                  if (curr.properties.winner == 2) {
+                                    acc += 1;
+                                  }
+                                  return acc;
+                                }, 0),
+                              }))
     return temp.sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses)).slice(0, 10);
   }
 

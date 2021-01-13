@@ -17,10 +17,14 @@ class Game {
   }
 
   async getLeaderboard(league) {
-    let query = 'MATCH (u:User)-[p:PLAYED_GAME]->(:Game)';
+    let query = 'MATCH (u:User)-[p:PLAYED_GAME]->(g:Game)';
 
     if (league !== "undefined") {
-      query += "-[:IN_LEAGUE]-(l:League {league:$league})";
+      if (league === "No league") {
+        query += " WHERE NOT (g)-[:IN_LEAGUE]->()"
+      } else {
+        query += "-[:IN_LEAGUE]-(l:League {league:$league})";
+      }
     }
 
     const res = (await Neo4j.query(query + " RETURN u{.*,games:collect(p)}", { league }))
@@ -31,7 +35,7 @@ class Game {
                           losses: o.u.games.filter(g => !g.properties.winner).length
                           }))
 
-    return temp.sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses)).slice(0, 9);
+    return temp.sort((a, b) => (b.wins - b.losses) - (a.wins - a.losses)).slice(0, 10);
   }
 
   async saveGame(body) {

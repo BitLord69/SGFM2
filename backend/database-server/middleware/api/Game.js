@@ -9,6 +9,7 @@ router.get('/latestgame/', async (req, res) => {
   return res.json(await game.getLatestGame(req.session.user.username));
 })
 
+//Statistics
 router.get('/:league', async (req, res) => {
   if (!req.session.user) {
     return res.json({ error: 'Not logged in!' });

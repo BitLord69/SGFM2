@@ -31,11 +31,12 @@ export default {
   name: "FullLeaderboard",
   components: { Leaderboard },
   setup(){
+    let leagues = ref(null);
     const isLoaded = ref(false);
-    const { leagues, getLeagues } = LeagueHandler();
+    const { getLeaguesPrivately } = LeagueHandler();
 
     onMounted(async () => {
-      await getLeagues();
+      leagues.value = await getLeaguesPrivately();
       leagues.value.unshift( { league: "No league" });
       leagues.value.unshift( { league: "Total" });
       isLoaded.value = true;

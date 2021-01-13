@@ -14,5 +14,16 @@ export default function LeagueHandler() {
     }  
   }
 
-  return { getLeagues, leagueError, leagues }
+  async function getLeaguesPrivately() {
+    let result;
+    try {
+      result = await extFetch("/api/league/");
+    } catch (e) {
+      leagueError.value = e;
+      return {}
+    }  
+    return result;
+  }
+
+  return { getLeagues, getLeaguesPrivately, leagueError, leagues }
 }

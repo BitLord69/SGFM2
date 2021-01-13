@@ -1,5 +1,5 @@
 <template>
-  <div id="leaderboard" class="p-d-flex p-flex-column"
+  <div id="leaderboard" class="p-d-flex p-flex-column p-pb-4 p-px-4"
     :style="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length) ? 'border: 2px solid #3b1704;' : ''" >
     <div class="p-text-center" v-if="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length)">Leaderboard</div>
       <div>
@@ -24,12 +24,12 @@
           :disabled="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length)"
         >
       <div class="leaderboard-content" v-if="leaderboard && leaderboard.length">
-        <div class="info-row p-mb-1">
+        <div class="info-row p-mb-1 p-jc-center">
           <div style="grid-column:1/2; text-decoration:underline">#</div>
           <div style="grid-column:2/3; text-decoration:underline">Player</div>
           <div style="grid-column:3/4; text-align: right; text-decoration:underline">Score</div>
         </div>
-        <div :class="'p'+ (index + 1) " v-for="(user, index) in leaderboard" :key="user.username">
+        <div :class="'p'+ (index + 1) + ' p-jc-center'" v-for="(user, index) in leaderboard" :key="user.username">
           <div style="grid-column:1/2">{{ index + 1 }}</div>
           <div style="grid-column:2/3">{{ user.username }}</div>
           <div style="grid-column:3/4; text-align: right">{{ user.wins - user.losses }}pts</div>
@@ -82,6 +82,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+
+$col1: 2vw;
+$col2: 7vw;
+$col3: 2vw;
+
 #leaderboard {
   padding: 1%;
   color: #3b1704;
@@ -108,62 +114,62 @@ export default {
 .info-row{ 
   display: grid;
   grid-row: 1/2;
-  grid-template-columns: 2vw 8vw 4vw;
+  grid-template-columns: $col1 $col2 $col3;
 }
 .p1 {
   display: grid;
   grid-row: 2/3;
-  grid-template-columns: 2vw 8vw 4vw;
+  grid-template-columns: $col1 $col2 $col3;
 }
 
 .p2{
   display: grid;
   grid-row: 3/4;
-  grid-template-columns: 2vw 8vw 4vw;
+  grid-template-columns: $col1 $col2 $col3;
 }
 .p3 {
   display: grid;
   grid-row: 4/5;
-  grid-template-columns: 2vw 8vw 4vw;
+  grid-template-columns: $col1 $col2 $col3;
 }
 
 .p4{
   display: grid;
   grid-row: 5/6;
-  grid-template-columns: 2vw 8vw 4vw;
+  grid-template-columns: $col1 $col2 $col3;
 }
 .p5 {
   display: grid;
   grid-row: 6/7;
-  grid-template-columns: 2vw 8vw 4vw;
+  grid-template-columns: $col1 $col2 $col3;
 }
 
 .p6{
   display: grid;
   grid-row: 7/8;
-  grid-template-columns: 2vw 8vw 4vw;
+  grid-template-columns: $col1 $col2 $col3;
 }
 .p7 {
   display: grid;
   grid-row: 8/9;
-  grid-template-columns: 2vw 8vw 4vw;
+  grid-template-columns: $col1 $col2 $col3;
 }
 
 .p8{
   display: grid;
   grid-row: 9/10;
-  grid-template-columns: 2vw 8vw 4vw;
+  grid-template-columns: $col1 $col2 $col3;
 }
 
 .p9 {
   display: grid;
   grid-row: 10/11;
-  grid-template-columns: 2vw 8vw 4vw;
+  grid-template-columns: $col1 $col2 $col3;
 }
 
 .p10{
   display: grid;
   grid-row: 11/12;
-  grid-template-columns: 2vw 8vw 4vw;
+  grid-template-columns: $col1 $col2 $col3;
 }
 </style>

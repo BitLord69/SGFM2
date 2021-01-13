@@ -18,10 +18,11 @@ router.get('/:league', async (req, res) => {
   return res.json(await game.getAll(req.session.user.username, req.params.league));
 })
 
-router.get('/mylatestgame', async (req, res) => { 
+router.get('/latestgame/my', async (req, res) => { 
   if (!req.session.user) {
     return res.json({ error: 'Not logged in!' });
   }  
+
   return res.json(await game.getMyLatestGame(req.session.user.username));
 })
 

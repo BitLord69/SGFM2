@@ -3,28 +3,79 @@ import { reactive, ref } from "vue";
 
 const gameError = ref(null);
 const stats = ref(null);
+const latestGame = ref(null);
+
 const CreateGameState = reactive({
   cardsOnHand: 5,
   pointsToWin: 15,
-  selectedLeague: null
+  selectedLeague: null,
 });
+
 let inGame = ref(false);
+const leaderboard = ref(null);
 
 const joinGameState = reactive({
   activeIndex: -1,
   selectedGame: null,
-  gameList: null
+  gameList: null,
 });
 
 export default function GameHandler() {
-  async function getGames() {
+  async function getGames(league) {
     try {
-      stats.value = await extFetch("/api/game/", "GET");
+      stats.value = await extFetch("/api/game/" + league);
+    } catch (e) {
+      gameError.value = e;
+      return;
+    }
+  }
+
+  async function getLatestGame() {
+    try {
+      latestGame.value = await extFetch("/api/game/latestgame/");
+    } catch (e) {
+      gameError.value = e;
+    }
+  }
+ 
+  async function getGamesPrivately(league) {
+    let res;
+    try {
+      res = await extFetch("/api/game/" + league);
     } catch (e) {
       gameError.value = e;
       return
-    }  
+    }
+
+    return res;
   }
 
-  return { getGames, gameError, stats, CreateGameState, inGame, joinGameState }
+  async function getLeaderboard(league) {
+    let result;
+
+    try {
+      result = await extFetch("/api/game/leaderboard/" + league);
+      if (result.error) {
+        gameError.value = result.error;
+        return
+      }
+      leaderboard.value = result;
+    } catch (e) {
+      gameError.value = e
+      return 
+    }
+  }
+
+  return {
+    stats,
+    inGame,
+    gameError,
+    latestGame,
+    joinGameState,
+    CreateGameState,
+    getGames,
+    getLeaderboard,
+    getGamesPrivately,
+    getLatestGame,
+  }
 }

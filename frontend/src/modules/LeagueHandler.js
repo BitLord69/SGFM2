@@ -7,7 +7,7 @@ const leagues = ref(null);
 export default function LeagueHandler() {
   async function getLeagues() {
     try {
-      leagues.value = await extFetch("/api/league/", "GET");
+      leagues.value = await extFetch("/api/league/");
     } catch (e) {
       leagueError.value = e;
       return

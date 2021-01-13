@@ -3,6 +3,7 @@ import { reactive, ref } from "vue";
 
 const gameError = ref(null);
 const stats = ref(null);
+const myLatestGame = ref(null);
 const latestGame = ref(null);
 
 const CreateGameState = reactive({
@@ -28,6 +29,15 @@ export default function GameHandler() {
     }
   }
 
+  async function getMyLatestGame() {
+    try {
+      myLatestGame.value = await extFetch("/api/game/mylatestgame", "GET");
+    } catch (e) {
+      gameError.value = e;
+      return;
+    }
+  }
+
   async function getLatestGame() {
     try {
       latestGame.value = await extFetch("/api/game/latestgame", "GET");
@@ -45,6 +55,8 @@ export default function GameHandler() {
     inGame,
     joinGameState,
     latestGame,
+    myLatestGame,
+    getMyLatestGame,
     getLatestGame,
   };
 }

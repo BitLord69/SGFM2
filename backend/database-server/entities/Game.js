@@ -45,12 +45,19 @@ class Game {
     return res;
   }
 
-  async getLatestGame(username) {
+  async getMyLatestGame(username) {
    return (await Neo4j.query(`MATCH (u:User{username: $username})-[p:PLAYED_GAME]-(g:Game)-[p2:PLAYED_GAME]-(op:User) 
-                                  RETURN p.points AS myPoints, p.winner AS winner, op.username AS opponent, op.avatar AS oppAvatar,
+                                  RETURN p.points AS myPoints, op.username AS opponent, op.avatar AS oppAvatar,
                  								  p2.points AS oppPoints, g.date AS time ORDER BY g.date DESC LIMIT 1`, {username: username}
    ))[0];
   }
+
+  async getLatestGame() {
+    return (await Neo4j.query(`MATCH (u1:User)-[p1:PLAYED_GAME]-(g:Game)-[p2:PLAYED_GAME]-(u2:User) 
+                                   RETURN u1.username AS p1Username, u1.avatar AS p1Avatar, p1.points AS p1Points, u2.username AS p2Username, u2.avatar AS p2Avatar,
+                                    p2.points AS p2Points, g.date AS time ORDER BY g.date DESC LIMIT 1`, {}
+    ))[0];
+   }
 }
 
 module.exports = new Game()

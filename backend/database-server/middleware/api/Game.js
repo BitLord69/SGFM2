@@ -12,11 +12,15 @@ router.get('/leaderboard', async (req, res) => {
   return res.json(await game.getLeaderboard());
 })
 
-router.get('/latestgame', async (req, res) => { 
+router.get('/mylatestgame', async (req, res) => { 
   if (!req.session.user) {
     return res.json({ error: 'Not logged in!' });
   }  
-  return res.json(await game.getLatestGame(req.session.user.username));
+  return res.json(await game.getMyLatestGame(req.session.user.username));
+})
+
+router.get('/latestgame', async (req, res) => { 
+  return res.json(await game.getLatestGame());
 })
 
 router.post('/', async (req, res) => {

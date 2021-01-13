@@ -85,5 +85,23 @@ export default function SocketHandler() {
     client.emit("REMOVE_GAME");
   }
 
-  return { playCard, sendMessage, createGame, joinGame, getGameList, gameList, error, gameState, isConnected, opponentDisconnected, resetGameState, removeGame }
+  function rematch(name, avatarId) {
+    client.emit("REQUEST_REMATCH", { name, avatarId });
+  }
+
+  return {
+    playCard,
+    sendMessage,
+    createGame,
+    joinGame,
+    getGameList,
+    resetGameState,
+    removeGame,
+    rematch,
+    gameList,
+    error,
+    gameState,
+    isConnected,
+    opponentDisconnected,
+  }
 }

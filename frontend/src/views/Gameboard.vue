@@ -91,21 +91,32 @@
         </div>
       </div>
 
-      <div class="gameOver p-px-5 p-my-3" v-if="gameState.gameWinner !== -1">
-        <h4>GAME OVER</h4>
-        <div v-if="playerId == gameState.gameWinner">You won!</div>
-        <div
-          v-if="playerId != gameState.gameWinner && gameState.gameWinner != 2"
-        >
-          You lost!
+      <div class="gameOver p-px-5 p-my-4" v-if="gameState.gameWinner !== -1">
+        <h4 class="p-my-5">GAME OVER</h4>
+        <div class="p-mb-1">
+          <div v-if="playerId == gameState.gameWinner">You won!</div>
+          <div v-if="playerId != gameState.gameWinner && gameState.gameWinner != 2">
+            You lost!
+          </div>
+          <div v-if="gameState.gameWinner == 2">Game is a tie!</div>
         </div>
-        <div v-if="gameState.gameWinner == 2">Game is a tie!</div>
         <div class="p-my-5">
+          <div style="font-size: 1.4rem;" class="p-mb-3">Rematch?</div>
+          <Button
+            class="p-ripple p-mr-6"
+            @click="requestMatch"
+            label="Yes 5s"
+          />
           <Button
             class="p-ripple"
             @click="returnToLobbyFunc(false)"
-            label="Return to Lobby"
+            label="No"
           />
+          <!-- <Button
+            class="p-ripple p-mx-2"
+            @click="returnToLobbyFunc(false)"
+            label="Return to Lobby"
+          />       -->
         </div>
       </div>
     </div>
@@ -161,17 +172,17 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const gameIsRunning = ref(false);
     const playerId = route.params.player;
     const { inGame } = GameHandler();
     const { currentUser, isLoggedIn } = UserHandler();
-    const gameIsRunning = ref(false);
-
     const {
       gameState,
       playCard,
       opponentDisconnected,
       resetGameState,
       removeGame,
+      rematch
     } = SocketHandler();
     const state = reactive({
       connectedPlayers: 1,
@@ -230,15 +241,6 @@ export default {
           }
         }
 
-        // if (playerId != gameState.value.currentPlayer) {
-        //     document.getElementsByClassName("cardHoverable").forEach((element) => {
-        //       element.setAttribute("disabled");
-        //     });
-        //   console.log("Inte min tur än.....");
-        // } else {
-
-        // }
-
         if (playerId == gameState.value.gameWinner) {
           startParticleAnimation();
           setTimeout(() => {
@@ -248,12 +250,12 @@ export default {
           }, 4000);
         }
       }
-
-      // if (gameState.value == null && gameIsRunning.value) {
-      //   gameIsRunning.value = false;
-
-      // }
     });
+
+    function requestMatch() {
+      console.log("Calling rematch in gameboard...");
+      rematch(currentUser.value.username, currentUser.value.avatar);
+    }
 
     function startParticleAnimation() {
       setTimeout(() => {
@@ -369,6 +371,7 @@ export default {
       isLoggedIn,
       currentUser,
       opponentAvatar,
+      requestMatch,
     };
   },
 };

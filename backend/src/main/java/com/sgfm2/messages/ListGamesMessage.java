@@ -6,36 +6,26 @@ import java.util.ArrayList;
 
 public class ListGamesMessage {
   private String roomNo;
-  private String creator;
-  private int pointsToWin;
-  private int cardsOnHand;
   private int playersInRoom;
-  private String league;
+  private CreateGameMessage cgm;
   private transient ArrayList<String> tokens = new ArrayList<>();
   private transient ArrayList<SocketIOClient> clients = new ArrayList<>();
 
   public ListGamesMessage() {
   }
 
-  public ListGamesMessage(String roomNo, int playersInRoom, int pointsToWin, int cardsOnHand, String creator, String league) {
+  public ListGamesMessage(String roomNo, int playersInRoom) {
     this.roomNo = roomNo;
-    this.creator = creator;
-    this.pointsToWin = pointsToWin;
-    this.cardsOnHand = cardsOnHand;
     this.playersInRoom = playersInRoom;
-    this.league = league;
   }
 
-  public ListGamesMessage(String roomNo, int playersInRoom, CreateGameMessage data) {
-    this(roomNo, playersInRoom, data.getPointsToWin(), data.getCardsOnHand(), data.getName(), data.getLeague());
+  public ListGamesMessage(String roomNo, int playersInRoom, CreateGameMessage cgm) {
+    this(roomNo, playersInRoom);
+    this.cgm = cgm;
   }
 
   public String getCreator() {
-    return creator;
-  }
-
-  public void setCreator(String creator) {
-    this.creator = creator;
+    return cgm.getName();
   }
 
   public String getRoomNo() {
@@ -55,19 +45,11 @@ public class ListGamesMessage {
   }
 
   public int getPointsToWin() {
-    return pointsToWin;
-  }
-
-  public void setPointsToWin(int pointsToWin) {
-    this.pointsToWin = pointsToWin;
+    return cgm.getPointsToWin();
   }
 
   public int getCardsOnHand() {
-    return cardsOnHand;
-  }
-
-  public void setCardsOnHand(int cardsOnHand) {
-    this.cardsOnHand = cardsOnHand;
+    return cgm.getCardsOnHand();
   }
 
   public void addToken(String token) {
@@ -97,7 +79,15 @@ public class ListGamesMessage {
     return clients.contains(client);
   }
 
+  public int getClientIndex(SocketIOClient client) {
+    return clients.indexOf(client);
+  }
+
   public ArrayList<SocketIOClient> getClients() {
     return clients;
+  }
+
+  public CreateGameMessage getGameData() {
+    return cgm;
   }
 }

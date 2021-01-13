@@ -9,19 +9,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.sgfm2.messages.Message;
+import com.sgfm2.messages.*;
 import com.sgfm2.gameobjects.Player;
 import com.sgfm2.gameengine.GameEngine;
 import com.sgfm2.gameobjects.GameState;
-import com.sgfm2.messages.JoinGameMessage;
-import com.sgfm2.messages.ListGamesMessage;
-import com.sgfm2.messages.CreateGameMessage;
 import com.sgfm2.utils.TextUtil;
 
 public class Server {
   final SocketIOServer server;
   private final ConcurrentHashMap<String, GameEngine> games = new ConcurrentHashMap<>();
   private final ConcurrentHashMap<String, ListGamesMessage> roomList = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<String, RematchAcknowledge> rematchRequests = new ConcurrentHashMap<>();
 
   public Server() {
     Configuration config = new Configuration();
@@ -64,11 +62,7 @@ public class Server {
     server.addEventListener("CREATE_GAME", CreateGameMessage.class, (client, data, ackSender) -> {
       String room = getToken(client);
 
-      // TODO: 2020-12-14 Do we need a new thread here????
-      GameEngine gameEngine = new GameEngine(localThis, data.getCardsOnHand(),data.getPointsToWin(), room, data.getLeague());
-      gameEngine.setPlayer(new Player(data.getName(), data.getAvatarId()));
-      games.put(room, gameEngine);
-
+      GameEngine gameEngine = getAndSaveNewGameEngine(localThis, data, room);
       ListGamesMessage lgm = new ListGamesMessage(room, 1, data);
 
       lgm.addClient(client);
@@ -127,6 +121,65 @@ public class Server {
     server.addEventListener("REMOVE_GAME", null, (client, data, ackSender) -> {
       removeGame(getRoomNoFromClientToken(getToken(client)));
     });
+
+    server.addEventListener("REQUEST_REMATCH", RematchMessage.class, (client, data, ackSender) -> {
+      String room = getRoomNoFromClientToken(getToken(client));
+      RematchAcknowledge reReq = rematchRequests.get(room);
+      ListGamesMessage lgm = roomList.get(room);
+      int clientId = lgm.getClientIndex(client);
+      GameEngine ge;
+
+      // Have the players already played a re-match? If so, clear the previous game
+      if (reReq != null && reReq.isReadyToGo()) {
+        rematchRequests.remove(reReq);
+        reReq = null;
+      }
+
+      if (reReq == null) {
+        reReq = new RematchAcknowledge();
+        ge = getAndSaveNewGameEngine(localThis, lgm.getGameData(), room);
+        reReq.setGameEngine(ge);
+      } else {
+        ge = reReq.getGameEngine();
+      }
+
+      System.out.println("Rematch requested with data " + data + ", clientId: " + clientId);
+
+      switch (clientId) {
+        case 0:
+          reReq.player1Accept();
+          break;
+
+        case 1:
+          reReq.player2Accept();
+          ge.setPlayer(new Player(data.getName(), data.getAvatarId()));
+          break;
+
+        default:
+          System.out.println("Unknown client!!!!! " + clientId);
+          return ;
+      } // switch
+      rematchRequests.put(room, reReq);
+
+      try {
+        System.out.println("First player: " + ge.getGameState().getPlayer(0));
+        System.out.println("Second player: " + ge.getGameState().getPlayer(1));
+      } catch (Exception e) {
+        System.out.println("Exception!!!!");
+      }
+
+      if (reReq.isReadyToGo()) {
+        ge.startGame();
+        sendGameUpdateToRoom(ge.getGameState(), room);
+      }
+    });
+  }
+
+  private GameEngine getAndSaveNewGameEngine(Server server, CreateGameMessage data, String room) {
+    GameEngine gameEngine = new GameEngine(server, data.getCardsOnHand(), data.getPointsToWin(), room, data.getLeague());
+    gameEngine.setPlayer(new Player(data.getName(), data.getAvatarId()));
+    games.put(room, gameEngine);
+    return gameEngine;
   }
 
   private String getGameList(String username) {

@@ -32,7 +32,6 @@ export default function GameHandler() {
 
   async function getLatestGame() {
     try {
-      console.log("Hej i getLatestGame!!");
       latestGame.value = await extFetch("/api/game/latestgame/");
     } catch (e) {
       gameError.value = e;

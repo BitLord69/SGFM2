@@ -39,10 +39,11 @@ export default {
   },
 
   async setup(props) {
+    let leagues;
     const stats = ref(null);
     const selectedLeague = ref(null);
     const { getGamesPrivately } = GameHandler();
-    const { leagues, getLeagues } = LeagueHandler();
+    const { getLeaguesPrivately } = LeagueHandler();
 
     const chartData = ref(null);
 
@@ -85,9 +86,9 @@ export default {
       const league = (props.leagueToDisplay === "Total") ? undefined : props.leagueToDisplay;
       stats.value = await getGamesPrivately(league);
     } else {
-      await getLeagues();
+      leagues = await getLeaguesPrivately();
       stats.value = await getGamesPrivately();
-      leagues.value.unshift( {league:"No league"});
+      leagues.unshift( {league:"No league"});
     }
 
     async function filterStats() {
@@ -115,7 +116,7 @@ export default {
     border-bottom: 1px solid darken(#e2c3a6, 5%);
   }
 
-  .p-dropdown {
+  ::v-deep(.p-dropdown) {
     border-color: black !important;
     background-color: #e2c3a6 !important;
 
@@ -126,20 +127,21 @@ export default {
     .p-highlight {
       background-color: darken(#e2c3a6, 10%) !important;
     }
-  }
 
-  .p-dropdown-items-wrapper {
-    background-color: #e2c3a6 !important;
-  }
+    .p-dropdown-items-wrapper {
+      background-color: #e2c3a6 !important;
+    }
 
-  .p-dropdown-panel {
-    background-color: #e2c3a6 !important;
-    border: 1px solid darken(#e2c3a6, 10%) !important;
-  }
+    .p-dropdown-panel {
+      background-color: #e2c3a6;
+      border: 1px solid darken(#e2c3a6, 10%);
+    }
 
-  .p-dropdown-item {
-    &:hover {
-    background-color: darken(#e2c3a6, 10%) !important;
+    .p-dropdown-item {
+      &:hover {
+        background-color: darken(#e2c3a6, 10%) !important;
+      }
     }
   }
+
 </style>

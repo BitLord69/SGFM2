@@ -1,5 +1,5 @@
 <template>
-  <div id="leaderboard" class="p-d-flex p-flex-column p-pb-4 p-px-4"
+  <div id="leaderboard" class="p-d-flex p-flex-column p-pb-3 p-px-3"
     :style="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length) ? 'border: 2px solid #3b1704;' : ''" >
     <div class="p-text-center" v-if="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length)">Leaderboard</div>
       <div>
@@ -24,15 +24,15 @@
           :disabled="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length)"
         >
       <div class="leaderboard-content" v-if="leaderboard && leaderboard.length">
-        <div class="info-row p-mb-1 p-jc-center">
+        <div class="info-row p-mb-1 p-jc-around">
           <div style="grid-column:1/2; text-decoration:underline">#</div>
           <div style="grid-column:2/3; text-decoration:underline">Player</div>
           <div style="grid-column:3/4; text-align: right; text-decoration:underline">Score</div>
         </div>
-        <div :class="'p'+ (index + 1) + ' p-jc-center'" v-for="(user, index) in leaderboard" :key="user.username">
+        <div :class="'p'+ (index + 1) + ' p-jc-around'" v-for="(user, index) in leaderboard" :key="user.username">
           <div style="grid-column:1/2">{{ index + 1 }}</div>
           <div style="grid-column:2/3">{{ user.username }}</div>
-          <div style="grid-column:3/4; text-align: right">{{ user.wins - user.losses }}pts</div>
+          <div style="grid-column:3/4; text-align: right">{{ user.wins - user.losses }} pts</div>
         </div>
       </div>
       <div v-else>No games played</div>
@@ -51,18 +51,19 @@ export default {
     leagueToDisplay: String 
   },
   async setup(props) {
+    let leagues;
     const leaderboard = ref(null);
     const selectedLeague = ref(null);
     const { getLeaderboardPrivately } = GameHandler();
-    const { leagues, getLeagues } = LeagueHandler();
+    const { getLeaguesPrivately } = LeagueHandler();
 
     if(props && props.leagueToDisplay) {
       const league = (props.leagueToDisplay === "Total") ? undefined : props.leagueToDisplay;
       leaderboard.value = await getLeaderboardPrivately(league);
     } else {
-      await getLeagues();
+      leagues = await getLeaguesPrivately();
       leaderboard.value = await getLeaderboardPrivately();
-      leagues.value.unshift( {league:"No league"});
+      leagues.unshift({league:"No league"});
     }
 
     async function filterLeaderboard(){
@@ -82,11 +83,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
-
 $col1: 2vw;
 $col2: 7vw;
-$col3: 2vw;
+$col3: 4vw;
 
 #leaderboard {
   padding: 1%;
@@ -94,8 +93,8 @@ $col3: 2vw;
   min-width: 230px;
   border-radius: 5px;
   background-color: #e2c3a6;
-  //border: 2px solid #3b1704;
-  a{
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  a {
     text-decoration: none;
     color: #3b1704;
   }

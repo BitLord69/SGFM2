@@ -17,8 +17,9 @@ class User {
   }
 
   async getUserName(username) {
+    username = "(?i)" + username;
     return (await Neo4j.query(
-      `MATCH (u:User {username: $username}) RETURN u.username AS username`,
+      `MATCH (u:User) WHERE u.username=~ $username RETURN u.username AS username`,
       {username}
     ))[0];
     // console.log("res:", res);
@@ -26,8 +27,9 @@ class User {
   }
 
   async getEmail(email) {
+    email = "(?i)" + email;
     return (await Neo4j.query(
-      `MATCH (u:User {email: $email}) RETURN u.email AS email`,
+      `MATCH (u:User) WHERE u.email =~ $email RETURN u.email AS email`,
       {email}
     ))[0];
   }

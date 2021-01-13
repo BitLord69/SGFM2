@@ -33,6 +33,7 @@ export default function UserHandler() {
   async function getEmail(email) {
     try {
       emailToCheck.value = await extFetch("/api/user/check/email/" + email);
+      console.log("getemail", emailToCheck.value);
     } catch (e) {
       userError.value = e;
     }

@@ -11,7 +11,7 @@
           />
           <label class="input" for="username">Username</label>
         </span>
-        <div class="p-text-center p-invalid" v-if="check.username">
+        <div class="p-text-center p-invalid" v-if="!check.username">
           <p class="p-mx-1 p-my-1 p-text-left">
             Username already exists!
           </p>
@@ -27,9 +27,9 @@
           />
           <label class="input" for="email">Email</label>
         </span>
-        <div class="p-text-center p-invalid" v-if="check.email">
+        <div class="p-text-center p-invalid" v-if="!check.email">
           <p class="p-mx-1 p-my-1 p-text-left">
-            Email already exists!
+            Email is not valid or already exists!
           </p>
         </div>
       </div>
@@ -44,7 +44,7 @@
           <label class="input" for="password">Password</label>
         </span>
       </div>
-      <div class="p-text-center p-invalid" v-if="!checkPassword()">
+      <div class="p-text-center p-invalid" v-if="!check.password">
         <p class="p-mx-6 p-text-left p-my-0">
           Password must have atleast 8 characters, consist of uppercase,
           lowercase and numeric character!
@@ -56,13 +56,12 @@
             class="input"
             id="rePassword"
             type="password"
-            v-bind:class="{ 'p-invalid': !passwordMatch() }"
             v-model="state.rePassword"
           />
           <label class="input" for="password">Password (again)</label>
         </span>
       </div>
-      <div class="p-text-center p-invalid" v-if="!passwordMatch()">
+      <div class="p-text-center p-invalid" v-if="!check.passwordMatch">
         <p class="p-mx-6 p-text-left p-mt-0">Password doesn't match!</p>
       </div>
       <div class="p-formgroup-inline p-d-flex p-jc-center">
@@ -129,8 +128,10 @@ const state = reactive({
 });
 
 const check = reactive({
-  username: false,
-  email: false,
+  username: true,
+  email: true,
+  password: true,
+  passwordMatch: true
 });
 
 export default {
@@ -152,37 +153,60 @@ export default {
     }
 
     function passwordMatch() {
-      console.log(form.password + " - " + state.rePassword);
-      return form.password === state.rePassword;
+      if(form.password !== state.rePassword) {
+        check.passwordMatch = false;
+        return false;
+      }
+
+      check.passwordMatch = true;
+      return true;
     }
 
     function checkPassword() {
       let regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
-      return regex.exec(form.password);
+      if(!regex.exec(form.password)) {
+        check.password = false;
+        return false;
+      }
+
+      check.password = true;
+      return true;
     }
 
     async function checkUsername() {
+      usernameToCheck.value = null;
+      console.log(usernameToCheck.value);
       await getUsername(form.username);
       if (usernameToCheck.value) {
-        check.username = true;
-        return true;
+        check.username = false;
+        return false;
       }
-      return false;
+
+      check.username = true;
+      return true;
     }
 
     async function checkEmail() {
-      console.log("in checkEmail, emailToCheck:", emailToCheck.value);
+      let regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      emailToCheck.value = null;
       await getEmail(form.email);
-      if (emailToCheck.value) {
-        console.log("EMAIL TRUE");
-        check.email = true;
-        return true;
+      console.log("checkEmail: ", regex.test(form.email));
+      if (emailToCheck.value || !regex.test(form.email)) {
+        check.email = false;
+        return false;
       }
-      return false;
+
+      check.email = true;
+      return true;
     }
 
     async function register() {
-      if (!checkEmail()) {
+      check.username = true;
+      check.email = true;
+      check.password = true;
+      check.passwordMatch = true;
+
+      if (await checkUsername() && await checkEmail() && checkPassword() && passwordMatch()) {
         await createUser(form);
         if (isLoggedIn.value) {
           router.push("/lobby");
@@ -238,7 +262,7 @@ button {
 }
 
 .register-container {
-  height: 65%;
+  height: 70%;
   width: 40%;
   background-image: linear-gradient(#b99778, #e2c3a6);
   color: #3b1704;

@@ -3,30 +3,21 @@
     <div class="p-mb-6">
       <Suspense>
         <template #default>
-          <Leaderboard class="leaderboard"/>
-        </template>
-        <template #fallback>
-          <div>Loading stats...</div>
+          <Leaderboard class="leaderboard" />
         </template>
       </Suspense>
     </div>
     <div class="p-mb-6">
       <Suspense>
-          <template #default>
-            <LatestGame class="latestGame" type="The latest played game"/>
-          </template>
-          <template #fallback>
-            <div>Loading your latest game...</div>
-          </template>
+        <template #default>
+          <LatestGame class="latestGame" type="The latest played game" />
+        </template>
       </Suspense>
     </div>
     <Suspense>
-        <template #default>
-          <LatestGame class="myLatestGame" type="Your latest played game"/>
-        </template>
-        <template #fallback>
-          <div>Loading your latest game...</div>
-        </template>
+      <template #default>
+        <LatestGame class="myLatestGame" type="Your latest played game" />
+      </template>
     </Suspense>
   </div>
     <div class="p-grid" style="width: 100%">
@@ -41,74 +32,82 @@
         </div>
       </div>
     </div>
-    <div class="modals">
-      <Dialog
-        id="createModal"
-        :modal="true"
-        :dismissableMask="true"
-        :closable="false"
-        :visible="state.displayCreate"
-      >
-        <template #header>
-          <div class="p-grid" style="width: 100%">
-            <h3 class="p-m-0 p-col-11 p-pb-0">Create game</h3>
-            <i class="pi pi-times-circle p-col-1 p-mt-2" @click="setVisibleCreate" style="cursor: pointer"></i>
-          </div>
+  <div class="modals">
+    <Dialog
+      id="createModal"
+      :modal="true"
+      :dismissableMask="true"
+      :closable="false"
+      :visible="state.displayCreate"
+    >
+      <template #header>
+        <div class="p-grid" style="width: 100%">
+          <h3 class="p-m-0 p-col-11 p-pb-0">Create game</h3>
+          <i
+            class="pi pi-times-circle p-col-1 p-mt-2"
+            @click="setVisibleCreate"
+            style="cursor: pointer"
+          ></i>
+        </div>
+      </template>
+      <Suspense>
+        <template #default>
+          <CreateGame />
         </template>
-        <Suspense>
-          <template #default>
-            <CreateGame />
-          </template>
-          <template #fallback>
-            <div>Loading leagues...</div>
-          </template>
-        </Suspense>
-        <template class="p-mx-auto" #footer>
-          <router-link style="text-decoration: none" to="/gameboard/0">
-            <Button
-              label="Create"
-              class="p-d-block p-mx-auto p-button-raised btn-dialog"
-              @click="createNewGame"
-            />
-          </router-link>
+        <template #fallback>
+          <div>Loading leagues...</div>
         </template>
-      </Dialog>
+      </Suspense>
+      <template class="p-mx-auto" #footer>
+        <router-link style="text-decoration: none" to="/gameboard/0">
+          <Button
+            label="Create"
+            class="p-d-block p-mx-auto p-button-raised btn-dialog"
+            @click="createNewGame"
+          />
+        </router-link>
+      </template>
+    </Dialog>
 
-      <Dialog
-        id="joinModal"
-        :modal="true"
-        :dismissableMask="true"
-        :closable="false"
-        :visible="state.displayJoin"
-      >
-        <template #header>
-          <div class="p-grid p-d-flex p-ai-between" style="width: 100%">
-            <h3 class="p-m-0 p-col-11 p-pb-0">Join game</h3>
-            <i class="pi pi-times-circle p-col-1 p-mt-2 p-text-right p-mr-0" @click="setVisibleJoin" style="cursor: pointer"></i>
-          </div>
+    <Dialog
+      id="joinModal"
+      :modal="true"
+      :dismissableMask="true"
+      :closable="false"
+      :visible="state.displayJoin"
+    >
+      <template #header>
+        <div class="p-grid p-d-flex p-ai-between" style="width: 100%">
+          <h3 class="p-m-0 p-col-11 p-pb-0">Join game</h3>
+          <i
+            class="pi pi-times-circle p-col-1 p-mt-2 p-text-right p-mr-0"
+            @click="setVisibleJoin"
+            style="cursor: pointer"
+          ></i>
+        </div>
+      </template>
+      <Suspense>
+        <template #default>
+          <JoinGame />
         </template>
-        <Suspense>
-          <template #default>
-            <JoinGame />
-          </template>
-          <template #fallback>
-            Loading available games...
-          </template>
-        </Suspense>
-          
-        <template class="p-mx-auto" #footer>
-          <router-link style="text-decoration: none" to="/gameboard/1">
-            <Button
-              label="Join"
-              class="p-d-block p-mx-auto p-button-raised btn-dialog"
-              :disabled="joinGameState.activeIndex == -1"
-              @click="joinExistingGame"
-            />
-          </router-link>
+        <template #fallback>
+          Loading available games...
         </template>
-      </Dialog>
-    </div>
-    <Sidebar />
+      </Suspense>
+
+      <template class="p-mx-auto" #footer>
+        <router-link style="text-decoration: none" to="/gameboard/1">
+          <Button
+            label="Join"
+            class="p-d-block p-mx-auto p-button-raised btn-dialog"
+            :disabled="joinGameState.activeIndex == -1"
+            @click="joinExistingGame"
+          />
+        </router-link>
+      </template>
+    </Dialog>
+  </div>
+  <Sidebar />
 </template>
 
 <script>
@@ -116,8 +115,8 @@ import { reactive } from "vue";
 import CreateGame from "@/components/CreateGame";
 import JoinGame from "@/components/JoinGame";
 import Sidebar from "@/components/Sidebar";
-import Leaderboard from '@/components/Leaderboard';
-import LatestGame from '../components/LatestGame.vue';
+import Leaderboard from "@/components/Leaderboard";
+import LatestGame from "../components/LatestGame.vue";
 import UserHandler from "@/modules/UserHandler";
 import SocketHandler from "@/modules/SocketHandler";
 import GameHandler from "@/modules/GameHandler";
@@ -127,7 +126,13 @@ export default {
   name: "Lobby",
   components: { CreateGame, JoinGame, Sidebar, Leaderboard, LatestGame },
   setup() {
-    const { createGame, joinGame, gameList, error, isConnected } = SocketHandler();
+    const {
+      createGame,
+      joinGame,
+      gameList,
+      error,
+      isConnected,
+    } = SocketHandler();
     const { CreateGameState, inGame, joinGameState } = GameHandler();
     const { logout, currentUser } = UserHandler();
     const router = useRouter();
@@ -152,14 +157,18 @@ export default {
       if (CreateGameState.selectedLeague) {
         selectedLeague = { ...CreateGameState.selectedLeague };
       }
-      createGame(currentUser.value.username, currentUser.value.avatar, selectedLeague);
+      createGame(
+        currentUser.value.username,
+        currentUser.value.avatar,
+        selectedLeague
+      );
       inGame.value = true;
     }
 
     function joinExistingGame() {
       joinGame(
         currentUser.value.username,
-        currentUser.value.avatar, 
+        currentUser.value.avatar,
         gameList.value[joinGameState.activeIndex].roomNo
       );
       inGame.value = true;
@@ -186,7 +195,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
 .lobby {
   position: relative;
   display: flex;
@@ -229,19 +237,19 @@ export default {
   font-family: "Press Start 2P", cursive;
 }
 
-.leftCardButtonLobby{
+.leftCardButtonLobby {
   background-image: url("/space_nerd.png");
 }
 
-.leftCardButtonLobbyText{
+.leftCardButtonLobbyText {
   left: 36%;
 }
 
-.rightCardButtonLobby{
+.rightCardButtonLobby {
   background-image: url("/anonymous_hacker.png");
 }
 
-.rightCardButtonLobbyText{
+.rightCardButtonLobbyText {
   left: 38%;
 }
 
@@ -256,7 +264,7 @@ export default {
 .dcLeft {
   filter:grayscale(80%);
 
-  &:hover{
+  &:hover {
     box-shadow: none;
     -webkit-transform: rotate(-10deg);
   }

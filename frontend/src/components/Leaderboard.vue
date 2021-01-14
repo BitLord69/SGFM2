@@ -24,12 +24,12 @@
           :disabled="!props.leagueToDisplay || (props.leagueToDisplay && !props.leagueToDisplay.length)"
         >
       <div class="leaderboard-content" v-if="leaderboard && leaderboard.length">
-        <div class="info-row p-mb-1 p-jc-around">
+        <div class="info-row p-mb-1">
           <div style="grid-column:1/2; text-decoration:underline">#</div>
           <div style="grid-column:2/3; text-decoration:underline">Player</div>
           <div style="grid-column:3/4; text-align: right; text-decoration:underline">Score</div>
         </div>
-        <div :class="'p'+ (index + 1) + ' p-jc-around'" v-for="(user, index) in leaderboard" :key="user.username">
+        <div :class="'p'+ (index + 1)" v-for="(user, index) in leaderboard" :key="user.username">
           <div style="grid-column:1/2">{{ index + 1 }}</div>
           <div style="grid-column:2/3">{{ user.username }}</div>
           <div style="grid-column:3/4; text-align: right">{{ user.wins - user.losses }} pts</div>
@@ -86,9 +86,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
-$col1: 2vw;
-$col2: 7vw;
-$col3: 4vw;
+$col1: 10%;
+$col2: 70%;
+$col3: 20%;
 
 #leaderboard {
   padding: 1%;

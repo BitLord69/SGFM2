@@ -74,7 +74,9 @@
     <div class="playerRow">
       <div class="profile p-pt-1" id="profileOpponent">
         <div>{{ opponent?.name || "waiting..." }}</div>
-        <div class="p-mt-1"><img :src="opponentAvatar" /></div>
+        <div class="p-mt-1">
+          <img :class="{ active: playerId != gameState.currentPlayer }" :src="opponentAvatar" />
+        </div>
         <div class="p-mt-1">
           Points: {{ opponent?.score || 0 }}/{{ gameState?.pointsToWin }}
         </div>
@@ -159,7 +161,7 @@
       <div class="profile p-pt-1" id="profileYou">
         <div>{{ gameState && gameState?.players[playerId]?.name }}</div>
         <div class="p-mt-1">
-          <img :src="'/avatar/' + currentUser.avatar + '.png'" />
+          <img :class="{ active: playerId == gameState.currentPlayer }" :src="'/avatar/' + currentUser.avatar + '.png'" />
         </div>
         <div class="p-mt-1">
           Points: {{ gameState && gameState?.players[playerId]?.score }}/{{
@@ -444,6 +446,10 @@ $particle-size: 8px;
   }
 }
 
+.active {
+  border: 2px solid green !important;
+}
+
 .gameboard {
   width: 70%;
   display: flex;
@@ -486,10 +492,6 @@ $particle-size: 8px;
   height: 100%;
   border: 2px solid #2c3e50;
   border-radius: 50%;
-}
-
-#profileYou img {
-  border: 2px solid green;
 }
 
 .cardsOnHand {

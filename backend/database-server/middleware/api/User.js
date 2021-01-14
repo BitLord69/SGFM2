@@ -5,6 +5,15 @@ router.get("/", async (req, res) => {
   return res.json(await user.getAll());
 });
 
+router.get("/check/:username", async(req, res) => {
+  return res.json(await user.getUserName(req.params.username));
+})
+
+router.get("/check/email/:email", async(req, res) => {
+  return res.json(await user.getEmail(req.params.email));
+})
+
+
 router.post("/", async (req, res) => {
   const { username, email, password, avatar } = req.body;
   return res.json(

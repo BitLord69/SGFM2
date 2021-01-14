@@ -1,6 +1,8 @@
 import { ref } from "vue";
 import { extFetch } from "./extFetch";
 
+const usernameToCheck = ref(null);
+const emailToCheck = ref(null);
 const currentUser = ref(null);
 const isLoggedIn = ref(false);
 const isLoggedInAsGuest = ref(false);
@@ -9,12 +11,40 @@ const loginError = ref(null);
 
 export default function UserHandler() {
 
+  // async function getAllUsers() {
+  //   let allUsers;
+  //   try {
+  //     allUsers = await extFetch("/api/user");
+  //   } catch (e) {
+  //     userError.value = e;
+  //   }
+  //   users.value = allUsers;
+  // }
+
+  async function getUsername(username) {
+    try {
+      usernameToCheck.value = await extFetch("/api/user/check/" + username);
+      console.log('usernametocheck.value:', usernameToCheck.value);
+    } catch (e) {
+      userError.value = e;
+    }
+  }
+
+  async function getEmail(email) {
+    try {
+      emailToCheck.value = await extFetch("/api/user/check/email/" + email);
+      console.log("getemail", emailToCheck.value);
+    } catch (e) {
+      userError.value = e;
+    }
+  }
+
   async function logout() {
     try {
       await extFetch("/api/auth/logout/", "POST");
     } catch (e) {
-      userError.value = e
-    }    
+      userError.value = e;
+    }
     currentUser.value = null;
     isLoggedIn.value = false;
     isLoggedInAsGuest.value = false;
@@ -24,19 +54,22 @@ export default function UserHandler() {
     let result;
 
     try {
-      result = await extFetch("/api/auth/login/", "POST", {"email" : email, "password" : password});
+      result = await extFetch("/api/auth/login/", "POST", {
+        email: email,
+        password: password,
+      });
       if (result.error) {
         loginError.value = result.error;
         isLoggedIn.value = false;
-        return 
+        return;
       }
 
       isLoggedIn.value = true;
       currentUser.value = result;
     } catch (e) {
-      loginError.value = e
+      loginError.value = e;
       isLoggedIn.value = false;
-      return 
+      return;
     }
   };
 
@@ -50,30 +83,44 @@ export default function UserHandler() {
       await extFetch("/api/user/", "POST", form);
     } catch (e) {
       userError.value = e;
-      return 
+      return;
     }
-    await login(form.email, form.password)
+    await login(form.email, form.password);
   }
 
   async function startApp() {
     let result;
 
     try {
-      result = await extFetch("/api/auth/whoami/"); 
+      result = await extFetch("/api/auth/whoami/");
       if (result.error) {
         isLoggedIn.value = false;
         userError.value = result.error;
-        return
+        return;
       }
       isLoggedIn.value = true;
       currentUser.value = result;
     } catch (e) {
-      userError.value = e
+      userError.value = e;
       isLoggedIn.value = false;
       return;
     }
   }
 
-
-  return { currentUser, isLoggedIn, isLoggedInAsGuest, userError, loginError, logout, login, loginAsGuest, createUser, startApp };
+  return {
+    usernameToCheck,
+    getUsername,
+    emailToCheck,
+    getEmail,
+    currentUser,
+    isLoggedIn,
+    isLoggedInAsGuest,
+    userError,
+    loginError,
+    logout,
+    login,
+    loginAsGuest,
+    createUser,
+    startApp,
+  };
 }

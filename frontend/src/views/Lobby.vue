@@ -32,10 +32,10 @@
     <div class="p-grid" style="width: 100%">
       <div class="first-container p-col-6 p-offset-3 p-d-flex p-jc-center">
         <div class="container p-d-flex p-jc-center">
-            <div class="leftCardButtonLobby p-shadow-24" @click="isConnected ? setVisibleCreate(): null" :class=" { disConnected: !isConnected }">
+            <div class="leftCardButtonLobby p-shadow-24" @click="isConnected ? setVisibleCreate(): null" :class=" { dcLeft: !isConnected }">
               <div class="leftCardButtonLobbyText">Create Game</div>
             </div>
-          <div class="rightCardButtonLobby p-shadow-24" @click="isConnected ? setVisibleJoin() : null" :class=" { disConnected: !isConnected }">
+          <div class="rightCardButtonLobby p-shadow-24" @click="isConnected ? setVisibleJoin() : null" :class=" { dcRight: !isConnected }">
             <div class="rightCardButtonLobbyText">Join Game</div>
           </div>
         </div>
@@ -253,12 +253,21 @@ export default {
   flex-direction: column;
 }
 
-.disConnected {
+.dcLeft {
   filter:grayscale(80%);
 
   &:hover{
     box-shadow: none;
-    -webkit-transform: none;
+    -webkit-transform: rotate(-10deg);
+  }
+}
+
+.dcRight {
+  filter:grayscale(80%);
+
+  &:hover{
+    box-shadow: none;
+    -webkit-transform: rotate(10deg);
   }
 }
 </style>

@@ -567,7 +567,7 @@ $particle-size: 8px;
 .messageCont {
   position: absolute;
   width: 100%;
-  bottom: 1vh;
+  bottom: 10vh;
   z-index: 11;
   margin: 0 auto;
 }

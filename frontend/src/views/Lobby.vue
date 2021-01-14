@@ -32,10 +32,10 @@
     <div class="p-grid" style="width: 100%">
       <div class="first-container p-col-6 p-offset-3 p-d-flex p-jc-center">
         <div class="container p-d-flex p-jc-center">
-            <div class="leftCardButtonLobby p-shadow-24" @click="setVisibleCreate()">
+            <div class="leftCardButtonLobby p-shadow-24" @click="isConnected ? setVisibleCreate(): null" :class=" { disConnected: !isConnected }">
               <div class="leftCardButtonLobbyText">Create Game</div>
             </div>
-          <div class="rightCardButtonLobby p-shadow-24" @click="setVisibleJoin()">
+          <div class="rightCardButtonLobby p-shadow-24" @click="isConnected ? setVisibleJoin() : null" :class=" { disConnected: !isConnected }">
             <div class="rightCardButtonLobbyText">Join Game</div>
           </div>
         </div>
@@ -127,7 +127,7 @@ export default {
   name: "Lobby",
   components: { CreateGame, JoinGame, Sidebar, Leaderboard, LatestGame },
   setup() {
-    const { createGame, joinGame, gameList, error } = SocketHandler();
+    const { createGame, joinGame, gameList, error, isConnected } = SocketHandler();
     const { CreateGameState, inGame, joinGameState } = GameHandler();
     const { logout, currentUser } = UserHandler();
     const router = useRouter();
@@ -172,19 +172,20 @@ export default {
 
     return {
       state,
-      setVisibleCreate,
-      setVisibleJoin,
-      createNewGame,
       error,
+      isConnected,
+      createNewGame,
+      joinGameState,
       performlogout,
+      setVisibleJoin,
       joinExistingGame,
-      joinGameState
+      setVisibleCreate,
     };
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 .lobby {
   position: relative;
@@ -252,19 +253,12 @@ export default {
   flex-direction: column;
 }
 
-/* .leaderboard {
-  
-}
+.disConnected {
+  filter:grayscale(80%);
 
-.latestGame {
-  position: absolute;
-  top: 35vh;
-  left: 3vw;
+  &:hover{
+    box-shadow: none;
+    -webkit-transform: none;
+  }
 }
-
-.myLatestGame {
-  position: absolute;
-  top: 55vh;
-  left: 3vw;
-} */
 </style>

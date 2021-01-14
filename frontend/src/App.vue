@@ -4,6 +4,12 @@
       <router-link :to="jumpTo" style="text-decoration:none; color: #e69244; cursor:pointer;">
         <h1>Super Galaxy Face Melter</h1>
       </router-link>
+      <div class="disconnected" v-if="!isConnected">
+        <h4>The game server is off-line, please retry later!</h4>
+        <div class=p-mb-3>
+          Everything else <em>should</em> function as normal...
+        </div>
+      </div>
     </div>
     <div class="gameWindow" id="gameWindow">
       <router-view :key="$route.path" />
@@ -15,12 +21,14 @@
 import { useRoute } from "vue-router";
 import { watchEffect, ref, computed } from "vue";
 import UserHandler from "@/modules/UserHandler.js"
+import SocketHandler from "@/modules/SocketHandler";
 
 export default {
   name: "App",
   setup() {
     const route = useRoute();
     const redrawCounter = ref(0);
+    const { isConnected } = SocketHandler();
     const {currentUser, isLoggedIn, isLoggedInAsGuest} = UserHandler()
 
     const jumpTo = computed(() => {
@@ -34,7 +42,7 @@ export default {
       }
     })
 
-    return { redrawCounter, currentUser, isLoggedIn, isLoggedInAsGuest, jumpTo };
+    return { redrawCounter, currentUser, isLoggedIn, isLoggedInAsGuest, jumpTo, isConnected };
   }
 }
 </script>
@@ -181,5 +189,21 @@ Button:hover{
 
 .p-progressbar .p-progressbar-value {
   background: darken(#e2c3a6, 10%) !important;
+}
+
+.disconnected {
+  top: 8vh;
+  left: calc(50% - 225px);
+  width: 450px;
+  z-index: 5;
+  opacity: 80%;
+  padding: 10px;
+  font-size: 18px;
+  color: #3b1704;
+  text-align: center;
+  position: absolute;
+  border-radius: 5px;
+  border: 2px solid #3b1704;
+  background-color: #e2c3a6;
 }
 </style>

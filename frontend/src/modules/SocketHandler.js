@@ -51,13 +51,16 @@ export default function SocketHandler() {
 
   client.on("connect_error", (e) => {
     error.value = e;
+    isConnected.value = false;
+    console.log("In connect_error!!! e:", e);
   });
 
   client.on("disconnect", (reason) => {
+    isConnected.value = false;
     if (reason === 'transport close') {
+      console.log("In disconnect, transport_close!!!");
       client.close()
     }
-    isConnected.value = false;
   });
 
   client.on("REMATCH_DENIED", () => {

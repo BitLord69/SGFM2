@@ -107,10 +107,6 @@ public class Server {
       String room = getRoomNoFromClientToken(getToken(client));
       if (!room.isEmpty()) {
         GameEngine gameEngine = games.get(room);
-        if (gameEngine == null) {
-          System.out.println("WTF - GAME ENGINE IS NULL!?!?!?!");
-          System.out.println("room: " + room + ", data: " + data);
-        }
         gameEngine.setPlayedCard(Integer.parseInt(data));
       }
     });
@@ -147,13 +143,9 @@ public class Server {
       }
 
       if (reReq == null) {
-        System.out.println("Creating a new rematch request object... clientId: " + clientId);
-
         reReq = new RematchAcknowledge();
         ge = getAndSaveNewGameEngine(localThis, lgm.getGameData(), room);
         reReq.setGameEngine(ge);
-
-        System.out.println("Created a new game engine: " + ge);
         rematchRequests.put(room, reReq);
       } else {
         ge = reReq.getGameEngine();
@@ -167,8 +159,6 @@ public class Server {
         case 1:
           reReq.player2Accept();
           ge.setPlayer(new Player(data.getName(), data.getAvatarId()));
-          System.out.println("Player two accepted, with the game engine " + ge + ", in room: " + room);
-          System.out.println("GameEngine from games: " + games.get(room));
           break;
 
         default:

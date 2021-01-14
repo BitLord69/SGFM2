@@ -409,6 +409,14 @@ $particle-size: 8px;
   --start: 0px;
 }
 
+#card-0 {
+  margin-right: 3px;
+}
+
+#card-1 {
+  margin-left: 3px;
+}
+
 .gameOver {
   font-size: 40px;
   color: red;

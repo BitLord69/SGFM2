@@ -447,7 +447,7 @@ $particle-size: 8px;
 }
 
 .active {
-  border: 2px solid green !important;
+  border: 6px solid green !important;
 }
 
 .gameboard {

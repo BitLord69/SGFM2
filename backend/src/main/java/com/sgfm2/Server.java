@@ -23,8 +23,8 @@ public class Server {
 
   public Server() {
     Configuration config = new Configuration();
-    //config.setHostname("192.168.1.8");
-    config.setHostname("localhost");
+    config.setHostname("192.168.1.8");
+    //config.setHostname("localhost");
     config.setPort(9092);
     config.setPingInterval(30);
     server = new SocketIOServer(config);
@@ -53,18 +53,19 @@ public class Server {
         sendEventToRoom("OPPONENT_DISCONNECTED", room, "");
 //        if (lgm.get(0).getPlayersInRoom() == 0) {
         games.remove(room);
+        removeRematchRequest(client);
         roomList.remove(room);
 //          System.out.printf("No more players in room %s, removing game!\n",
           System.out.printf("Removing game from room %s!\n",
             TextUtil.pimpString(room, TextUtil.LEVEL_WARNING));
 //        }
 
-        removeRematchRequest(client);
       }
     });
 
     server.addEventListener("CREATE_GAME", CreateGameMessage.class, (client, data, ackSender) -> {
       String room = getToken(client);
+      System.out.println("CREATE_GAME - Room created: " + room);
 
       GameEngine gameEngine = getAndSaveNewGameEngine(localThis, data, room);
       ListGamesMessage lgm = new ListGamesMessage(room, 1, data);
@@ -77,6 +78,7 @@ public class Server {
           getClients().forEach(x -> x.sendEvent("LIST_GAMES" , getGameList(data.getName())));
 
       client.sendEvent("GAME_UPDATE" , new Gson().toJson(gameEngine.getGameState()));
+      System.out.println("End of CREATE_GAME: " + games.get(room));
     });
 
     server.addEventListener("JOIN_GAME", JoinGameMessage.class, (client, data, ackSender) -> {
@@ -105,9 +107,16 @@ public class Server {
 
     server.addEventListener("PLAYED_CARD", String.class, (client, data, ackSender) -> {
       String room = getRoomNoFromClientToken(getToken(client));
-      if (!room.isEmpty()) {
+      if (room != null && !room.isEmpty()) {
         GameEngine gameEngine = games.get(room);
-        gameEngine.setPlayedCard(Integer.parseInt(data));
+
+        try{
+          gameEngine.setPlayedCard(Integer.parseInt(data));
+        } catch (NullPointerException e) {
+          System.out.println("Ballade ur: " + room);
+        }
+      } else {
+        System.out.println("Room is null or empty!!??!?!?!?!");
       }
     });
 
@@ -123,12 +132,22 @@ public class Server {
     });
 
     server.addEventListener("REMOVE_GAME", null, (client, data, ackSender) -> {
-      removeGame(getRoomNoFromClientToken(getToken(client)));
+      String roomNo = getRoomNoFromClientToken(getToken(client));
+      if(roomNo != null && !roomNo.isEmpty()) {
+        removeGame(roomNo);
+        roomList.remove(roomNo);
+      }
     });
 
     server.addEventListener("REQUEST_REMATCH", RematchMessage.class, (client, data, ackSender) -> {
       GameEngine ge;
       String room = getRoomNoFromClientToken(getToken(client));
+      if(room == null || room.isEmpty()){
+        denyRematch(client);
+        System.out.println("Opponent already denied rematch!");
+        client.sendEvent("REMATCH_DENIED", "");
+        return;
+      }
 
       ListGamesMessage lgm = roomList.get(room);
       RematchAcknowledge reReq = rematchRequests.get(room);
@@ -174,14 +193,25 @@ public class Server {
     });
 
     server.addEventListener("DENY_REMATCH", null, (client, data, ackSender) -> {
-      removeRematchRequest(client);
-      sendEventToOpponent(client, "REMATCH_DENIED", "");
+      denyRematch(client);
     });
+  }
+
+  private void denyRematch(SocketIOClient client) {
+    removeRematchRequest(client);
+    sendEventToOpponent(client, "REMATCH_DENIED", "");
+    String roomNo = getRoomNoFromClientToken(getToken(client));
+    if(roomNo != null && !roomNo.isEmpty()) {
+      removeGame(roomNo);
+      roomList.remove(roomNo);
+    }
   }
 
   private void removeRematchRequest(SocketIOClient client) {
     String room = getRoomNoFromClientToken(getToken(client));
-    rematchRequests.remove(room);
+    if(room != null && !room.isEmpty()) {
+      rematchRequests.remove(room);
+    }
   }
 
   private void sendEventToOpponent(SocketIOClient client, String event, String data) {
@@ -267,6 +297,8 @@ public class Server {
 
   public void removeGame(String roomNo) {
     System.out.println(TextUtil.pimpString("In removeGame: " + roomNo, TextUtil.LEVEL_INFO));
-    games.remove(roomNo);
+    if(roomNo != null && !roomNo.isEmpty()) {
+      games.remove(roomNo);
+    }
   }
 }

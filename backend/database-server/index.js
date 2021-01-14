@@ -16,7 +16,7 @@ app.use('*', encryptor({
   // Our settings for the encryptor
   salt: 'bestComputedDevelopersEVER3xp019Z'
 }));
-app.use(require('cors')({ origin: 'http://localhost:8080' }))
+app.use(require('cors')({ origin: 'http://192.168.1.8:8080' }))
 //app.use(require('cors')({ origin: 'http://98.128.140.50:8080' }))
 
 app.use('*', require('./middleware/session'))

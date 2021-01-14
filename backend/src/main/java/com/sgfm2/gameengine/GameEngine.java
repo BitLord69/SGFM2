@@ -181,7 +181,7 @@ public class GameEngine  {
           saveGameInDatabase();
         }
         server.sendGameUpdateToRoom(gameState, roomNo);
-        server.removeGame(roomNo);
+        //server.removeGame(roomNo);
       }
     } else {
       gameState.changeCurrentPlayer();

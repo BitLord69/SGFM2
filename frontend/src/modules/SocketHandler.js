@@ -16,15 +16,15 @@ const rematchState = reactive({
 let client = null;
 export default function SocketHandler() {
   if (client === null) {
-    // client = SocketIO("http://98.128.140.50:9092", {
-   client = SocketIO("http://localhost:9092", {
-    reconnectionDelay: 500,
-    reconnection: false,
-    timeout: 2000,
-    forceNew: true,
-    query: {
-      token: uuid()
-    }
+    client = SocketIO("98.128.140.50:9092", {
+      //client = SocketIO("http://localhost:9092", {
+      reconnectionDelay: 500,
+      reconnection: false,
+      timeout: 2000,
+      forceNew: true,
+      query: {
+        token: uuid(),
+      },
     });
   }
 
@@ -78,6 +78,7 @@ export default function SocketHandler() {
 
   function createGame(name, avatarId, createGameState) {
     resetMatchState();
+    client.io.opts.query = { token: uuid() };
     client.emit("CREATE_GAME", { name, avatarId, ...createGameState });
   }
 

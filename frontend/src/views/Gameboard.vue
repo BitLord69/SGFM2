@@ -39,6 +39,23 @@
     </Dialog>
 
     <Dialog
+      id="rematchDenied"
+      :modal="true"
+      :dismissableMask="false"
+      :closable="false"
+      :visible="rematchState.message.length">
+      <template #header>
+        <div class="p-text-center">Opponent left the game!</div>
+      </template>
+        <div class="p-text-center">
+          <h3>{{ rematchState.message }}</h3>
+          <div>
+            Hang on, you will be tranferred to the lobby shortly.
+          </div>
+        </div>
+    </Dialog>
+
+    <Dialog
       id="waitingForConnectionModal"
       :modal="true"
       :dismissableMask="true"
@@ -91,20 +108,27 @@
         </div>
       </div>
 
-      <div class="gameOver p-px-5 p-my-3" v-if="gameState.gameWinner !== -1">
-        <h4>GAME OVER</h4>
-        <div v-if="playerId == gameState.gameWinner">You won!</div>
-        <div
-          v-if="playerId != gameState.gameWinner && gameState.gameWinner != 2"
-        >
-          You lost!
+      <div class="gameOver p-px-5 p-my-4" v-if="gameState.gameWinner !== -1">
+        <h4 class="p-my-5">GAME OVER</h4>
+        <div class="p-mb-1">
+          <div v-if="playerId == gameState.gameWinner">You won!</div>
+          <div v-if="playerId != gameState.gameWinner && gameState.gameWinner != 2">
+            You lost!
+          </div>
+          <div v-if="gameState.gameWinner == 2">Game is a tie!</div>
         </div>
-        <div v-if="gameState.gameWinner == 2">Game is a tie!</div>
         <div class="p-my-5">
+          <div style="font-size: 1.4rem;" class="p-mb-3">Rematch?</div>
+          <Button
+            class="p-ripple p-mr-6"
+            @click="requestRematch"
+            label="Yes"
+            :disabled="rematchState.rematchRequested"
+          />
           <Button
             class="p-ripple"
             @click="returnToLobbyFunc(false)"
-            label="Return to Lobby"
+            label="No"
           />
         </div>
       </div>
@@ -148,10 +172,11 @@
 </template>
 
 <script>
-import { ref, reactive, watchEffect, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { reactive, watchEffect, computed } from "vue";
+
 import SocketHandler from "@/modules/SocketHandler";
 import WaitingForPlayer from "../components/WaitingForPlayer";
-import { useRoute, useRouter } from "vue-router";
 import GameHandler from "@/modules/GameHandler";
 import UserHandler from "@/modules/UserHandler";
 
@@ -164,14 +189,16 @@ export default {
     const playerId = route.params.player;
     const { inGame } = GameHandler();
     const { currentUser, isLoggedIn } = UserHandler();
-    const gameIsRunning = ref(false);
-
     const {
-      gameState,
+      rematch,
       playCard,
-      opponentDisconnected,
-      resetGameState,
+      gameState,
       removeGame,
+      denyRematch,
+      rematchState,
+      resetGameState,
+      resetMatchState,
+      opponentDisconnected,
     } = SocketHandler();
     const state = reactive({
       connectedPlayers: 1,
@@ -195,9 +222,16 @@ export default {
       );
     });
 
-    if (state.connectedPlayers == 2) {
-      gameIsRunning.value = true;
-    }
+    watchEffect(() => {
+      if (rematchState.rematchDenied) {
+        rematchState.message = "Sorry, your opponent doesn't like you any more and has left the game!";
+        setTimeout(() => { 
+          resetGameState(); 
+          resetMatchState();
+          router.push("/lobby");
+        }, 3500);
+      }
+    });
 
     watchEffect(() => {
       if (gameState.value !== null) {
@@ -230,15 +264,6 @@ export default {
           }
         }
 
-        // if (playerId != gameState.value.currentPlayer) {
-        //     document.getElementsByClassName("cardHoverable").forEach((element) => {
-        //       element.setAttribute("disabled");
-        //     });
-        //   console.log("Inte min tur än.....");
-        // } else {
-
-        // }
-
         if (playerId == gameState.value.gameWinner) {
           startParticleAnimation();
           setTimeout(() => {
@@ -248,12 +273,11 @@ export default {
           }, 4000);
         }
       }
-
-      // if (gameState.value == null && gameIsRunning.value) {
-      //   gameIsRunning.value = false;
-
-      // }
     });
+
+    function requestRematch() {
+      rematch(currentUser.value.username, currentUser.value.avatar);
+    }
 
     function startParticleAnimation() {
       setTimeout(() => {
@@ -349,6 +373,7 @@ export default {
       if (remove) {
         removeGame();
       }
+      denyRematch();
       resetGameState();
       inGame.value = false;
       router.push("/lobby");
@@ -369,6 +394,8 @@ export default {
       isLoggedIn,
       currentUser,
       opponentAvatar,
+      requestRematch,
+      rematchState,
     };
   },
 };
@@ -380,6 +407,14 @@ $particle-size: 8px;
   --target-x: 0px;
   --target-y: 0px;
   --start: 0px;
+}
+
+#card-0 {
+  margin-right: 3px;
+}
+
+#card-1 {
+  margin-left: 3px;
 }
 
 .gameOver {

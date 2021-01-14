@@ -42,10 +42,10 @@
     <div  v-if="joinGameState && filterGames.length > 0">
       <div :class="'gamelist-item' + ' item-'+index" v-for="(game, index) in filterGames" :key="game.roomNo" @click="setActiveIndex(index)">
         <div class="p-d-flex p-jc-between">
-          <h4 class="p-my-1 p-ml-1">{{game.creator}}'s game</h4>
-          <h4 class="p-my-1 p-mr-1">League: {{ game?.league || "None" }}</h4>
+          <h4 class="p-my-1 p-ml-1">{{ game.cgm.name }}'s game</h4>
+          <h4 class="p-my-1 p-mr-1">League: {{ game?.cgm?.league || "None" }}</h4>
         </div>
-        <h5 class="p-d-flex p-jc-evenly"><span>&#8226; Cards on hand: {{game.cardsOnHand}}</span> <span>&#8226; Points to win: {{game.pointsToWin}}</span></h5>
+        <h5 class="p-d-flex p-jc-evenly"><span>&#8226; Cards on hand: {{game.cgm.cardsOnHand}}</span> <span>&#8226; Points to win: {{game.cgm.pointsToWin}}</span></h5>
       </div>
     </div>
     <div v-else>

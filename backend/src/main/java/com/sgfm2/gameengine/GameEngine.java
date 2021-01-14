@@ -181,12 +181,6 @@ public class GameEngine  {
           saveGameInDatabase();
         }
         server.sendGameUpdateToRoom(gameState, roomNo);
-        try {
-          Thread.sleep(3000);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-
         server.removeGame(roomNo);
       }
     } else {
